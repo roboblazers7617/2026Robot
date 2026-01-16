@@ -76,4 +76,11 @@ public final class Constants {
 		 */
 		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 	}
+
+	/**
+	 * Constants for the drivetrain class
+	 */
+	public static class DrivetrainConstants {
+
+	}
 }
