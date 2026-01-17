@@ -54,6 +54,7 @@ public class Shooter extends SubsystemBase {
 
 	private void startShooter(double speed) {
 		leaderMotor.setControl(velocityOut.withVelocity(speed));
+		System.out.println("Speed is" + speed);
 	}
 
 	private void stopShooter() {

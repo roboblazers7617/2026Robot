@@ -14,6 +14,7 @@ import frc.robot.util.Elastic;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -51,6 +52,8 @@ public class RobotContainer {
 		configureNamedCommands();
 		configureDriverControls();
 		configureOperatorControls();
+
+		SmartDashboard.putNumber("Shooter speed", 10);
 	}
 
 	/**
@@ -88,7 +91,7 @@ public class RobotContainer {
 	 */
 	private void configureOperatorControls() {
 		operatorController.a()
-				.whileTrue(m_ShooterSubsystem.StartShooterCommand(() -> ShooterConstants.FAST_SPEED))
+				.whileTrue(m_ShooterSubsystem.StartShooterCommand(() -> SmartDashboard.getNumber("Shooter speed", 10)))
 				.onFalse(m_ShooterSubsystem.StartShooterCommand(() -> ShooterConstants.COAST_SPEED));
 		operatorController.b().whileTrue(m_ShooterSubsystem.StopShooterCommand());
 		operatorController.x()
