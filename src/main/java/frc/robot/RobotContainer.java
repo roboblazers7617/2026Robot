@@ -5,6 +5,8 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
@@ -35,6 +37,7 @@ public class RobotContainer {
 	 */
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
+	private final Shooter m_ShooterSubsystem = new Shooter();
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -83,7 +86,15 @@ public class RobotContainer {
 	/**
 	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
 	 */
-	private void configureOperatorControls() {}
+	private void configureOperatorControls() {
+		operatorController.a()
+				.whileTrue(m_ShooterSubsystem.StartShooterCommand(() -> ShooterConstants.FAST_SPEED))
+				.onFalse(m_ShooterSubsystem.StartShooterCommand(() -> ShooterConstants.COAST_SPEED));
+		operatorController.b().whileTrue(m_ShooterSubsystem.StopShooterCommand());
+		operatorController.x()
+				.whileTrue(m_ShooterSubsystem.StartShooterCommand(() -> ShooterConstants.SLOW_SPEED))
+				.onFalse(m_ShooterSubsystem.StartShooterCommand(() -> ShooterConstants.COAST_SPEED));
+	}
 
 	/**
 	 * Use this to pass the autonomous command to the main {@link Robot} class.

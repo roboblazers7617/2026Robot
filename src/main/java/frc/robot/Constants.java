@@ -76,4 +76,23 @@ public final class Constants {
 		 */
 		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 	}
+
+	public static class ShooterConstants {
+		public final static int CAN_ID = 0;
+		public final static double KP = 0.15;
+		public final static double KI = 0;
+		public final static double KD = 0;
+		public final static double KV = 0.115;
+		public final static double KS = 0;
+		public static final double RPS = 20.0;
+		public static final double CRUISE_VELOCITY = RPS * 0.8; // 0.8 is 80% effeciancy
+		public static final double ACCELERATION = 2.0 * CRUISE_VELOCITY;
+		public final static boolean ENABLE_STATOR_LIMIT = true;
+		public final static double STATOR_CURRENT_LIMIT = 40;
+		public final static boolean ENABLE_SUPPLY_LIMIT = false;
+		public final static double SUPPLY_CURRENT_LIMIT = 40;
+		public final static double FAST_SPEED = CRUISE_VELOCITY;
+		public final static double SLOW_SPEED = CRUISE_VELOCITY / 2.0;
+		public final static double COAST_SPEED = CRUISE_VELOCITY / 4.0;
+	}
 }
