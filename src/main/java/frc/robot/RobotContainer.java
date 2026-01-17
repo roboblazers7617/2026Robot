@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.shooter.Turret;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
@@ -60,6 +61,9 @@ public class RobotContainer {
 	 */
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
+
+	// Subsystems
+	private final Turret turret = new Turret();
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -137,7 +141,12 @@ public class RobotContainer {
 	/**
 	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
 	 */
-	private void configureOperatorControls() {}
+	private void configureOperatorControls() {
+		turret.setDefaultCommand(turret.setPositionCommand(() -> operatorController.getRightTriggerAxis()));
+
+		operatorController.a()
+				.whileTrue(turret.setPositionCommand(() -> 1.0));
+	}
 
 	/**
 	 * Use this to pass the autonomous command to the main {@link Robot} class.
