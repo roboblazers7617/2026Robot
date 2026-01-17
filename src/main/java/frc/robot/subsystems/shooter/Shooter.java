@@ -10,21 +10,25 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-
+import com.ctre.phoenix6.controls.Follower;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 
 public class Shooter extends SubsystemBase {
-	private final TalonFX motor;
+	private final TalonFX leaderMotor;
+	private final TalonFX followermotor;
+
 	// Velocity output control for the flywheel
 	private final MotionMagicVelocityVoltage velocityOut = new MotionMagicVelocityVoltage(0);
 
 	/** Creates a new Shooter. */
 	public Shooter() {
-		motor = new TalonFX(ShooterConstants.CAN_ID);
-
+		leaderMotor = new TalonFX(ShooterConstants.LEADER_CAN_ID);
+		followermotor = new TalonFX(ShooterConstants.FOLLOWER_CAN_ID);
+		followermotor.setControl(new Follower(leaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
 		TalonFXConfiguration config = new TalonFXConfiguration();
 		// Put's the motor in Coast mode to make it easier to move by hand
 		config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
@@ -37,7 +41,7 @@ public class Shooter extends SubsystemBase {
 		config.MotionMagic.MotionMagicAcceleration = ShooterConstants.ACCELERATION; // Max acceleration allowed
 		// Try to apply config multiple time. Break after successfully applying
 		for (int i = 0; i < 2; ++i) {
-			var status = motor.getConfigurator().apply(config);
+			var status = leaderMotor.getConfigurator().apply(config);
 			if (status.isOK())
 				break;
 		}
@@ -49,11 +53,11 @@ public class Shooter extends SubsystemBase {
 	}
 
 	private void startShooter(double speed) {
-		motor.setControl(velocityOut.withVelocity(speed));
+		leaderMotor.setControl(velocityOut.withVelocity(speed));
 	}
 
 	private void stopShooter() {
-		motor.stopMotor();
+		leaderMotor.stopMotor();
 	}
 
 	public Command StartShooterCommand(Supplier<Double> speed) {

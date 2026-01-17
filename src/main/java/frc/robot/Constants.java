@@ -78,7 +78,8 @@ public final class Constants {
 	}
 
 	public static class ShooterConstants {
-		public final static int CAN_ID = 0;
+		public final static int LEADER_CAN_ID = 0;
+		public final static int FOLLOWER_CAN_ID = 0;
 		public final static double KP = 0.15;
 		public final static double KI = 0;
 		public final static double KD = 0;
