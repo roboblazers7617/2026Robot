@@ -103,4 +103,38 @@ public final class Constants {
 		// will set spinny mode turn speed
 		public static final double MAX_ANGULAR_RATE_DEADBAND = 0.5 * RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 	}
+
+	/**
+	 * Constants used to configure the turret.
+	 */
+	public static class TurretConstants {
+		/**
+		 * The CAN ID for the turret motor.
+		 */
+		public static final int MOTOR_ID = 0;
+		/**
+		 * The CAN ID for the primary turret encoder.
+		 */
+		public static final int PRIMARY_ENCODER_ID = 0;
+		/**
+		 * The CAN ID for the secondary turret encoder.
+		 */
+		public static final int SECONDARY_ENCODER_ID = 0;
+		/**
+		 * The current limit for the motor.
+		 */
+		public static final double MOTOR_CURRENT_LIMIT = 40.0;
+		/**
+		 * The PID kP for the turret closed loop controller.
+		 */
+		public static final double TURRET_KP = 1.0;
+		/**
+		 * The PID kI for the turret closed loop controller.
+		 */
+		public static final double TURRET_KI = 0;
+		/**
+		 * The PID kD for the turret closed loop controller.
+		 */
+		public static final double TURRET_KD = 0;
+	}
 }
