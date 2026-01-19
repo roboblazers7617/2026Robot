@@ -32,6 +32,8 @@ public class Turret extends SubsystemBase {
 
 		// PID configuration
 		Slot0Configs slot0Configs = new Slot0Configs();
+		slot0Configs.kS = TurretConstants.TURRET_KS;
+		slot0Configs.kV = TurretConstants.TURRET_KV;
 		slot0Configs.kP = TurretConstants.TURRET_KP;
 		slot0Configs.kI = TurretConstants.TURRET_KI;
 		slot0Configs.kD = TurretConstants.TURRET_KD;
