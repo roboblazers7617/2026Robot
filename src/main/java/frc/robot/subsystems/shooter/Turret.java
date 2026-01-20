@@ -62,19 +62,19 @@ public class Turret extends SubsystemBase {
 	 * Commands the turret to a certain position.
 	 *
 	 * @param position
-	 *            Position in rotations.
+	 *            Angle to turn to.
 	 */
-	public void setPosition(double position) {
+	public void setPosition(Angle position) {
 		motor.setControl(positionRequest.withPosition(position));
 	}
 
 	/**
-	 * Command to set the turret to a certain position
+	 * Command to set the turret to a certain position.
 	 *
 	 * @param position
-	 *            Position in rotations.
+	 *            Angle to turn to.
 	 */
-	public Command setPositionCommand(Supplier<Double> position) {
+	public Command setPositionCommand(Supplier<Angle> position) {
 		return runOnce(() -> setPosition(position.get()));
 	}
 

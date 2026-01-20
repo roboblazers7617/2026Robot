@@ -30,6 +30,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Degrees;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -142,10 +145,11 @@ public class RobotContainer {
 	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
 	 */
 	private void configureOperatorControls() {
-		turret.setDefaultCommand(turret.setPositionCommand(() -> operatorController.getRightTriggerAxis()));
+		turret.setDefaultCommand(turret.setPositionCommand(() -> Rotations.of(operatorController.getRightTriggerAxis())));
 
-		operatorController.a()
-				.whileTrue(turret.setPositionCommand(() -> 1.0));
+		// Set turret to D-pad position
+		operatorController.povCenter()
+				.whileFalse(turret.setPositionCommand(() -> Degrees.of(operatorController.getHID().getPOV())));
 	}
 
 	/**
