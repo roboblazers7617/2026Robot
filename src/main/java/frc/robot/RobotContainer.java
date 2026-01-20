@@ -37,6 +37,11 @@ public class RobotContainer {
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
 	/**
+	 * Logic for the shoot from anywhere functionality.
+	 */
+	private final ShootFromAnywhere shootFromAnywhere = new ShootFromAnywhere();
+
+	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
