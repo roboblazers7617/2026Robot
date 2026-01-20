@@ -93,6 +93,16 @@ public final class Constants {
 		 * The CAN ID for the secondary turret encoder.
 		 */
 		public static final int SECONDARY_ENCODER_ID = 0;
+
+		/**
+		 * The number of encoder rotations per mechanism rotation for the primary encoder.
+		 */
+		public static final double PRIMARY_ENCODER_RATIO = 1.0 / 1.0;
+		/**
+		 * The number of encoder rotations per mechanism rotation for the secondary encoder.
+		 */
+		public static final double SECONDARY_ENCODER_RATIO = 1.0 / 2.0;
+
 		/**
 		 * The current limit for the motor.
 		 */
