@@ -12,7 +12,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import yams.units.CRTAbsoluteEncoder;
 import yams.units.CRTAbsoluteEncoderConfig;
-
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,6 +23,7 @@ import frc.robot.util.Elastic;
 /**
  * The turret that the shooter is attached to.
  */
+@Logged
 public class Turret extends SubsystemBase {
 	private TalonFX motor = new TalonFX(TurretConstants.MOTOR_ID);
 
@@ -76,6 +77,16 @@ public class Turret extends SubsystemBase {
 	 */
 	public Command setPositionCommand(Supplier<Angle> position) {
 		return runOnce(() -> setPosition(position.get()));
+	}
+
+	/**
+	 * Gets the current position of the turret. This reads the relative encoder on the motor.
+	 *
+	 * @return
+	 *         The current position of the turret motor.
+	 */
+	public Angle getPosition() {
+		return motor.getRotorPosition().getValue();
 	}
 
 	/**
