@@ -34,7 +34,7 @@ public class ShootFromAnywhere {
 	 * @return
 	 *         The resulting Angle to point the turret at.
 	 */
-	private Angle solveTurretAngle(Pose2d robotPose, Pose2d targetPose) {
+	private static Angle solveTurretAngle(Pose2d robotPose, Pose2d targetPose) {
 		Pose2d turretPose = robotPose;
 
 		return turretPose.getTranslation()
