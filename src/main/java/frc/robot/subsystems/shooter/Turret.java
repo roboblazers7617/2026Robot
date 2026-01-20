@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
@@ -12,9 +13,12 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import yams.units.CRTAbsoluteEncoder;
 import yams.units.CRTAbsoluteEncoderConfig;
 
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.util.Elastic;
 
 /**
  * The turret that the shooter is attached to.
@@ -49,6 +53,9 @@ public class Turret extends SubsystemBase {
 		slot0Configs.kI = TurretConstants.TURRET_KI;
 		slot0Configs.kD = TurretConstants.TURRET_KD;
 		talonFXConfigurator.apply(slot0Configs);
+
+		// Seed the encoder
+		seedEncoder();
 	}
 
 	/**
@@ -69,5 +76,30 @@ public class Turret extends SubsystemBase {
 	 */
 	public Command setPositionCommand(Supplier<Double> position) {
 		return runOnce(() -> setPosition(position.get()));
+	}
+
+	/**
+	 * Seeds the turret encoder. This polls the absolute encoder value and uses it to set the relative encoder's position.
+	 *
+	 * @implNote
+	 *           This may fail to solve! If it does, a notification will be sent to Elastic to notify the technician, since this is a fatal state to be in.
+	 * @return
+	 *         True if solved, false if failed to solve.
+	 */
+	private boolean seedEncoder() {
+		// Encoder seeding
+		Optional<Angle> turretPosition = encoder.getAngleOptional();
+		if (turretPosition.isPresent()) {
+			motor.setPosition(turretPosition.get());
+		} else {
+			Elastic.Notification notification = new Elastic.Notification()
+					.withLevel(Elastic.Notification.NotificationLevel.ERROR)
+					.withTitle("Failed to solve turret encoder position!")
+					.withDescription("Failed to solve the turret encoder's position. This shouldn't happen! Try moving the turret a bit and restarting the robot code to see if it will solve correctly.");
+			Elastic.sendNotification(notification);
+			DriverStation.reportError("Failed to solve turret encoder position!", false);
+		}
+
+		return turretPosition.isPresent();
 	}
 }
