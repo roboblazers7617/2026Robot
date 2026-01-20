@@ -6,7 +6,11 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import yams.units.CRTAbsoluteEncoder;
+import yams.units.CRTAbsoluteEncoderConfig;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -17,6 +21,13 @@ import frc.robot.Constants.TurretConstants;
  */
 public class Turret extends SubsystemBase {
 	private TalonFX motor = new TalonFX(TurretConstants.MOTOR_ID);
+
+	private final CANcoder primaryEncoder = new CANcoder(TurretConstants.PRIMARY_ENCODER_ID);
+	private final CANcoder secondaryEncoder = new CANcoder(TurretConstants.SECONDARY_ENCODER_ID);
+
+	private final CRTAbsoluteEncoderConfig encoderConfig = new CRTAbsoluteEncoderConfig(primaryEncoder.getPosition().asSupplier(), secondaryEncoder.getPosition().asSupplier())
+			.withEncoderRatios(TurretConstants.PRIMARY_ENCODER_RATIO, TurretConstants.SECONDARY_ENCODER_RATIO);
+	private final CRTAbsoluteEncoder encoder = new CRTAbsoluteEncoder(encoderConfig);
 
 	private final PositionVoltage positionRequest = new PositionVoltage(0)
 			.withSlot(0);
