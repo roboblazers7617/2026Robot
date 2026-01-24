@@ -72,5 +72,6 @@
 	},
 	"editor.wordWrap": "on",
 	"editor.wrappingIndent": "indent",
-	"wpilib.autoStartRioLog": false
+	"wpilib.autoStartRioLog": false,
+	"java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable"
 }

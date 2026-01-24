@@ -4,9 +4,19 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.FeetPerSecond;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import java.io.File;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Filesystem;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -81,6 +91,69 @@ public final class Constants {
 	 * Constants for the drivetrain class
 	 */
 	public static class DrivetrainConstants {
+		/**
+		 * Maximum speed of the robot in meters per second.
+		 */
+		public static final double MAX_SPEED = FeetPerSecond.of(14.5).in(MetersPerSecond);
+		/**
+		 * Directory that contains the YAGSL configuration.
+		 */
+		public static final File CONFIG_DIR = new File(Filesystem.getDeployDirectory(), "swerve");
+		/**
+		 * YAGSL telemetry verbosity when in debug mode.
+		 */
+		// public static final TelemetryVerbosity TELEMETRY_VERBOSITY_DEBUG = TelemetryVerbosity.HIGH;
+		// /**
+		// * YAGSL telemetry verbosity when in normal mode.
+		// */
+		// public static final TelemetryVerbosity TELEMETRY_VERBOSITY_NORMAL = TelemetryVerbosity.POSE;
+		/**
+		 * Translation axis scaling. Changes the overall maximum speed of the drivetrain in fast mode.
+		 */
+		public static final double TRANSLATION_SCALE_FAST = 1;
+		/**
+		 * Translation axis scaling. Changes the overall maximum speed of the drivetrain in normal mode.
+		 */
+		public static final double TRANSLATION_SCALE_NORMAL = 0.8;
+		/**
+		 * Translation axis scaling. Changes the overall maximum speed of the drivetrain in slow mode.
+		 */
+		public static final double TRANSLATION_SCALE_SLOW = 0.3;
+		/**
+		 * Translation axis scaling. Changes the overall maximum speed of the drivetrain when in slide mode.
+		 */
+		public static final double TRANSLATION_SCALE_SLIDE = 0.3;
+		/**
+		 * Starting pose.
+		 */
+		public static final Pose2d STARTING_POSITION = new Pose2d(new Translation2d(Meters.of(1), Meters.of(4)), Rotation2d.fromDegrees(0));
+		/**
+		 * Enables {@link swervelib.SwerveDrive#headingCorrection heading correction}. Should only be used while controlling the robot via angle.
+		 */
+		public static final boolean ENABLE_HEADING_CORRECTION = false;
+		/**
+		 * Enables {@link swervelib.parser.SwerveModuleConfiguration#useCosineCompensator cosine compensation}.
+		 */
+		public static final boolean ENABLE_COSINE_COMPENSATION = false;
 
+		/**
+		 * Angular velocity skew correction configuration.
+		 *
+		 * @see swervelib.SwerveDrive#setAngularVelocityCompensation
+		 */
+		public static final class AngularVelocityCompensation {
+			/**
+			 * Enables angular velocity correction in teleop.
+			 */
+			public static final boolean USE_IN_TELEOP = true;
+			/**
+			 * Enables angular velocity correction in autonomous.
+			 */
+			public static final boolean USE_IN_AUTO = true;
+			/**
+			 * The angular velocity coefficient.
+			 */
+			public static final double ANGULAR_VELOCITY_COEFFICIENT = 0.1;
+		}
 	}
 }
