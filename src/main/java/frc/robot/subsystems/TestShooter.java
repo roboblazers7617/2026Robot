@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LoggingConstants;
-import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.HopperConstants;
 
 public class TestShooter extends SubsystemBase {
 	private NetworkTable shooterTable;
@@ -38,19 +38,19 @@ public class TestShooter extends SubsystemBase {
 	public TestShooter(NetworkTable table) {
 		setupNetworkTables(table);
 
-		leaderMotor = new TalonFX(ShooterConstants.LEADER_CAN_ID);
-		followermotor = new TalonFX(ShooterConstants.FOLLOWER_CAN_ID);
+		leaderMotor = new TalonFX(HopperConstants.LEADER_CAN_ID);
+		followermotor = new TalonFX(HopperConstants.FOLLOWER_CAN_ID);
 		followermotor.setControl(new Follower(leaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
 		TalonFXConfiguration config = new TalonFXConfiguration();
 		// Put's the motor in Coast mode to make it easier to move by hand
 		config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 		// Configure the motor to make sure positive voltage is counter clockwise
 		config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-		config.Slot0.kS = ShooterConstants.KS; // Static gain
-		config.Slot0.kV = ShooterConstants.KV; // Velocity gain
-		config.Slot0.kP = ShooterConstants.KP; // Proportional gain
-		config.MotionMagic.MotionMagicCruiseVelocity = ShooterConstants.CRUISE_VELOCITY; // Max velocity
-		config.MotionMagic.MotionMagicAcceleration = ShooterConstants.ACCELERATION; // Max acceleration allowed
+		config.Slot0.kS = HopperConstants.KS; // Static gain
+		config.Slot0.kV = HopperConstants.KV; // Velocity gain
+		config.Slot0.kP = HopperConstants.KP; // Proportional gain
+		config.MotionMagic.MotionMagicCruiseVelocity = HopperConstants.CRUISE_VELOCITY; // Max velocity
+		config.MotionMagic.MotionMagicAcceleration = HopperConstants.ACCELERATION; // Max acceleration allowed
 		// Try to apply config multiple time. Break after successfully applying
 		for (int i = 0; i < 2; ++i) {
 			var status = leaderMotor.getConfigurator().apply(config);
