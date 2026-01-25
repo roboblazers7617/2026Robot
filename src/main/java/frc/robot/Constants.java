@@ -77,7 +77,7 @@ public final class Constants {
 		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 	}
 
-	public static class HopperConstants {
+	public static class ShooterConstants {
 		public final static int LEADER_CAN_ID = 0;
 		public final static int FOLLOWER_CAN_ID = 0;
 		public final static double KP = 0.15;
