@@ -25,18 +25,39 @@ import frc.robot.util.Elastic;
  */
 @Logged
 public class Turret extends SubsystemBase {
+	/**
+	 * The motor on the turret.
+	 */
 	private TalonFX motor = new TalonFX(TurretConstants.MOTOR_ID);
 
+	/**
+	 * The primary encoder on the turret. This is 1:1 with the motor, and {@link TurretConstants#PRIMARY_ENCODER_RATIO} to the mechanism.
+	 */
 	private final CANcoder primaryEncoder = new CANcoder(TurretConstants.PRIMARY_ENCODER_ID);
+	/**
+	 * The secondary encoder on the turret. This is {@link TurretConstants#SECONDARY_ENCODER_RATIO} to the mechanism.
+	 */
 	private final CANcoder secondaryEncoder = new CANcoder(TurretConstants.SECONDARY_ENCODER_ID);
 
+	/**
+	 * The configuration for the {@link #encoder}.
+	 */
 	private final CRTAbsoluteEncoderConfig encoderConfig = new CRTAbsoluteEncoderConfig(primaryEncoder.getPosition().asSupplier(), secondaryEncoder.getPosition().asSupplier())
 			.withEncoderRatios(TurretConstants.PRIMARY_ENCODER_RATIO, TurretConstants.SECONDARY_ENCODER_RATIO);
+	/**
+	 * The encoder on the turret. This uses some gearing magic to derive the position based off the position of two absolute encoders.
+	 */
 	private final CRTAbsoluteEncoder encoder = new CRTAbsoluteEncoder(encoderConfig);
 
+	/**
+	 * The control request used for position control.
+	 */
 	private final PositionVoltage positionRequest = new PositionVoltage(0)
 			.withSlot(0);
 
+	/**
+	 * Creates a new Turret.
+	 */
 	public Turret() {
 		TalonFXConfigurator talonFXConfigurator = motor.getConfigurator();
 
