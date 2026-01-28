@@ -6,7 +6,10 @@
 		{
 			"label": "Format with Spotless",
 			"type": "shell",
-			"command": "./gradlew spotlessApply",
+			"command": "./gradlew",
+			"args": [
+				"spotlessApply"
+			],
 			"presentation": {
 				"reveal": "always",
 				"panel": "shared"
