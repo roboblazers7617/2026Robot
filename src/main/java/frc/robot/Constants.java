@@ -13,6 +13,19 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
 import frc.robot.generated.TunerConstants;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rectangle2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import frc.robot.util.BiAlliancePose3d;
+import frc.robot.util.PoseUtil;
+import frc.robot.util.RectangleUtil;
+
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Inches;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -86,6 +99,49 @@ public final class Constants {
 		 * AprilTag Field Layout for the current game.
 		 */
 		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+		/**
+		 * A pose at the center of the field.
+		 */
+		public static final Pose2d FIELD_CENTER = new Pose2d(FIELD_LAYOUT.getFieldLength() / 2, FIELD_LAYOUT.getFieldWidth() / 2, Rotation2d.kZero);
+		/**
+		 * A rectangle encompassing the neutral (center) zone of the field.
+		 */
+		public static final Rectangle2d NEUTRAL_RECTANGLE = new Rectangle2d(FIELD_CENTER, Inches.of(287.0), Meters.of(FIELD_LAYOUT.getFieldWidth()));
+
+		/**
+		 * Zones and poses to shoot from and to.
+		 */
+		public static class ShootingZones {
+			/**
+			 * A rectangle encompassing the shooting zone for the top half of the neutral rectangle (when looking at the field diagram).
+			 */
+			public static final Rectangle2d NEUTRAL_ZONE_TOP = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(0, -FIELD_LAYOUT.getFieldWidth() / 3.0, Rotation2d.kZero)), NEUTRAL_RECTANGLE.getXWidth(), NEUTRAL_RECTANGLE.getYWidth() / 3.0);
+			/**
+			 * A rectangle encompassing the shooting zone for the bottom half of the neutral rectangle (when looking at the field diagram).
+			 */
+			public static final Rectangle2d NEUTRAL_ZONE_BOTTOM = RectangleUtil.flipRectangleY(NEUTRAL_ZONE_TOP);
+			/**
+			 * The pose to shoot at for the {@link #NEUTRAL_ZONE_TOP top of the neutral rectangle} (when looking at the field diagram).
+			 */
+			public static final BiAlliancePose3d SHUTTLE_TOP_POSE = BiAlliancePose3d.fromBluePose(new Pose3d(Meters.of(3.0), Meters.of(2.0), Meters.zero(), Rotation3d.kZero), BiAlliancePose3d.InvertY.KEEP_Y);
+			/**
+			 * The pose to shoot at for the {@link #NEUTRAL_ZONE_BOTTOM bottom of the neutral rectangle} (when looking at the field diagram).
+			 */
+			public static final BiAlliancePose3d SHUTTLE_BOTTOM_POSE = BiAlliancePose3d.fromBluePose(PoseUtil.flipPoseY(SHUTTLE_TOP_POSE.getBluePose()), BiAlliancePose3d.InvertY.KEEP_Y);
+
+			/**
+			 * A rectangle encompassing the shooting zone for the hub on the red alliance.
+			 */
+			public static final Rectangle2d HUB_ZONE_RED = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(Inches.of(234.555).plus(Meters.of(0.1)), Meters.zero(), Rotation2d.kZero)), Inches.of(182.11), Meters.of(5.0));
+			/**
+			 * A rectangle encompassing the shooting zone for the hub on the blue alliance.
+			 */
+			public static final Rectangle2d HUB_ZONE_BLUE = RectangleUtil.flipRectangleX(HUB_ZONE_RED);
+			/**
+			 * The pose to shoot at for the {@link #HUB_ZONE_RED} and {@link #HUB_ZONE_BLUE}.
+			 */
+			public static final BiAlliancePose3d HUB_POSE = BiAlliancePose3d.fromRedPose(new Pose3d(FIELD_CENTER).transformBy(new Transform3d(Inches.of(143.50), Meters.zero(), Inches.of(72.0), Rotation3d.kZero)), BiAlliancePose3d.InvertY.KEEP_Y);
+		}
 	}
 
 	public static class DrivetrainConstants {

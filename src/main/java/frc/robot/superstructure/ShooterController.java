@@ -3,7 +3,9 @@ package frc.robot.superstructure;
 import java.util.function.Supplier;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -13,6 +15,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 @Logged
 public class ShooterController {
 	// TODO: Implement things here for the various subsystems once those are added
+	private Pose2d testRobotPose = new Pose2d(5.0, 1.0, Rotation2d.kZero);
+
+	/**
+	 * Creates a new ShooterController.
+	 */
+	public ShooterController() {
+		System.out.println(ShooterUtils.getTargetPoseForPosition(testRobotPose));
+	}
+
 	/**
 	 * Sets the shooter state to the specified state.
 	 *
@@ -56,6 +67,6 @@ public class ShooterController {
 	private void prepareShootAtTarget(Pose3d targetPose) {
 		// Pose2d robotPose = drivetrain.samplePoseAt(Utils.getCurrentTimeSeconds());
 
-		// setShooterState(ShootWhileMove.computeShooterState(robotPose, targetPose));
+		// setShooterState(ShootFromAnywhere.solve(robotPose, targetPose));
 	}
 }
