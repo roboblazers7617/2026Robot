@@ -1,9 +1,13 @@
 package frc.robot.util;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import frc.robot.Constants.FieldConstants;
 
 /**
@@ -23,6 +27,18 @@ public class PoseUtil {
 	}
 
 	/**
+	 * Flips a pose to the other alliance.
+	 *
+	 * @param pose
+	 *            Pose to flip.
+	 * @return
+	 *         Flipped pose.
+	 */
+	public static Pose3d flipPoseAlliance(Pose3d pose) {
+		return new Pose3d(flipTranslationAlliance(pose.getTranslation()), pose.getRotation().rotateBy(new Rotation3d(Rotation2d.k180deg)));
+	}
+
+	/**
 	 * Flips a translation to the other alliance.
 	 *
 	 * @param translation
@@ -35,6 +51,18 @@ public class PoseUtil {
 	}
 
 	/**
+	 * Flips a translation to the other alliance.
+	 *
+	 * @param translation
+	 *            Translation to flip.
+	 * @return
+	 *         Flipped translation.
+	 */
+	public static Translation3d flipTranslationAlliance(Translation3d translation) {
+		return new Translation3d(FieldConstants.FIELD_LAYOUT.getFieldLength() - translation.getX(), FieldConstants.FIELD_LAYOUT.getFieldWidth() - translation.getY(), translation.getZ());
+	}
+
+	/**
 	 * Flips a transform across the X axis (inverts the Y axis).
 	 *
 	 * @param transform
@@ -44,5 +72,17 @@ public class PoseUtil {
 	 */
 	public static Transform2d flipTransformY(Transform2d transform) {
 		return new Transform2d(transform.getMeasureX(), transform.getMeasureY().times(-1), transform.getRotation());
+	}
+
+	/**
+	 * Flips a transform across the X axis (inverts the Y axis).
+	 *
+	 * @param transform
+	 *            Transform to flip.
+	 * @return
+	 *         Flipped transform.
+	 */
+	public static Transform3d flipTransformY(Transform3d transform) {
+		return new Transform3d(transform.getMeasureX(), transform.getMeasureY().times(-1), transform.getMeasureZ(), transform.getRotation());
 	}
 }
