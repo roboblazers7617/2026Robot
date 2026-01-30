@@ -149,7 +149,7 @@ public class RobotContainer {
 
 		// Set turret to D-pad position
 		operatorController.povCenter()
-				.whileFalse(turret.setPositionCommand(() -> Degrees.of(operatorController.getHID().getPOV())));
+				.whileFalse(turret.setPositionMotionMagicCommand(() -> Degrees.of(operatorController.getHID().getPOV())));
 	}
 
 	/**
