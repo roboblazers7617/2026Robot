@@ -4,8 +4,10 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -54,6 +56,11 @@ public class Turret extends SubsystemBase {
 	 */
 	private final PositionVoltage positionRequest = new PositionVoltage(0)
 			.withSlot(0);
+	/**
+	 * The control request used for position control with MotionMagic.
+	 */
+	private final MotionMagicVoltage positionRequestMotionMagic = new MotionMagicVoltage(0)
+			.withSlot(0);
 
 	/**
 	 * Creates a new Turret.
@@ -71,13 +78,41 @@ public class Turret extends SubsystemBase {
 		Slot0Configs slot0Configs = new Slot0Configs();
 		slot0Configs.kS = TurretConstants.TURRET_KS;
 		slot0Configs.kV = TurretConstants.TURRET_KV;
+		slot0Configs.kA = TurretConstants.TURRET_KA;
 		slot0Configs.kP = TurretConstants.TURRET_KP;
 		slot0Configs.kI = TurretConstants.TURRET_KI;
 		slot0Configs.kD = TurretConstants.TURRET_KD;
 		talonFXConfigurator.apply(slot0Configs);
 
+		// MotionMagic configuration
+		MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
+		motionMagicConfigs.MotionMagicCruiseVelocity = TurretConstants.CRUISE_VELOCITY;
+		motionMagicConfigs.MotionMagicAcceleration = TurretConstants.ACCELERATION;
+		motionMagicConfigs.MotionMagicJerk = TurretConstants.JERK;
+		talonFXConfigurator.apply(motionMagicConfigs);
+
 		// Seed the encoder
 		seedEncoder();
+	}
+
+	/**
+	 * Command to set the turret to a certain position.
+	 *
+	 * @param position
+	 *            Angle to turn to.
+	 */
+	public Command setPositionCommand(Supplier<Angle> position) {
+		return runOnce(() -> setPosition(position.get()));
+	}
+
+	/**
+	 * Command to set the turret to a certain position with MotionMagic.
+	 *
+	 * @param position
+	 *            Angle to turn to.
+	 */
+	public Command setPositionMotionMagicCommand(Supplier<Angle> position) {
+		return runOnce(() -> setPositionMotionMagic(position.get()));
 	}
 
 	/**
@@ -91,13 +126,13 @@ public class Turret extends SubsystemBase {
 	}
 
 	/**
-	 * Command to set the turret to a certain position.
+	 * Commands the turret to a certain position with MotionMagic.
 	 *
 	 * @param position
 	 *            Angle to turn to.
 	 */
-	public Command setPositionCommand(Supplier<Angle> position) {
-		return runOnce(() -> setPosition(position.get()));
+	public void setPositionMotionMagic(Angle position) {
+		motor.setControl(positionRequestMotionMagic.withPosition(position));
 	}
 
 	/**
