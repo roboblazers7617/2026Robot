@@ -127,5 +127,21 @@ public final class Constants {
 		 * The PID kV for the turret closed loop controller.
 		 */
 		public static final double TURRET_KV = 0.12;
+		/**
+		 * The PID kA for the turret closed loop controller.
+		 */
+		public static final double TURRET_KA = 0.01;
+		/**
+		 * The peak/cruising velocity of the motion.
+		 */
+		public static final double CRUISE_VELOCITY = 80;
+		/**
+		 * The acceleration and deceleration rates during the beginning and end of motion.
+		 */
+		public static final double ACCELERATION = 160;
+		/**
+		 * Jerk (derivative of acceleration).
+		 */
+		public static final double JERK = 1600;
 	}
 }
