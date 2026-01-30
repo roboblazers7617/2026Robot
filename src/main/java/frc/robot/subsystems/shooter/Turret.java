@@ -102,7 +102,7 @@ public class Turret extends SubsystemBase {
 	 *            Angle to turn to.
 	 */
 	public Command setPositionCommand(Supplier<Angle> position) {
-		return runOnce(() -> setPosition(position.get()));
+		return run(() -> setPosition(position.get()));
 	}
 
 	/**
@@ -112,7 +112,7 @@ public class Turret extends SubsystemBase {
 	 *            Angle to turn to.
 	 */
 	public Command setPositionMotionMagicCommand(Supplier<Angle> position) {
-		return runOnce(() -> setPositionMotionMagic(position.get()));
+		return run(() -> setPositionMotionMagic(position.get()));
 	}
 
 	/**
