@@ -7,6 +7,9 @@ package frc.robot;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.Angle;
+
+import static edu.wpi.first.units.Units.Rotations;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -97,7 +100,7 @@ public final class Constants {
 		/**
 		 * The number of encoder rotations per mechanism rotation for the primary encoder.
 		 */
-		public static final double PRIMARY_ENCODER_RATIO = 1.0 / 1.0;
+		public static final double PRIMARY_ENCODER_RATIO = 10.0 / 1.0;
 		/**
 		 * The number of encoder rotations per mechanism rotation for the secondary encoder.
 		 */
@@ -143,5 +146,14 @@ public final class Constants {
 		 * Jerk (derivative of acceleration).
 		 */
 		public static final double JERK = 1600;
+
+		/**
+		 * The lowest angle the turret can rotate to.
+		 */
+		public static final Angle MINIMUM_ANGLE = Rotations.of(-1.5);
+		/**
+		 * The highest angle the turret can rotate to.
+		 */
+		public static final Angle MAXIMUM_ANGLE = Rotations.of(1.5);
 	}
 }
