@@ -3,7 +3,9 @@ package frc.robot.subsystems.shooter;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
@@ -11,6 +13,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 
 import yams.units.CRTAbsoluteEncoder;
 import yams.units.CRTAbsoluteEncoderConfig;
@@ -21,6 +24,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.util.Elastic;
+
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotations;
 
 /**
  * The turret that the shooter is attached to.
@@ -65,9 +71,25 @@ public class Turret extends SubsystemBase {
 			.withSlot(0);
 
 	/**
+	 * The current setpoint of the motor.
+	 */
+	private Angle setpoint = Rotations.of(0);
+
+	/**
 	 * Creates a new Turret.
 	 */
 	public Turret() {
+		// If we're in simulation, calculate a gear ratio to use.
+		if (Utils.isSimulation()) {
+			Optional<CRTAbsoluteEncoderConfig.CrtGearPair> gearPair = encoderConfig.getRecommendedCrtGearPair();
+
+			if (gearPair.isPresent()) {
+				System.out.println(String.format("Gear 1: %d, Gear 2: %d", gearPair.get().gearA(), gearPair.get().gearB()));
+			} else {
+				System.out.println("Failed to solve optimal gear counts");
+			}
+		}
+
 		TalonFXConfigurator talonFXConfigurator = motor.getConfigurator();
 
 		// Current limit configuration
@@ -75,6 +97,14 @@ public class Turret extends SubsystemBase {
 		limitConfigs.SupplyCurrentLimit = TurretConstants.MOTOR_CURRENT_LIMIT;
 		limitConfigs.SupplyCurrentLimitEnable = true;
 		talonFXConfigurator.apply(limitConfigs);
+
+		// Sensor feedback configuration
+		FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
+		feedbackConfigs.FeedbackRemoteSensorID = primaryEncoder.getDeviceID();
+		feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+		feedbackConfigs.SensorToMechanismRatio = TurretConstants.PRIMARY_ENCODER_RATIO;
+		feedbackConfigs.RotorToSensorRatio = 1.0;
+		talonFXConfigurator.apply(feedbackConfigs);
 
 		// PID configuration
 		Slot0Configs slot0Configs = new Slot0Configs();
@@ -102,9 +132,11 @@ public class Turret extends SubsystemBase {
 	 *
 	 * @param position
 	 *            Angle to turn to.
+	 * @return
+	 *         Command to run.
 	 */
 	public Command setPositionCommand(Supplier<Angle> position) {
-		return run(() -> setPosition(position.get()));
+		return run(() -> setPositionWithWrapping(position.get(), false));
 	}
 
 	/**
@@ -112,39 +144,76 @@ public class Turret extends SubsystemBase {
 	 *
 	 * @param position
 	 *            Angle to turn to.
+	 * @return
+	 *         Command to run.
 	 */
 	public Command setPositionMotionMagicCommand(Supplier<Angle> position) {
-		return run(() -> setPositionMotionMagic(position.get()));
+		return run(() -> setPositionWithWrapping(position.get(), true));
 	}
 
 	/**
-	 * Commands the turret to a certain position.
-	 *
-	 * @param position
-	 *            Angle to turn to.
-	 */
-	public void setPosition(Angle position) {
-		motor.setControl(positionRequest.withPosition(position));
-	}
-
-	/**
-	 * Commands the turret to a certain position with MotionMagic.
-	 *
-	 * @param position
-	 *            Angle to turn to.
-	 */
-	public void setPositionMotionMagic(Angle position) {
-		motor.setControl(positionRequestMotionMagic.withPosition(position));
-	}
-
-	/**
-	 * Gets the current position of the turret. This reads the relative encoder on the motor.
+	 * Command to unspool the turret. This rotates back to an equivalent position +/- 0.5 rotations from center.
+	 * <p>
+	 * This allows you to "unspool" the mechanism, untwisting the wires.
 	 *
 	 * @return
-	 *         The current position of the turret motor.
+	 *         Command to run.
+	 */
+	public Command unspoolCommand() {
+		return runOnce(() -> unspool());
+	}
+
+	/**
+	 * Commands the turret motor closed loop controller directly to a certain position.
+	 *
+	 * @param position
+	 *            Angle to turn to.
+	 * @param motionMagic
+	 *            Should MotionMagic be used?
+	 */
+	private void setPositionDirect(Angle position, boolean motionMagic) {
+		if (motionMagic) {
+			motor.setControl(positionRequestMotionMagic.withPosition(position));
+		} else {
+			motor.setControl(positionRequest.withPosition(position));
+		}
+		setpoint = position;
+	}
+
+	/**
+	 * Commands the turret motor closed loop controller to a certain position, wrapping if applicable.
+	 *
+	 * @param position
+	 *            Angle to turn to. Wrapped to be within [0-1] rotations (and the shortest path to the target is then taken).
+	 * @param motionMagic
+	 *            Should MotionMagic be used?
+	 */
+	private void setPositionWithWrapping(Angle position, boolean motionMagic) {
+		setPositionDirect(findClosestTargetEquivalent(position), motionMagic);
+	}
+
+	/**
+	 * Gets the current position of the turret with no wrapping. This reads the relative encoder on the motor.
+	 *
+	 * @return
+	 *         The current position of the turret motor, with no wrapping and scaled to match gear ratios.
+	 */
+	public Angle getPositionDirect() {
+		return motor.getRotorPosition().getValue();
+	}
+
+	/**
+	 * Gets the current position of the turret, wrapped to stay within [0-1]. This reads the relative encoder on the motor.
+	 *
+	 * @return
+	 *         The current position of the turret motor, wrapped and scaled to match gear ratios.
 	 */
 	public Angle getPosition() {
-		return motor.getRotorPosition().getValue();
+		double positionRadians = getPositionDirect().in(Radians);
+
+		positionRadians %= Rotations.one().in(Radians);
+
+		return Radians.of(positionRadians);
 	}
 
 	/**
@@ -170,5 +239,60 @@ public class Turret extends SubsystemBase {
 		}
 
 		return turretPosition.isPresent();
+	}
+
+	/**
+	 * Find the closest equivalent angle to the target angle, within the range {@link TurretConstants#MINIMUM_ANGLE} to {@link TurretConstants#MAXIMUM_ANGLE}.
+	 *
+	 * @param target
+	 *            The target position.
+	 * @return
+	 *         The angle to turn to.
+	 */
+	private Angle findClosestTargetEquivalent(Angle target) {
+		double targetRotations = target.in(Rotations);
+		double currentRotations = getPositionDirect().in(Rotations);
+
+		// Wrap target position within one rotation
+		targetRotations %= 1.0;
+
+		// Handle negative remainder
+		if (targetRotations < 0) {
+			targetRotations += 1;
+		}
+
+		// How much can the new target differ from the current target?
+		int kMin = (int) Math.ceil(TurretConstants.MINIMUM_ANGLE.in(Rotations) - targetRotations);
+		int kMax = (int) Math.floor(TurretConstants.MAXIMUM_ANGLE.in(Rotations) - targetRotations);
+
+		// Ideal difference (shortest path ignoring limits)
+		int kIdeal = (int) Math.round(currentRotations - targetRotations);
+
+		// Clamp to limits
+		int k = Math.max(kMin, Math.min(kMax, kIdeal));
+
+		// Final chosen absolute target
+		return Rotations.of(targetRotations + k);
+	}
+
+	/**
+	 * Rotates back to an equivalent position +/- 0.5 rotations from center.
+	 * <p>
+	 * This allows you to "unspool" the mechanism, untwisting the wires.
+	 */
+	public void unspool() {
+		// Map current setpoint to a value within [0, 1]
+		double targetRotations = ((setpoint.in(Rotations) + 0.5) % 1.0);
+
+		// Handle negative remainder
+		if (targetRotations < 0) {
+			targetRotations += 1.0;
+		}
+
+		// Remap to [-0.5, 0.5]
+		targetRotations -= 0.5;
+
+		// Command the motor to spin
+		setPositionDirect(Rotations.of(targetRotations), true);
 	}
 }
