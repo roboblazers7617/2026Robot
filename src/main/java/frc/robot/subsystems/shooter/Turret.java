@@ -45,7 +45,9 @@ public class Turret extends SubsystemBase {
 	 * The configuration for the {@link #encoder}.
 	 */
 	private final CRTAbsoluteEncoderConfig encoderConfig = new CRTAbsoluteEncoderConfig(primaryEncoder.getPosition().asSupplier(), secondaryEncoder.getPosition().asSupplier())
-			.withEncoderRatios(TurretConstants.PRIMARY_ENCODER_RATIO, TurretConstants.SECONDARY_ENCODER_RATIO);
+			.withEncoderRatios(TurretConstants.PRIMARY_ENCODER_RATIO, TurretConstants.SECONDARY_ENCODER_RATIO)
+			.withCrtGearRecommendationInputs(200, 0.1)
+			.withCrtGearRecommendationConstraints(3, 5, 70, 10000);
 	/**
 	 * The encoder on the turret. This uses some gearing magic to derive the position based off the position of two absolute encoders.
 	 */
