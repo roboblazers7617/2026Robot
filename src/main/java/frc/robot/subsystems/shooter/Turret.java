@@ -18,15 +18,22 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import yams.units.CRTAbsoluteEncoder;
 import yams.units.CRTAbsoluteEncoderConfig;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.LoggingConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.util.Elastic;
 
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Degrees;
 
 /**
  * The turret that the shooter is attached to.
@@ -74,6 +81,25 @@ public class Turret extends SubsystemBase {
 	 * The current setpoint of the motor.
 	 */
 	private Angle setpoint = Rotations.of(0);
+
+	/**
+	 * The position in rotations of the simulated turret.
+	 */
+	private double simPositionRotations = 0.0;
+
+	/**
+	 * The mechanism to use to publish turret information to NetworkTables.
+	 */
+	@Logged
+	private final Mechanism2d turretMechanism = new Mechanism2d(6, 6); // 6x6 units canvas
+	/**
+	 * The root component of the turret mechanism.
+	 */
+	private final MechanismRoot2d turretMechanismRoot = turretMechanism.getRoot("TurretBase", 3, 3);
+	/**
+	 * The ligament of the turret mechanism that represents the actual turret rotation.
+	 */
+	private final MechanismLigament2d turretMechanismLigament = new MechanismLigament2d("Turret", 2.0, 0.0);
 
 	/**
 	 * Creates a new Turret.
@@ -125,6 +151,36 @@ public class Turret extends SubsystemBase {
 
 		// Seed the encoder
 		seedEncoder();
+
+		// Set up the Mechanism2d if we're in debug mode
+		if (LoggingConstants.DEBUG_MODE) {
+			turretMechanismRoot.append(turretMechanismLigament);
+			SmartDashboard.putData("TurretMechanism", turretMechanism);
+		}
+	}
+
+	@Override
+	public void periodic() {
+		// Update the Mechanism2d if we're in debug mode
+		if (LoggingConstants.DEBUG_MODE) {
+			turretMechanismLigament.setAngle(getPositionDirect().in(Degrees));
+		}
+	}
+
+	@Override
+	public void simulationPeriodic() {
+		// Simulate proportional control to the setpoint
+		// This is very basic simulation but it works well enough
+		// Could maybe add some more advanced stuff later if needed
+		double setpointRotations = setpoint.in(Rotations);
+
+		simPositionRotations = MathUtil.interpolate(simPositionRotations, setpointRotations, 0.1);
+
+		motor.getSimState().setRawRotorPosition(simPositionRotations);
+
+		// Update simulated encoder values
+		primaryEncoder.getSimState().setRawPosition(simPositionRotations / TurretConstants.PRIMARY_ENCODER_RATIO);
+		secondaryEncoder.getSimState().setRawPosition(simPositionRotations / TurretConstants.SECONDARY_ENCODER_RATIO);
 	}
 
 	/**
