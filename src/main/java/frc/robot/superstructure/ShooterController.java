@@ -21,18 +21,20 @@ public class ShooterController {
 	 * Creates a new ShooterController.
 	 */
 	public ShooterController() {
-		System.out.println(ShooterUtils.getTargetPoseForPosition(testRobotPose));
+		System.out.println(ShootFromAnywhere.getTargetPoseForPosition(testRobotPose));
 	}
 
 	/**
 	 * Sets the shooter state to the specified state.
+	 * <p>
+	 * This assumes that we are not tracking a target, since that is done internally.
 	 *
 	 * @param state
 	 *            Supplier for the state to set the shooter to.
 	 */
-	public Command setShooterStateCommand(Supplier<ShooterState> state) {
+	public Command setStateCommand(Supplier<ShooterState> state) {
 		// TODO: Depend on all the subsystems involved once they are in here
-		return Commands.run(() -> setShooterState(state.get()));
+		return Commands.run(() -> setState(state.get(), false));
 	}
 
 	/**
@@ -51,10 +53,12 @@ public class ShooterController {
 	 *
 	 * @param state
 	 *            The state to set the shooter to.
+	 * @param tracking
+	 *            Is the shooter currently tracking a target?
 	 */
-	private void setShooterState(ShooterState state) {
+	private void setState(ShooterState state, boolean tracking) {
 		// shooter.setSpeed(state.getShooterSpeed());
-		// turret.setAngle(state.getTurretAngle());
+		// turret.setAngle(state.getTurretAngle(), !tracking);
 		// hood.setAngle(state.getHoodAngle());
 	}
 
@@ -68,5 +72,14 @@ public class ShooterController {
 		// Pose2d robotPose = drivetrain.samplePoseAt(Utils.getCurrentTimeSeconds());
 
 		// setShooterState(ShootFromAnywhere.solve(robotPose, targetPose));
+	}
+
+	/**
+	 * Homes the various components of the turret.
+	 */
+	private void home() {
+		// shooter.setSpeed(ShooterConstants.IDLE_SPEED);
+		// turret.unspool();
+		// hood.setAngle(HoodConstants.HOME_ANGLE);
 	}
 }
