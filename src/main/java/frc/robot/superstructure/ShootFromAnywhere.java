@@ -10,24 +10,24 @@ import frc.robot.Constants.FieldConstants;
 
 public class ShootFromAnywhere {
 	/**
-	 * Solves a shooter state for a given robot pose and target.
+	 * Solves shooter values for a given robot pose and target.
 	 *
 	 * @param robotPose
 	 *            The pose of the robot.
 	 * @param targetPose
 	 *            The pose of the target to point at.
 	 * @return
-	 *         The resulting ShooterState to apply.
+	 *         The resulting values to apply.
 	 */
-	public static ShooterState solve(Pose2d robotPose, Pose3d targetPose) {
-		ShooterState state = new ShooterState();
+	public static ShooterValues solve(Pose2d robotPose, Pose3d targetPose) {
+		ShooterValues values = new ShooterValues();
 
 		// Turret
-		state.setTurretAngle(solveTurretAngle(robotPose, targetPose.toPose2d()));
+		values.setTurretAngle(solveTurretAngle(robotPose, targetPose.toPose2d()));
 
 		// TOOD: Add shooter and hood
 
-		return state;
+		return values;
 	}
 
 	/**
@@ -53,6 +53,8 @@ public class ShootFromAnywhere {
 	/**
 	 * Gets the desired target pose for the given robot position.
 	 *
+	 * @param robotPose
+	 *            The current pose of the robot.
 	 * @return
 	 *         Hub receptacle if viable, on to our side if in the center, or empty if otherwise.
 	 */

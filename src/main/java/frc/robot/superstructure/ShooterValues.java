@@ -9,22 +9,22 @@ import static edu.wpi.first.units.Units.Radians;
 /**
  * An object that represents a state that the shooter can be in. This includes the shooter speed, turret position, and hood position.
  */
-public class ShooterState {
+public class ShooterValues {
 	private AngularVelocity shooterSpeed;
 	private Angle turretAngle;
 	private Angle hoodAngle;
 
 	/**
-	 * Creates a new ShooterState with zero values.
+	 * Creates a new ShooterValues with zero values.
 	 */
-	public ShooterState() {
+	public ShooterValues() {
 		shooterSpeed = RadiansPerSecond.of(0);
 		turretAngle = Radians.of(0);
 		hoodAngle = Radians.of(0);
 	}
 
 	/**
-	 * Creates a new ShooterState with specified values.
+	 * Creates a new ShooterValues with specified values.
 	 *
 	 * @param shooterSpeed
 	 *            The velocity to spin the shooter up to.
@@ -33,7 +33,7 @@ public class ShooterState {
 	 * @param hoodAngle
 	 *            The angle to set the hood to.
 	 */
-	public ShooterState(AngularVelocity shooterSpeed, Angle turretAngle, Angle hoodAngle) {
+	public ShooterValues(AngularVelocity shooterSpeed, Angle turretAngle, Angle hoodAngle) {
 		this.shooterSpeed = shooterSpeed;
 		this.turretAngle = turretAngle;
 		this.hoodAngle = hoodAngle;
@@ -47,7 +47,7 @@ public class ShooterState {
 	 * @return
 	 *         This object for method chaining.
 	 */
-	public ShooterState setShooterSpeed(AngularVelocity shooterSpeed) {
+	public ShooterValues setShooterSpeed(AngularVelocity shooterSpeed) {
 		this.shooterSpeed = shooterSpeed;
 		return this;
 	}
@@ -60,7 +60,7 @@ public class ShooterState {
 	 * @return
 	 *         This object for method chaining.
 	 */
-	public ShooterState setTurretAngle(Angle turretAngle) {
+	public ShooterValues setTurretAngle(Angle turretAngle) {
 		this.turretAngle = turretAngle;
 		return this;
 	}
@@ -73,7 +73,7 @@ public class ShooterState {
 	 * @return
 	 *         This object for method chaining.
 	 */
-	public ShooterState setHoodAngle(Angle hoodAngle) {
+	public ShooterValues setHoodAngle(Angle hoodAngle) {
 		this.hoodAngle = hoodAngle;
 		return this;
 	}
