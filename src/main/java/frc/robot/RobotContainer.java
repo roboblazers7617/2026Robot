@@ -9,6 +9,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.superstructure.ShooterController;
+import frc.robot.superstructure.ShooterControllerDebug;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
@@ -66,6 +67,10 @@ public class RobotContainer {
 	 * Superstructure that handles controlling the shooter and related subsystems.
 	 */
 	private final ShooterController shooterController = new ShooterController();
+	/**
+	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
+	 */
+	private final ShooterControllerDebug shooterControllerDebug;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -79,6 +84,10 @@ public class RobotContainer {
 		configureNamedCommands();
 		configureDriverControls();
 		configureOperatorControls();
+
+		if (LoggingConstants.DEBUG_MODE) {
+			shooterControllerDebug = new ShooterControllerDebug(shooterController);
+		}
 	}
 
 	/**
