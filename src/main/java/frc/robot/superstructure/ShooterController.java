@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Degrees;
+
 /**
  * A superstructure that controls the functionality of the shooter. This helps coordinate the various subsystems involved with the shooter.
  */
@@ -102,6 +105,10 @@ public class ShooterController {
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL);
 
 		stateMachine = new StateMachine<>(ShooterState.HOME, stateMachineConfig);
+
+		stateMachine.onUnhandledTrigger((ShooterState state, ShooterTrigger trigger) -> {
+			DriverStation.reportError("Unhandled trigger: " + trigger + " from state: " + state, true);
+		});
 
 		// Put commands on SmartDashboard
 		SmartDashboard.putData("Shooter Controller/Home", homeCommand());
@@ -193,7 +200,7 @@ public class ShooterController {
 			if (stateMachine.isInState(ShooterState.MANUAL_CONTROL)) {
 				setValues(values.get(), false);
 			} else {
-				DriverStation.reportWarning("[ShooterController] Attempted to execute setStateCommand without being in manual mode.", true);
+				DriverStation.reportWarning("Attempted to execute setStateCommand without being in manual mode.", true);
 			}
 		});
 	}
@@ -214,7 +221,7 @@ public class ShooterController {
 			if (stateMachine.isInState(ShooterState.MANUAL_CONTROL)) {
 				prepareShootAtTarget(targetPose.get(), false);
 			} else {
-				DriverStation.reportWarning("[ShooterController] Attempted to execute prepareShootAtTargetCommand without being in manual mode.", true);
+				DriverStation.reportWarning("Attempted to execute prepareShootAtTargetCommand without being in manual mode.", true);
 			}
 		});
 	}
@@ -266,6 +273,11 @@ public class ShooterController {
 		// shooter.setSpeed(values.getShooterSpeed());
 		// turret.setAngle(values.getTurretAngle(), !tracking);
 		// hood.setAngle(values.getHoodAngle());
+
+		// Temporary debug stuff
+		System.out.println(String.format("Shooter Speed: %f RPM", values.getShooterSpeed().in(RPM)));
+		System.out.println(String.format("Turret Angle: %f degrees", values.getTurretAngle().in(Degrees)));
+		System.out.println(String.format("Hood Angle: %f degrees", values.getHoodAngle().in(Degrees)));
 	}
 
 	/**
@@ -276,5 +288,8 @@ public class ShooterController {
 		// shooter.setSpeed(ShooterConstants.IDLE_SPEED);
 		// turret.unspool();
 		// hood.setAngle(HoodConstants.HOME_ANGLE);
+
+		// Temporary debug stuff
+		System.out.println("Homed turret");
 	}
 }
