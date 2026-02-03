@@ -8,10 +8,9 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
-
+import frc.robot.util.Util;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -42,6 +41,10 @@ public class RobotContainer {
 	public RobotContainer() {
 		// Publish version metadata
 		VersionConstants.publish();
+
+		// Publish some general metadata
+		Util.recordMetadata("DebugMode", LoggingConstants.DEBUG_MODE ? "true" : "false");
+		Util.recordMetadata("LogLevel", LoggingConstants.DEBUG_LEVEL.name());
 
 		// Configure the trigger bindings
 		configureNamedCommands();
