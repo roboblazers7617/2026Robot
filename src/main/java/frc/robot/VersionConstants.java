@@ -1,10 +1,7 @@
 package frc.robot;
 
-import com.ctre.phoenix6.SignalLogger;
-
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.StringPublisher;
 import frc.robot.generated.VersionConstantsGenerated;
+import frc.robot.util.Util;
 
 /**
  * Constants that contain version metadata for the robot. Wraps an auto-generated class to add Javadoc and logging.
@@ -61,63 +58,18 @@ public class VersionConstants {
 	public static final int DIRTY = VersionConstantsGenerated.DIRTY;
 
 	/**
-	 * Publish version metadata to a NetworkTable.
-	 *
-	 * @param table
-	 *            NetworkTable to publish metadata to.
+	 * Publish version metadata. This uses {@link Util#recordMetadata(String, String)}
 	 */
 	@SuppressWarnings("all")
-	public static void publishNetworkTables(NetworkTable table) {
-		StringPublisher mavenGroupPublisher = table.getStringTopic("MavenGroup")
-				.publish();
-		mavenGroupPublisher.set(MAVEN_GROUP);
-
-		StringPublisher mavenNamePublisher = table.getStringTopic("MavenName")
-				.publish();
-		mavenNamePublisher.set(MAVEN_NAME);
-
-		StringPublisher versionPublisher = table.getStringTopic("Version")
-				.publish();
-		versionPublisher.set(VERSION);
-
-		StringPublisher gitRevisionPublisher = table.getStringTopic("GitRevision")
-				.publish();
-		gitRevisionPublisher.set(String.valueOf(GIT_REVISION));
-
-		StringPublisher gitShaPublisher = table.getStringTopic("GitSHA")
-				.publish();
-		gitShaPublisher.set(GIT_SHA);
-
-		StringPublisher gitDatePublisher = table.getStringTopic("GitDate")
-				.publish();
-		gitDatePublisher.set(GIT_DATE);
-
-		StringPublisher gitBranchPublisher = table.getStringTopic("GitBranch")
-				.publish();
-		gitBranchPublisher.set(GIT_BRANCH);
-
-		StringPublisher buildDatePublisher = table.getStringTopic("BuildDate")
-				.publish();
-		buildDatePublisher.set(BUILD_DATE);
-
-		StringPublisher dirtyPublisher = table.getStringTopic("Dirty")
-				.publish();
-		dirtyPublisher.set((DIRTY != 0) ? "Uncommited changes" : "All changes commited");
-	}
-
-	/**
-	 * Logs the metadata to SignalLogger.
-	 */
-	@SuppressWarnings("all")
-	public static void logSignals() {
-		SignalLogger.writeString("/Metadata/MavenGroup", MAVEN_GROUP);
-		SignalLogger.writeString("/Metadata/MavenName", MAVEN_NAME);
-		SignalLogger.writeString("/Metadata/Version", VERSION);
-		SignalLogger.writeString("/Metadata/GitRevision", String.valueOf(GIT_REVISION));
-		SignalLogger.writeString("/Metadata/GitSHA", GIT_SHA);
-		SignalLogger.writeString("/Metadata/GitDate", GIT_DATE);
-		SignalLogger.writeString("/Metadata/GitBranch", GIT_BRANCH);
-		SignalLogger.writeString("/Metadata/BuildDate", BUILD_DATE);
-		SignalLogger.writeString("/Metadata/Dirty", (DIRTY != 0) ? "Uncommited changes" : "All changes commited");
+	public static void publish() {
+		Util.recordMetadata("MavenGroup", MAVEN_GROUP);
+		Util.recordMetadata("MavenName", MAVEN_NAME);
+		Util.recordMetadata("Version", VERSION);
+		Util.recordMetadata("GitRevision", String.valueOf(GIT_REVISION));
+		Util.recordMetadata("GitSHA", GIT_SHA);
+		Util.recordMetadata("GitDate", GIT_DATE);
+		Util.recordMetadata("GitBranch", GIT_BRANCH);
+		Util.recordMetadata("BuildDate", BUILD_DATE);
+		Util.recordMetadata("Dirty", (DIRTY != 0) ? "Uncommited changes" : "All changes commited");
 	}
 }
