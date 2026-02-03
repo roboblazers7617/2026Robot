@@ -49,7 +49,7 @@
             "height": 128.0,
             "type": "Text Display",
             "properties": {
-              "topic": "/Metadata//BuildDate",
+              "topic": "/Metadata/BuildDate",
               "period": 0.06,
               "data_type": "string",
               "show_submit_button": false
