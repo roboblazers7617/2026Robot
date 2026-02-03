@@ -140,8 +140,7 @@ public class RobotContainer {
 	 */
 	public RobotContainer() {
 		// Publish version metadata
-		VersionConstants.publishNetworkTables(NetworkTableInstance.getDefault().getTable("/Metadata"));
-		VersionConstants.logSignals();
+		VersionConstants.publish();
 
 		// autoChooser = AutoBuilder.buildAutoChooser("Tests");
 		// SmartDashboard.putData("Auto Mode", autoChooser);
