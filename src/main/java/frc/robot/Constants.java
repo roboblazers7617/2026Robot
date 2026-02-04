@@ -13,6 +13,8 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
 import frc.robot.generated.TunerConstants;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.Angle;
 
 import static edu.wpi.first.units.Units.Rotations;
@@ -182,5 +184,10 @@ public final class Constants {
 		 * The highest angle the turret can rotate to.
 		 */
 		public static final Angle MAXIMUM_ANGLE = Rotations.of(1.5);
+
+		/**
+		 * How close does the Turret have to be to its setpoint to be counted as being there.
+		 */
+		public static final Measure<AngleUnit> SETPOINT_THRESHOLD = Rotations.of(0.1);
 	}
 }
