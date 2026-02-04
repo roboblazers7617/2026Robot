@@ -132,7 +132,7 @@ public class Turret extends SubsystemBase {
 		feedbackConfigs.FeedbackRemoteSensorID = primaryEncoder.getDeviceID();
 		feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
 		feedbackConfigs.SensorToMechanismRatio = TurretConstants.PRIMARY_ENCODER_RATIO;
-		feedbackConfigs.RotorToSensorRatio = 1.0;
+		feedbackConfigs.RotorToSensorRatio = TurretConstants.MOTOR_TO_PRIMARY_ENCODER_RATIO;
 		talonFXConfigurator.apply(feedbackConfigs);
 
 		// PID configuration
@@ -260,20 +260,21 @@ public class Turret extends SubsystemBase {
 	}
 
 	/**
-	 * Gets the current position of the turret with no wrapping. This reads the relative encoder on the motor.
+	 * Gets the current position of the turret with no wrapping.
 	 *
 	 * @return
-	 *         The current position of the turret motor, with no wrapping and scaled to match gear ratios.
+	 *         The current position of the turret, with no wrapping and scaled to match gear ratios.
 	 */
 	public Angle getPositionDirect() {
-		return motor.getRotorPosition().getValue();
+		return motor.getPosition()
+				.getValue();
 	}
 
 	/**
-	 * Gets the current position of the turret, wrapped to stay within [0-1]. This reads the relative encoder on the motor.
+	 * Gets the current position of the turret, wrapped to stay within [0-1].
 	 *
 	 * @return
-	 *         The current position of the turret motor, wrapped and scaled to match gear ratios.
+	 *         The current position of the turret, wrapped and scaled to match gear ratios.
 	 */
 	public Angle getPosition() {
 		double positionRadians = getPositionDirect().in(Radians);
