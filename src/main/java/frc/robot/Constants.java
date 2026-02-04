@@ -14,12 +14,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import frc.robot.util.BiAlliancePose3d;
 import frc.robot.util.PoseUtil;
 import frc.robot.util.RectangleUtil;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -130,6 +135,37 @@ public final class Constants {
 			 * The pose to shoot at for the {@link #HUB_ZONE_RED} and {@link #HUB_ZONE_BLUE}.
 			 */
 			public static final BiAlliancePose3d HUB_POSE = BiAlliancePose3d.fromRedPose(new Pose3d(FIELD_CENTER).transformBy(new Transform3d(Inches.of(143.50), Meters.zero(), Inches.of(72.0), Rotation3d.kZero)), BiAlliancePose3d.InvertY.KEEP_Y);
+		}
+	}
+
+	/**
+	 * Constants that control the shooting behavior.
+	 */
+	public static class ShootingConstants {
+		/**
+		 * An interpolation table used for shooter speed by distance.
+		 * <p>
+		 * Keys are distance in meters, values are speed in radians per second.
+		 */
+		public static final InterpolatingDoubleTreeMap shooterInterpolationTable = new InterpolatingDoubleTreeMap();
+
+		static {
+			// Add values to the interpolation table
+			shooterInterpolationTable.put(0.0, RPM.of(10.0).in(RadiansPerSecond));
+			shooterInterpolationTable.put(10.0, RPM.of(50.0).in(RadiansPerSecond));
+		}
+
+		/**
+		 * An interpolation table used for hood angle by distance.
+		 * <p>
+		 * Keys are distance in meters, values are angle in radians.
+		 */
+		public static final InterpolatingDoubleTreeMap hoodInterpolationTable = new InterpolatingDoubleTreeMap();
+
+		static {
+			// Add values to the interpolation table
+			hoodInterpolationTable.put(0.0, Degrees.of(20.0).in(Radians));
+			hoodInterpolationTable.put(10.0, Degrees.of(80.0).in(Radians));
 		}
 	}
 }
