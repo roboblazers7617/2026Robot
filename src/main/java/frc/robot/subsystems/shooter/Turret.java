@@ -93,15 +93,15 @@ public class Turret extends SubsystemBase {
 	 * The mechanism to use to publish turret information to NetworkTables.
 	 */
 	@Logged
-	private final Mechanism2d turretMechanism = new Mechanism2d(6, 6); // 6x6 units canvas
+	private Mechanism2d turretMechanism;
 	/**
 	 * The root component of the turret mechanism.
 	 */
-	private final MechanismRoot2d turretMechanismRoot = turretMechanism.getRoot("TurretBase", 3, 3);
+	private MechanismRoot2d turretMechanismRoot;
 	/**
 	 * The ligament of the turret mechanism that represents the actual turret rotation.
 	 */
-	private final MechanismLigament2d turretMechanismLigament = new MechanismLigament2d("Turret", 2.0, 0.0);
+	private MechanismLigament2d turretMechanismLigament;
 
 	/**
 	 * Creates a new Turret.
@@ -161,7 +161,12 @@ public class Turret extends SubsystemBase {
 
 		// Set up the Mechanism2d if we're in debug mode
 		if (LoggingConstants.DEBUG_MODE) {
+			turretMechanism = new Mechanism2d(6, 6); // 6x6 units canvas
+			turretMechanismRoot = turretMechanism.getRoot("TurretBase", 3, 3);
+
+			turretMechanismLigament = new MechanismLigament2d("Turret", 2.0, 0.0);
 			turretMechanismRoot.append(turretMechanismLigament);
+
 			SmartDashboard.putData("TurretMechanism", turretMechanism);
 		}
 
