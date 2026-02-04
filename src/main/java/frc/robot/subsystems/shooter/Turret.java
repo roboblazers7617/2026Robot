@@ -273,6 +273,17 @@ public class Turret extends SubsystemBase {
 	}
 
 	/**
+	 * Checks if the turret is at its setpoint.
+	 *
+	 * @return
+	 *         Is the turret at its setpoint?
+	 */
+	public boolean isAtTarget() {
+		return getPositionDirect()
+				.isNear(setpoint, TurretConstants.SETPOINT_THRESHOLD);
+	}
+
+	/**
 	 * Seeds the turret encoder. This polls the absolute encoder value and uses it to set the relative encoder's position.
 	 *
 	 * @implNote
