@@ -14,6 +14,8 @@ import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.sim.ChassisReference;
+import com.ctre.phoenix6.sim.TalonFXSimState;
 
 import yams.units.CRTAbsoluteEncoder;
 import yams.units.CRTAbsoluteEncoderConfig;
@@ -83,9 +85,9 @@ public class Turret extends SubsystemBase {
 	private Angle setpoint = Rotations.of(0);
 
 	/**
-	 * The position in rotations of the simulated turret.
+	 * The position of the simulated turret.
 	 */
-	private double simPositionRotations = 0.0;
+	private Angle simPosition = Radians.zero();
 
 	/**
 	 * The mechanism to use to publish turret information to NetworkTables.
@@ -125,6 +127,7 @@ public class Turret extends SubsystemBase {
 		talonFXConfigurator.apply(limitConfigs);
 
 		// Sensor feedback configuration
+		// TODO: Get this set up so the rotor to mechanism ratio works properly
 		FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
 		feedbackConfigs.FeedbackRemoteSensorID = primaryEncoder.getDeviceID();
 		feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
@@ -149,14 +152,21 @@ public class Turret extends SubsystemBase {
 		motionMagicConfigs.MotionMagicJerk = TurretConstants.JERK;
 		talonFXConfigurator.apply(motionMagicConfigs);
 
-		// Seed the encoder
-		seedEncoder();
+		// Set up stuff for simulation
+		if (Utils.isSimulation()) {
+			TalonFXSimState talonFXSim = motor.getSimState();
+			talonFXSim.Orientation = ChassisReference.CounterClockwise_Positive;
+			talonFXSim.setMotorType(TalonFXSimState.MotorType.KrakenX60);
+		}
 
 		// Set up the Mechanism2d if we're in debug mode
 		if (LoggingConstants.DEBUG_MODE) {
 			turretMechanismRoot.append(turretMechanismLigament);
 			SmartDashboard.putData("TurretMechanism", turretMechanism);
 		}
+
+		// Seed the encoder
+		seedEncoder();
 	}
 
 	@Override
@@ -172,15 +182,16 @@ public class Turret extends SubsystemBase {
 		// Simulate proportional control to the setpoint
 		// This is very basic simulation but it works well enough
 		// Could maybe add some more advanced stuff later if needed
-		double setpointRotations = setpoint.in(Rotations);
+		double setpointRadians = setpoint.in(Radians);
+		double simPositionRadians = simPosition.in(Radians);
 
-		simPositionRotations = MathUtil.interpolate(simPositionRotations, setpointRotations, 0.1);
+		simPosition = Radians.of(MathUtil.interpolate(simPositionRadians, setpointRadians, 0.1));
 
-		motor.getSimState().setRawRotorPosition(simPositionRotations);
+		motor.getSimState().setRawRotorPosition(simPosition.times(TurretConstants.MOTOR_GEAR_RATIO));
 
 		// Update simulated encoder values
-		primaryEncoder.getSimState().setRawPosition(simPositionRotations / TurretConstants.PRIMARY_ENCODER_RATIO);
-		secondaryEncoder.getSimState().setRawPosition(simPositionRotations / TurretConstants.SECONDARY_ENCODER_RATIO);
+		primaryEncoder.getSimState().setRawPosition(simPosition.times(TurretConstants.PRIMARY_ENCODER_RATIO));
+		secondaryEncoder.getSimState().setRawPosition(simPosition.times(TurretConstants.SECONDARY_ENCODER_RATIO));
 	}
 
 	/**

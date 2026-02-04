@@ -100,6 +100,10 @@ public final class Constants {
 		public static final int SECONDARY_ENCODER_ID = 0;
 
 		/**
+		 * The number of motor rotations per mechanism rotation.
+		 */
+		public static final double MOTOR_GEAR_RATIO = 1.0;
+		/**
 		 * The number of encoder rotations per mechanism rotation for the primary encoder.
 		 */
 		public static final double PRIMARY_ENCODER_RATIO = 10.0 / 1.0;
