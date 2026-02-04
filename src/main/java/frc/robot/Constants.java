@@ -10,6 +10,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.Angle;
+import yams.math.SmartMath;
 
 import static edu.wpi.first.units.Units.Rotations;
 
@@ -100,17 +101,45 @@ public final class Constants {
 		public static final int SECONDARY_ENCODER_ID = 0;
 
 		/**
-		 * The number of motor rotations per mechanism rotation.
+		 * The number of teeth on the main turret gear.
 		 */
-		public static final double MOTOR_GEAR_RATIO = 1.0;
+		public static final double TURRET_GEAR_TEETH = 200.0;
+		/**
+		 * The number of teeth on the gear on the turret motor.
+		 */
+		public static final double MOTOR_GEAR_TEETH = 20.0;
+		/**
+		 * The number of teeth on the encoder pinion.
+		 */
+		public static final double ENCODER_GEAR_TEETH = 20.0;
+		/**
+		 * The number of teeth on the primary encoder's gear.
+		 */
+		public static final double PRIMARY_ENCODER_GEAR_TEETH = 9.0;
+		/**
+		 * The number of teeth on the secondary encoder's gear.
+		 */
+		public static final double SECONDARY_ENCODER_GEAR_TEETH = 8.0;
+		/**
+		 * The ratio of motor turns to mechanism rotations.
+		 */
+		public static final double MOTOR_GEAR_RATIO = SmartMath.gearBox(MOTOR_GEAR_TEETH / TURRET_GEAR_TEETH);
+		/**
+		 * The ratio of encoder pinion turns to mechanism rotations.
+		 */
+		public static final double ENCODER_GEAR_RATIO = SmartMath.gearBox(ENCODER_GEAR_TEETH / TURRET_GEAR_TEETH);
+		/**
+		 * The number of primary encoder rotations per motor rotation.
+		 */
+		public static final double MOTOR_TO_PRIMARY_ENCODER_RATIO = SmartMath.gearBox(MOTOR_GEAR_RATIO, 1 / ENCODER_GEAR_RATIO, ENCODER_GEAR_TEETH / PRIMARY_ENCODER_GEAR_TEETH);
 		/**
 		 * The number of encoder rotations per mechanism rotation for the primary encoder.
 		 */
-		public static final double PRIMARY_ENCODER_RATIO = 10.0 / 1.0;
+		public static final double PRIMARY_ENCODER_RATIO = SmartMath.gearBox(ENCODER_GEAR_RATIO, ENCODER_GEAR_TEETH / PRIMARY_ENCODER_GEAR_TEETH);
 		/**
 		 * The number of encoder rotations per mechanism rotation for the secondary encoder.
 		 */
-		public static final double SECONDARY_ENCODER_RATIO = 1.0 / 2.0;
+		public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(ENCODER_GEAR_RATIO, ENCODER_GEAR_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
 
 		/**
 		 * The current limit for the motor.
