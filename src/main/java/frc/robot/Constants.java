@@ -20,12 +20,17 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import frc.robot.util.BiAlliancePose3d;
 import frc.robot.util.PoseUtil;
 import frc.robot.util.RectangleUtil;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -158,5 +163,36 @@ public final class Constants {
 		public static final double MAX_SPEED_DEADBAND = 0.35 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
 		// will set spinny mode turn speed
 		public static final double MAX_ANGULAR_RATE_DEADBAND = 0.5 * RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+	}
+
+	/**
+	 * Constants that control the shooting behavior.
+	 */
+	public static class ShootingConstants {
+		/**
+		 * An interpolation table used for shooter speed by distance.
+		 * <p>
+		 * Keys are distance in meters, values are speed in radians per second.
+		 */
+		public static final InterpolatingDoubleTreeMap shooterInterpolationTable = new InterpolatingDoubleTreeMap();
+
+		static {
+			// Add values to the interpolation table
+			shooterInterpolationTable.put(0.0, RPM.of(10.0).in(RadiansPerSecond));
+			shooterInterpolationTable.put(10.0, RPM.of(50.0).in(RadiansPerSecond));
+		}
+
+		/**
+		 * An interpolation table used for hood angle by distance.
+		 * <p>
+		 * Keys are distance in meters, values are angle in radians.
+		 */
+		public static final InterpolatingDoubleTreeMap hoodInterpolationTable = new InterpolatingDoubleTreeMap();
+
+		static {
+			// Add values to the interpolation table
+			hoodInterpolationTable.put(0.0, Degrees.of(20.0).in(Radians));
+			hoodInterpolationTable.put(10.0, Degrees.of(80.0).in(Radians));
+		}
 	}
 }
