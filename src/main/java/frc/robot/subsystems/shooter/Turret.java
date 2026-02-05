@@ -17,8 +17,8 @@ import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
-import yams.units.CRTAbsoluteEncoder;
-import yams.units.CRTAbsoluteEncoderConfig;
+import yams.units.EasyCRT;
+import yams.units.EasyCRTConfig;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
@@ -59,14 +59,14 @@ public class Turret extends SubsystemBase {
 	/**
 	 * The configuration for the {@link #encoder}.
 	 */
-	private final CRTAbsoluteEncoderConfig encoderConfig = new CRTAbsoluteEncoderConfig(primaryEncoder.getPosition().asSupplier(), secondaryEncoder.getPosition().asSupplier())
+	private final EasyCRTConfig encoderConfig = new EasyCRTConfig(primaryEncoder.getPosition().asSupplier(), secondaryEncoder.getPosition().asSupplier())
 			.withEncoderRatios(TurretConstants.PRIMARY_ENCODER_RATIO, TurretConstants.SECONDARY_ENCODER_RATIO)
 			.withCrtGearRecommendationInputs(200, 0.1)
-			.withCrtGearRecommendationConstraints(3, 5, 70, 10000);
+			.withCrtGearRecommendationConstraints(3, 20, 70, 100);
 	/**
 	 * The encoder on the turret. This uses some gearing magic to derive the position based off the position of two absolute encoders.
 	 */
-	private final CRTAbsoluteEncoder encoder = new CRTAbsoluteEncoder(encoderConfig);
+	private final EasyCRT encoder = new EasyCRT(encoderConfig);
 
 	/**
 	 * The control request used for position control.
@@ -109,10 +109,10 @@ public class Turret extends SubsystemBase {
 	public Turret() {
 		// If we're in simulation, calculate a gear ratio to use.
 		if (Utils.isSimulation()) {
-			Optional<CRTAbsoluteEncoderConfig.CrtGearPair> gearPair = encoderConfig.getRecommendedCrtGearPair();
+			Optional<EasyCRTConfig.CrtGearPair> gearPair = encoderConfig.getRecommendedCrtGearPair();
 
 			if (gearPair.isPresent()) {
-				System.out.println(String.format("Gear 1: %d, Gear 2: %d", gearPair.get().gearA(), gearPair.get().gearB()));
+				System.out.println(gearPair.get());
 			} else {
 				System.out.println("Failed to solve optimal gear counts");
 			}
