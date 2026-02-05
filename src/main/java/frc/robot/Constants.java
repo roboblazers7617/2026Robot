@@ -115,11 +115,11 @@ public final class Constants {
 		/**
 		 * The number of teeth on the primary encoder's gear.
 		 */
-		public static final double PRIMARY_ENCODER_GEAR_TEETH = 9.0;
+		public static final double PRIMARY_ENCODER_GEAR_TEETH = 20.0;
 		/**
 		 * The number of teeth on the secondary encoder's gear.
 		 */
-		public static final double SECONDARY_ENCODER_GEAR_TEETH = 8.0;
+		public static final double SECONDARY_ENCODER_GEAR_TEETH = 21.0;
 		/**
 		 * The ratio of motor turns to mechanism rotations.
 		 */
