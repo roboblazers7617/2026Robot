@@ -59,7 +59,7 @@ public class IntakeShoulder extends SubsystemBase {
 		motorConfigurator.apply(motionMagicConfigs);
 
 		/**
-		 * code to zero the encoder (so it doesn't freak out and go to what it previously decided was zero from a continous motor demo because the code I did here was based on specific finite angles which are relative to the big spinny tests)
+		 * code to zero encoder when code is intially run (robot is turned on) so that it doesn't freak out and try to spin to the zero from a previous continuous motor run demo because the code of the shoulder has the motor spin to defined finite values and the leftover value in the encoder will be huge and it will zoom backward very powerfully. so it will not do that now as it takes a deep breath before going anywhere.
 		 */
 
 		motor.setPosition(0);
