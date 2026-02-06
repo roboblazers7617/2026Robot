@@ -5,6 +5,8 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.intake.IntakeGrabber;
+import frc.robot.subsystems.intake.IntakeShoulder;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
@@ -25,6 +27,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 @Logged
 public class RobotContainer {
+	IntakeGrabber intakeGrabber = new IntakeGrabber();
+	IntakeShoulder intakeShoulder = new IntakeShoulder();
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */
@@ -83,7 +87,23 @@ public class RobotContainer {
 	/**
 	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
 	 */
-	private void configureOperatorControls() {}
+	private void configureOperatorControls() {
+		/**
+		 * code for demo controls
+		 */
+		// Press A to start intake
+		operatorController.a()
+				.onTrue(intakeGrabber.startIntakeCommand());
+		// Press B to stop intake
+		operatorController.b()
+				.onTrue(intakeGrabber.stopIntakeCommand());
+		// Press X to raise shoulder
+		operatorController.x()
+				.onTrue(intakeShoulder.raiseShoulderCommand());
+		// Press Y to lower shoulder
+		operatorController.y()
+				.onTrue(intakeShoulder.lowerShoulderCommand());
+	}
 
 	/**
 	 * Use this to pass the autonomous command to the main {@link Robot} class.

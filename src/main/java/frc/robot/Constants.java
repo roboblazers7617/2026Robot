@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.Angle;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -75,5 +78,32 @@ public final class Constants {
 		 * AprilTag Field Layout for the current game.
 		 */
 		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+	}
+
+	/**
+	 * This is MY intake constant class which I balcantara made btw I don't know what it does YET (it contains constants for my dogwater code for intake)
+	 */
+	public static class IntakeConstants {
+		public static final int SHOULDER_CAN_ID = 2;
+		public static final int GRABBER_CAN_ID = 0;
+		/**
+		 * The current limit for the motor.
+		 */
+		public static final double MOTOR_CURRENT_LIMIT = 40.0;
+		public static final double INTAKE_START_SPEED = 0.2;
+		public static final double INTAKE_STOP_SPEED = 0.0;
+		public static final Angle SHOULDER_RAISED_ANGLE = Degrees.of(90);
+		public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
+		public static final double INTAKE_KG = 0;
+		public static final double INTAKE_KS = 0.2;
+		public static final double INTAKE_KV = 0.0;
+		public static final double INTAKE_KA = 0;
+		public static final double INTAKE_KP = 1;
+		public static final double INTAKE_KI = 0;
+		public static final double INTAKE_KD = 0;
+		public static final double INTAKE_MM_CRUISE_VELOCITY = 80;
+		public static final double INTAKE_MM_ACCELERATION = 160;
+		public static final double INTAKE_MM_JERK = 1600;
+		public static final double GEARBOX_RATIO = 1;
 	}
 }
