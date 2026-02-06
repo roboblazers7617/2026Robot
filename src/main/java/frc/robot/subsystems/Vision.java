@@ -23,13 +23,15 @@ import java.util.Optional;
 public class Vision extends SubsystemBase {
 	private final PhotonCamera frontCamera;
 	private final PhotonPoseEstimator photonFrontEstimator;
+	private final CommandSwerveDrivetrain drivetrain;
 
 	private Matrix<N3, N1> curStdDevs;
 
 	/** Creates a new Vision. */
-	public Vision() {
+	public Vision(CommandSwerveDrivetrain drivetrain) {
 		frontCamera = new PhotonCamera(VisionConstants.FRONT_CAM_NAME);
 		photonFrontEstimator = new PhotonPoseEstimator(FieldConstants.FIELD_LAYOUT, VisionConstants.ROBOT_TO_FRONT_CAM_TRANSFORM);
+		this.drivetrain = drivetrain;
 	}
 
 	@Override
@@ -46,7 +48,7 @@ public class Vision extends SubsystemBase {
 			if (frontVisionEst.isPresent()) {
 				var est = frontVisionEst.get();
 				var estStdDevs = getEstimationStdDevs();
-				// drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+				drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
 			}
 		}
 	}
