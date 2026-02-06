@@ -76,4 +76,12 @@ public final class Constants {
 		 */
 		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 	}
+
+	public static class VisionConstants {
+		public static final String FRONT_CAM_NAME = "Arducam";
+		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField;
+		public static final Transform3d ROBOT_TO_FRONT_CAM_TRANSFORM = new Transform3d(new Translation3d(0.5, 0.0, 0.0), new Rotation3d(0, 0, 0));
+		public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
+		public static final Matrix<N3, N1> MUlti_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);
+	}
 }
