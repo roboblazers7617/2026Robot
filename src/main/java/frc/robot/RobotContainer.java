@@ -11,8 +11,6 @@ import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
 
-import static edu.wpi.first.units.Units.Newton;
-
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.networktables.NetworkTable;

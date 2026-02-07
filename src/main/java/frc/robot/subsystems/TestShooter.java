@@ -20,7 +20,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.LoggingConstants;
 import frc.robot.Constants.ShooterConstants;
 
 public class TestShooter extends SubsystemBase {

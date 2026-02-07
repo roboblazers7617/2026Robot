@@ -6,9 +6,9 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.networktables.DoubleEntry;
@@ -17,7 +17,6 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.HopperConstants;
 
 /** Add your docs here. */
@@ -29,6 +28,9 @@ public class Hopper extends SubsystemBase {
 	private DoublePublisher HopperSpeedDisplayPublisher;
 	private DoublePublisher UptakeSpeedDisplayPublisher;
 
+	private String file = "output.chrp";
+
+	Orchestra music = new Orchestra();
 	// Motors
 	private final TalonFX bigSpinny;
 	private final TalonFX littleSpinny;
@@ -51,6 +53,15 @@ public class Hopper extends SubsystemBase {
 			var status2 = littleSpinny.getConfigurator().apply(config);
 			if (status.isOK() && status2.isOK())
 				break;
+		}
+		music.addInstrument(bigSpinny);
+		music.addInstrument(littleSpinny);
+		var status3 = music.loadMusic(file);
+		if (!status3.isOK()) {
+			// log error
+			System.out.println("AAAAAAAAAAH");
+		} else {
+			System.out.println("yippppeeeee");
 		}
 	}
 
@@ -78,23 +89,32 @@ public class Hopper extends SubsystemBase {
 		littleSpinny.stopMotor();
 	}
 
-	public Command StartHopperMotorCommand(Supplier<Double> Speed) {
+	public void musicTime() {
+		music.play();
+		System.out.println("working?");
+	}
+
+	public Command musicTimeCommand() {
+		return runOnce(() -> musicTime());
+	}
+
+	public Command startHopperMotorCommand(Supplier<Double> Speed) {
 		return runOnce(() -> startHopperMotor(Speed.get()));
 	}
 
-	public Command StopHopperMotorCommand() {
+	public Command stopHopperMotorCommand() {
 		return runOnce(() -> stopHopperMotor());
 	}
 
-	public Command StartUptakeMotorCommand(Supplier<Double> Speed) {
+	public Command startUptakeMotorCommand(Supplier<Double> Speed) {
 		return runOnce(() -> startUptakeMotor(Speed.get()));
 	}
 
-	public Command StopUptakeMotorCommand() {
+	public Command stopUptakeMotorCommand() {
 		return runOnce(() -> stopUptakeMotor());
 	}
 
-	public Command StopBothCommand() {
+	public Command stopBothCommand() {
 		return runOnce(() -> stopAll());
 	}
 
@@ -122,10 +142,11 @@ public class Hopper extends SubsystemBase {
 
 		// Put commands on the Dashboard to allow testing different shooter speeds
 		// This uses the value from the slider on the Dashboard
-		SmartDashboard.putData("Stop Hopper", StopHopperMotorCommand());
-		SmartDashboard.putData("Stop Uptake", StopUptakeMotorCommand());
-		SmartDashboard.putData("Stop Both", StopBothCommand());
-		SmartDashboard.putData("Start Hopper", StartHopperMotorCommand(() -> HopperSpeedEntry.getAsDouble()));
-		SmartDashboard.putData("Start Uptake", StartUptakeMotorCommand(() -> UptakeSpeedEntry.getAsDouble()));
+		SmartDashboard.putData("Stop Hopper", stopHopperMotorCommand());
+		SmartDashboard.putData("Stop Uptake", stopUptakeMotorCommand());
+		SmartDashboard.putData("Stop Both", stopBothCommand());
+		SmartDashboard.putData("Start Hopper", startHopperMotorCommand(() -> HopperSpeedEntry.getAsDouble()));
+		SmartDashboard.putData("Start Uptake", startUptakeMotorCommand(() -> UptakeSpeedEntry.getAsDouble()));
+		SmartDashboard.putData("silly", musicTimeCommand());
 	}
 }
