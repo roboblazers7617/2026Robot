@@ -94,8 +94,26 @@ public class Hopper extends SubsystemBase {
 		System.out.println("working?");
 	}
 
+	public void puaseMusicTime() {
+		music.pause();
+		System.out.println("puased");
+	}
+
+	public void stopMusicTime() {
+		music.pause();
+		System.out.println("stop");
+	}
+
 	public Command musicTimeCommand() {
 		return runOnce(() -> musicTime());
+	}
+
+	public Command musicTimePuaseCommand() {
+		return runOnce(() -> puaseMusicTime());
+	}
+
+	public Command musicTimeStopCommand() {
+		return runOnce(() -> stopMusicTime());
 	}
 
 	public Command startHopperMotorCommand(Supplier<Double> Speed) {
@@ -147,6 +165,8 @@ public class Hopper extends SubsystemBase {
 		SmartDashboard.putData("Stop Both", stopBothCommand());
 		SmartDashboard.putData("Start Hopper", startHopperMotorCommand(() -> HopperSpeedEntry.getAsDouble()));
 		SmartDashboard.putData("Start Uptake", startUptakeMotorCommand(() -> UptakeSpeedEntry.getAsDouble()));
-		SmartDashboard.putData("silly", musicTimeCommand());
+		SmartDashboard.putData("start", musicTimeCommand());
+		SmartDashboard.putData("puase", musicTimePuaseCommand());
+		SmartDashboard.putData("Stop", musicTimeStopCommand());
 	}
 }
