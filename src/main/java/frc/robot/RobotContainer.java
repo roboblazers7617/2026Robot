@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.superstructure.ShooterSuperstructure;
+import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
@@ -62,6 +64,15 @@ public class RobotContainer {
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
 	/**
+	 * Superstructure that handles controlling the shooter and related subsystems.
+	 */
+	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure();
+	/**
+	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
+	 */
+	private final ShooterSuperstructureDebug shooterSuperstructureDebug;
+
+	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
@@ -73,6 +84,10 @@ public class RobotContainer {
 		configureNamedCommands();
 		configureDriverControls();
 		configureOperatorControls();
+
+		if (LoggingConstants.DEBUG_MODE) {
+			shooterSuperstructureDebug = new ShooterSuperstructureDebug(shooterSuperstructure);
+		}
 	}
 
 	/**
@@ -93,6 +108,14 @@ public class RobotContainer {
 		if (!LoggingConstants.DEBUG_MODE) {
 			Elastic.selectTab(DashboardConstants.TELEOP_TAB_NAME);
 		}
+	}
+
+	/**
+	 * This method handles the periodic functionality for the superstructure.
+	 * This is done seperate from the subsystem periodic so it can be updated more frequently.
+	 */
+	public void superstructurePeriodic() {
+		shooterSuperstructure.update();
 	}
 
 	/**
