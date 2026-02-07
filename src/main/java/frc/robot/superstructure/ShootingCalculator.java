@@ -15,7 +15,10 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Meters;
 
-public class ShootFromAnywhere {
+/**
+ * Some static utility methods for calculating shooter values.
+ */
+public class ShootingCalculator {
 	/**
 	 * Solves shooter values for a given robot pose and target.
 	 *
@@ -41,7 +44,7 @@ public class ShootFromAnywhere {
 		// Solve shooter values
 		values.setTurretAngle(solveTurretAngle(turretPose, target2d));
 		values.setHoodAngle(solveHoodAngle(turretPose, shootingDistance));
-		values.setShooterSpeed(solveShooterSpeed(turretPose, shootingDistance));
+		values.setFlywheelSpeed(solveFlywheelSpeed(turretPose, shootingDistance));
 
 		return values;
 	}
@@ -79,17 +82,17 @@ public class ShootFromAnywhere {
 	}
 
 	/**
-	 * Solves the shooter speed required to hit the specified targetPose on the ground.
+	 * Solves the flywheel speed required to hit the specified targetPose on the ground.
 	 *
 	 * @param turretPose
 	 *            The pose of the turret.
 	 * @param targetPose
 	 *            The distance to the target
 	 * @return
-	 *         The resulting AngularVelocity to set the shooter to.
+	 *         The resulting AngularVelocity to set the flywheel to.
 	 */
-	private static AngularVelocity solveShooterSpeed(Pose2d turretPose, Distance targetDistance) {
-		return RadiansPerSecond.of(ShootingConstants.shooterInterpolationTable.get(targetDistance.in(Meters)));
+	private static AngularVelocity solveFlywheelSpeed(Pose2d turretPose, Distance targetDistance) {
+		return RadiansPerSecond.of(ShootingConstants.flywheelInterpolationTable.get(targetDistance.in(Meters)));
 	}
 
 	/**

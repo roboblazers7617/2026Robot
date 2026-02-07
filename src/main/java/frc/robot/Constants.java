@@ -118,11 +118,11 @@ public final class Constants {
 		 */
 		public static class ShootingZones {
 			/**
-			 * A rectangle encompassing the shooting zone for the top half of the neutral rectangle (when looking at the field diagram).
+			 * A rectangle encompassing the shooting zone for the top half (towards negative Y) of the neutral rectangle (when looking at the field diagram).
 			 */
 			public static final Rectangle2d NEUTRAL_ZONE_TOP = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(0, -FIELD_LAYOUT.getFieldWidth() / 3.0, Rotation2d.kZero)), NEUTRAL_RECTANGLE.getXWidth(), NEUTRAL_RECTANGLE.getYWidth() / 3.0);
 			/**
-			 * A rectangle encompassing the shooting zone for the bottom half of the neutral rectangle (when looking at the field diagram).
+			 * A rectangle encompassing the shooting zone for the bottom half (towards positive Y) of the neutral rectangle (when looking at the field diagram).
 			 */
 			public static final Rectangle2d NEUTRAL_ZONE_BOTTOM = RectangleUtil.flipRectangleY(NEUTRAL_ZONE_TOP);
 			/**
@@ -166,20 +166,30 @@ public final class Constants {
 	}
 
 	/**
+	 * Constants that configure the superstructure.
+	 */
+	public static class SuperstructureConstants {
+		/**
+		 * The table name for the shooter superstructure.
+		 */
+		public static final String SHOOTER_SUPERSTRUCTURE_TABLE_NAME = "Shooter Superstructure";
+	}
+
+	/**
 	 * Constants that control the shooting behavior.
 	 */
 	public static class ShootingConstants {
 		/**
-		 * An interpolation table used for shooter speed by distance.
+		 * An interpolation table used for flywheel speed by distance.
 		 * <p>
 		 * Keys are distance in meters, values are speed in radians per second.
 		 */
-		public static final InterpolatingDoubleTreeMap shooterInterpolationTable = new InterpolatingDoubleTreeMap();
+		public static final InterpolatingDoubleTreeMap flywheelInterpolationTable = new InterpolatingDoubleTreeMap();
 
 		static {
 			// Add values to the interpolation table
-			shooterInterpolationTable.put(0.0, RPM.of(10.0).in(RadiansPerSecond));
-			shooterInterpolationTable.put(10.0, RPM.of(50.0).in(RadiansPerSecond));
+			flywheelInterpolationTable.put(0.0, RPM.of(10.0).in(RadiansPerSecond));
+			flywheelInterpolationTable.put(10.0, RPM.of(50.0).in(RadiansPerSecond));
 		}
 
 		/**

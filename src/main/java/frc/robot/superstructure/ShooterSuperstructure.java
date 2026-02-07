@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.SuperstructureConstants;
 
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Degrees;
@@ -22,7 +23,7 @@ import static edu.wpi.first.units.Units.Degrees;
  * A superstructure that controls the functionality of the shooter. This helps coordinate the various subsystems involved with the shooter.
  */
 @Logged
-public class ShooterController {
+public class ShooterSuperstructure {
 	// TODO: Implement things here for the various subsystems once those are added
 	private Pose2d testRobotPose = new Pose2d(6.0, 1.0, Rotation2d.kZero);
 
@@ -82,7 +83,7 @@ public class ShooterController {
 	/**
 	 * Creates a new ShooterController.
 	 */
-	public ShooterController() {
+	public ShooterSuperstructure() {
 		// Set up the state machine
 		stateMachineConfig.configure(ShooterState.HOME)
 				.onEntry(this::home)
@@ -111,19 +112,28 @@ public class ShooterController {
 		});
 
 		// Put commands on SmartDashboard
-		SmartDashboard.putData("Shooter Controller/Home", homeCommand());
-		SmartDashboard.putData("Shooter Controller/Start Manual Control", startManualControlCommand());
+		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Home", homeCommand());
+		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Start Manual Control", startManualControlCommand());
 	}
 
 	/**
 	 * Updates the shooter state depending on drivetrain position.
+	 * <p>
+	 * This method does quite a few things. Based off of the robot pose, this will
+	 * find the desired shooting pose, and, depending on what state it's in, it
+	 * will transition to other states as needed. Also, while shooting, this handles
+	 * updating the tracking for the shooter.
 	 */
 	public void update() {
-		Optional<Pose3d> targetPose = ShootFromAnywhere.getTargetPoseForPosition(testRobotPose);
+		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(testRobotPose);
 
 		// Check the current state and handle sequence transitions.
 		switch (stateMachine.getState()) {
 			case HOME:
+				// Homed and waiting for a target
+				// This is just the idle state of the shooter
+
+				// If we get a target pose, start to track the target
 				if (targetPose.isPresent()) {
 					stateMachine.fire(ShooterTrigger.INITIALIZE);
 				}
@@ -133,25 +143,30 @@ public class ShooterController {
 				break;
 
 			case INITIALIZING:
-				// Once we reach the target, start to shoot
-				if (isAtTarget()) {
+				// Preparing to track a target
+
+				// Once we reach the target, start to track and shoot
+				if (subsystemsAtTargets()) {
 					stateMachine.fire(ShooterTrigger.INITIALIZING_DONE);
 					break;
 				}
 
-				// Get the shooter to an initial setpoint with MotionMagic
+				// Get the shooter to an initial setpoint with MotionMagic so we can start tracking
 				if (targetPose.isPresent()) {
 					prepareShootAtTarget(targetPose.get(), false);
 				} else {
+					// If we don't have a target anymore, home the shooter
 					stateMachine.fire(ShooterTrigger.HOME);
 				}
 				break;
 
 			case SHOOTING:
 				// Track the target without MotionMagic
+				// We don't use MotionMagic here because it should improve tracking accuracy
 				if (targetPose.isPresent()) {
 					prepareShootAtTarget(targetPose.get(), true);
 				} else {
+					// If we don't have a target anymore, home the shooter
 					stateMachine.fire(ShooterTrigger.HOME);
 				}
 				break;
@@ -227,12 +242,12 @@ public class ShooterController {
 	}
 
 	/**
-	 * Checks if the subsystems are at their targets.
+	 * Checks if the subsystems are at their targets. This checks flywheel speed, hood position, and turret position.
 	 *
 	 * @return
 	 *         Are all the shooter subsystems at their targets?
 	 */
-	public boolean isAtTarget() {
+	public boolean subsystemsAtTargets() {
 		// TODO: Add logic here to check if the subsystems are at their targets
 		return true;
 	}
@@ -257,7 +272,7 @@ public class ShooterController {
 		// Pose2d robotPose = drivetrain.samplePoseAt(Utils.getCurrentTimeSeconds());
 		Pose2d robotPose = new Pose2d();
 
-		setValues(ShootFromAnywhere.solve(robotPose, targetPose), tracking);
+		setValues(ShootingCalculator.solve(robotPose, targetPose), tracking);
 	}
 
 	/**
@@ -270,14 +285,14 @@ public class ShooterController {
 	 */
 	private void setValues(ShooterValues values, boolean tracking) {
 		// TODO: Update this once subsystems are in place
-		// shooter.setSpeed(values.getShooterSpeed());
+		// shooter.setFlywheelSpeed(values.getShooterSpeed());
+		// shooter.setHoodAngle(values.getHoodAngle());
 		// turret.setAngle(values.getTurretAngle(), !tracking);
-		// hood.setAngle(values.getHoodAngle());
 
 		// Temporary debug stuff
-		System.out.println(String.format("Shooter Speed: %f RPM", values.getShooterSpeed().in(RPM)));
-		System.out.println(String.format("Turret Angle: %f degrees", values.getTurretAngle().in(Degrees)));
+		System.out.println(String.format("Shooter Speed: %f RPM", values.getFlywheelSpeed().in(RPM)));
 		System.out.println(String.format("Hood Angle: %f degrees", values.getHoodAngle().in(Degrees)));
+		System.out.println(String.format("Turret Angle: %f degrees", values.getTurretAngle().in(Degrees)));
 	}
 
 	/**
@@ -285,9 +300,9 @@ public class ShooterController {
 	 */
 	private void home() {
 		// TODO: Update this once subsystems are in place
-		// shooter.setSpeed(ShooterConstants.IDLE_SPEED);
+		// shooter.setFlywheelSpeed(ShooterConstants.IDLE_SPEED);
+		// shooter.setHoodAngle(HoodConstants.HOME_ANGLE);
 		// turret.unspool();
-		// hood.setAngle(HoodConstants.HOME_ANGLE);
 
 		// Temporary debug stuff
 		System.out.println("Homed turret");

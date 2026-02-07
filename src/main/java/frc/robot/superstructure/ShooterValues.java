@@ -7,10 +7,10 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
 /**
- * An object that represents a state that the shooter can be in. This includes the shooter speed, turret position, and hood position.
+ * An object that represents a state that the shooter can be in. This includes the flywheel speed, turret position, and hood position.
  */
 public class ShooterValues {
-	private AngularVelocity shooterSpeed;
+	private AngularVelocity flywheelSpeed;
 	private Angle turretAngle;
 	private Angle hoodAngle;
 
@@ -18,7 +18,7 @@ public class ShooterValues {
 	 * Creates a new ShooterValues with zero values.
 	 */
 	public ShooterValues() {
-		shooterSpeed = RadiansPerSecond.of(0);
+		flywheelSpeed = RadiansPerSecond.of(0);
 		turretAngle = Radians.of(0);
 		hoodAngle = Radians.of(0);
 	}
@@ -26,29 +26,29 @@ public class ShooterValues {
 	/**
 	 * Creates a new ShooterValues with specified values.
 	 *
-	 * @param shooterSpeed
-	 *            The velocity to spin the shooter up to.
+	 * @param flywheelSpeed
+	 *            The velocity to spin the flywheel up to.
 	 * @param turretAngle
 	 *            The angle to point the turret at.
 	 * @param hoodAngle
 	 *            The angle to set the hood to.
 	 */
-	public ShooterValues(AngularVelocity shooterSpeed, Angle turretAngle, Angle hoodAngle) {
-		this.shooterSpeed = shooterSpeed;
+	public ShooterValues(AngularVelocity flywheelSpeed, Angle turretAngle, Angle hoodAngle) {
+		this.flywheelSpeed = flywheelSpeed;
 		this.turretAngle = turretAngle;
 		this.hoodAngle = hoodAngle;
 	}
 
 	/**
-	 * Sets the shooter speed.
+	 * Sets the flywheel speed.
 	 *
-	 * @param shooterSpeed
-	 *            The velocity to spin the shooter up to.
+	 * @param flywheelSpeed
+	 *            The velocity to spin the flywheel up to.
 	 * @return
 	 *         This object for method chaining.
 	 */
-	public ShooterValues setShooterSpeed(AngularVelocity shooterSpeed) {
-		this.shooterSpeed = shooterSpeed;
+	public ShooterValues setFlywheelSpeed(AngularVelocity flywheelSpeed) {
+		this.flywheelSpeed = flywheelSpeed;
 		return this;
 	}
 
@@ -79,13 +79,13 @@ public class ShooterValues {
 	}
 
 	/**
-	 * Gets the shooter speed.
+	 * Gets the flywheel speed.
 	 *
 	 * @return
-	 *         The shooter speed.
+	 *         The flywheel speed.
 	 */
-	public AngularVelocity getShooterSpeed() {
-		return shooterSpeed;
+	public AngularVelocity getFlywheelSpeed() {
+		return flywheelSpeed;
 	}
 
 	/**
