@@ -25,7 +25,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
 	private final static String FRONT_CAMERA_NAME = "Arducam";
+	private final static String BACK_CAMERA_NAME = "BackATCamera";
 	private static final Transform3d ROBOT_TO_FRONT_CAM_TRANSFORM = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+	private static final Transform3d ROBOT_TO_BACK_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
 	private static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
 	private static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);
 
@@ -33,7 +35,10 @@ public class Vision extends SubsystemBase {
 	private static final AprilTagFieldLayout AT_FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
 	private final PhotonCamera frontCamera = new PhotonCamera(FRONT_CAMERA_NAME);
+	private final PhotonCamera backCamera = new PhotonCamera(BACK_CAMERA_NAME);
+
 	private final PhotonPoseEstimator photonFrontEstimator;
+	private final PhotonPoseEstimator photonBackEstimator;
 
 	private Matrix<N3, N1> curStdDevs;
 
@@ -41,11 +46,12 @@ public class Vision extends SubsystemBase {
 	public Vision(CommandSwerveDrivetrain drivetrain) {
 		this.drivetrain = drivetrain;
 		photonFrontEstimator = new PhotonPoseEstimator(AT_FIELD_LAYOUT, ROBOT_TO_FRONT_CAM_TRANSFORM);
+		photonBackEstimator = new PhotonPoseEstimator(AT_FIELD_LAYOUT, ROBOT_TO_BACK_CAM_TRANSFORM);
 	}
 
 	@Override
 	public void periodic() {
-		// System.out.println("In vision periodic");
+		// Add in vision measurement for the Front Camera
 		Optional<EstimatedRobotPose> frontVisionEst = Optional.empty();
 		for (var result : frontCamera.getAllUnreadResults()) {
 			frontVisionEst = photonFrontEstimator.estimateCoprocMultiTagPose(result);
@@ -56,6 +62,25 @@ public class Vision extends SubsystemBase {
 
 			if (frontVisionEst.isPresent()) {
 				var est = frontVisionEst.get();
+
+				// Change our trust in the measurement based on the tags we can see
+				var estStdDevs = getEstimationStdDevs();
+				// System.out.println("Adding a measurement " + est.estimatedPose.toPose2d().getX() + " " + est.estimatedPose.toPose2d().getY() + " " + est.estimatedPose.toPose2d().getRotation().getDegrees());
+				drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+			}
+		}
+
+		// Add in vision measurements for the back camera
+		Optional<EstimatedRobotPose> backVisionEst = Optional.empty();
+		for (var result : backCamera.getAllUnreadResults()) {
+			backVisionEst = photonBackEstimator.estimateCoprocMultiTagPose(result);
+			if (backVisionEst.isEmpty()) {
+				backVisionEst = photonBackEstimator.estimateLowestAmbiguityPose(result);
+			}
+			updateEstimationStdDevs(backVisionEst, result.getTargets());
+
+			if (backVisionEst.isPresent()) {
+				var est = backVisionEst.get();
 
 				// Change our trust in the measurement based on the tags we can see
 				var estStdDevs = getEstimationStdDevs();
