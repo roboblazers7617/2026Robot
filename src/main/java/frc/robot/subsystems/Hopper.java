@@ -23,8 +23,11 @@ import frc.robot.Constants.HopperConstants;
 /** Add your docs here. */
 public class Hopper extends SubsystemBase {
 	private NetworkTable Hopper;
-	private DoubleEntry shooterSpeedEntry;
+	private NetworkTable Uptake;
+	private DoubleEntry HopperSpeedEntry;
+	private DoubleEntry UptakeSpeedEntry;
 	private DoublePublisher HopperSpeedDisplayPublisher;
+	private DoublePublisher UptakeSpeedDisplayPublisher;
 
 	// Motors
 	private final TalonFX bigSpinny;
@@ -56,14 +59,17 @@ public class Hopper extends SubsystemBase {
 	}
 
 	public void stopHopperMotor() {
+		System.out.println("stop hopper");
 		bigSpinny.stopMotor();
 	}
 
 	public void startUptakeMotor(double Speed) {
+		System.out.println("start uptake");
 		littleSpinny.set(Speed);
 	}
 
 	public void stopUptakeMotor() {
+		System.out.println("stop uptake");
 		littleSpinny.stopMotor();
 	}
 
@@ -95,26 +101,31 @@ public class Hopper extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
-		HopperSpeedDisplayPublisher.set(shooterSpeedEntry.getAsDouble());
+		HopperSpeedDisplayPublisher.set(HopperSpeedEntry.getAsDouble());
+		UptakeSpeedDisplayPublisher.set(UptakeSpeedEntry.getAsDouble());
 	}
 
 	private void setupNetworkTables(NetworkTable table) {
 		// Create a link to the subtable for the shooter data
 		Hopper = table;
+		Uptake = table;
 
 		// Display the current speed
-		HopperSpeedDisplayPublisher = table.getDoubleTopic("speedDisplay").publish();
+		HopperSpeedDisplayPublisher = table.getDoubleTopic("Hopper Speed").publish();
+		UptakeSpeedDisplayPublisher = table.getDoubleTopic("Uptake Speed").publish();
 
 		// Create an entry that allows you to vary the speed of the shooter
-		shooterSpeedEntry = Hopper.getDoubleTopic(("shooterSpeed")).getEntry(10);
-		shooterSpeedEntry.set(20);
+		HopperSpeedEntry = Hopper.getDoubleTopic(("Hopper Speed")).getEntry(10);
+		UptakeSpeedEntry = Uptake.getDoubleTopic(("Uptake Speed")).getEntry(10);
+		HopperSpeedEntry.set(20);
+		UptakeSpeedEntry.set(20);
 
 		// Put commands on the Dashboard to allow testing different shooter speeds
 		// This uses the value from the slider on the Dashboard
 		SmartDashboard.putData("Stop Hopper", StopHopperMotorCommand());
-		SmartDashboard.putData(" Stop Uptake", StopUptakeMotorCommand());
+		SmartDashboard.putData("Stop Uptake", StopUptakeMotorCommand());
 		SmartDashboard.putData("Stop Both", StopBothCommand());
-		SmartDashboard.putData("Start Hopper", StartHopperMotorCommand(() -> shooterSpeedEntry.getAsDouble()));
-		SmartDashboard.putData("Start Uptake", StartUptakeMotorCommand(() -> shooterSpeedEntry.getAsDouble()));
+		SmartDashboard.putData("Start Hopper", StartHopperMotorCommand(() -> HopperSpeedEntry.getAsDouble()));
+		SmartDashboard.putData("Start Uptake", StartUptakeMotorCommand(() -> UptakeSpeedEntry.getAsDouble()));
 	}
 }
