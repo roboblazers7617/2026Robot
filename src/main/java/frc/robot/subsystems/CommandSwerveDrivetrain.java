@@ -259,6 +259,8 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 	@Override
 	public void addVisionMeasurement(Pose2d visionRobotPoseMeters, double timestampSeconds, Matrix<N3, N1> visionMeasurementStdDevs) {
 		super.addVisionMeasurement(visionRobotPoseMeters, Utils.fpgaToCurrentTime(timestampSeconds), visionMeasurementStdDevs);
+		Pose2d curPose = getState().Pose;
+		System.out.println("Pose is " + curPose.getX() + " " + curPose.getY());
 	}
 
 	/**

@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Vision;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
@@ -50,6 +51,7 @@ public class RobotContainer {
 
 	private final Telemetry logger = new Telemetry(MaxSpeed);
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+	public final Vision vision = new Vision(drivetrain);
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */

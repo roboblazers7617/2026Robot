@@ -45,6 +45,7 @@ public class Vision extends SubsystemBase {
 
 	@Override
 	public void periodic() {
+		// System.out.println("In vision periodic");
 		Optional<EstimatedRobotPose> frontVisionEst = Optional.empty();
 		for (var result : frontCamera.getAllUnreadResults()) {
 			frontVisionEst = photonFrontEstimator.estimateCoprocMultiTagPose(result);
@@ -58,7 +59,7 @@ public class Vision extends SubsystemBase {
 
 				// Change our trust in the measurement based on the tags we can see
 				var estStdDevs = getEstimationStdDevs();
-
+				// System.out.println("Adding a measurement " + est.estimatedPose.toPose2d().getX() + " " + est.estimatedPose.toPose2d().getY() + " " + est.estimatedPose.toPose2d().getRotation().getDegrees());
 				drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
 			}
 		}
