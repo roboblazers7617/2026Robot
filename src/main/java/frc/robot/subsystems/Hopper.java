@@ -54,8 +54,14 @@ public class Hopper extends SubsystemBase {
 			if (status.isOK() && status2.isOK())
 				break;
 		}
-		music.addInstrument(bigSpinny);
-		music.addInstrument(littleSpinny);
+		music.addInstrument(bigSpinny, 0);
+		var status4 = music.addInstrument(littleSpinny, 1);
+		if (!status4.isOK()) {
+			// log error
+			System.out.println("oh no");
+		} else {
+			System.out.println("huzzah");
+		}
 		var status3 = music.loadMusic(file);
 		if (!status3.isOK()) {
 			// log error
