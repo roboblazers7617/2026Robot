@@ -5,7 +5,7 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.Hopper;
+import frc.robot.subsystems.HopperUptake;
 import frc.robot.subsystems.TestShooter;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
@@ -40,7 +40,7 @@ public class RobotContainer {
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
 	private final TestShooter testShooter;
-	private final Hopper hopper;
+	private final HopperUptake hopper;
 	private final NetworkTable networkTableInst = NetworkTableInstance.getDefault().getTable("/RoboBlazers");
 
 	/**
@@ -56,7 +56,7 @@ public class RobotContainer {
 		configureDriverControls();
 		configureOperatorControls();
 
-		hopper = new Hopper(networkTableInst.getSubTable("Hopper"));
+		hopper = new HopperUptake(networkTableInst.getSubTable("Hopper"));
 		testShooter = new TestShooter(networkTableInst.getSubTable("TestShooter"));
 	}
 
