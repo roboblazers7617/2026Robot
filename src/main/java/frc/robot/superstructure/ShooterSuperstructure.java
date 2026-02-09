@@ -9,12 +9,12 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SuperstructureConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Degrees;
@@ -25,7 +25,7 @@ import static edu.wpi.first.units.Units.Degrees;
 @Logged
 public class ShooterSuperstructure {
 	// TODO: Implement things here for the various subsystems once those are added
-	private Pose2d testRobotPose = new Pose2d(6.0, 1.0, Rotation2d.kZero);
+	private final CommandSwerveDrivetrain drivetrain;
 
 	/**
 	 * The list of states the shooter can be in.
@@ -82,8 +82,13 @@ public class ShooterSuperstructure {
 
 	/**
 	 * Creates a new ShooterController.
+	 *
+	 * @param drivetrain
+	 *            The drivetrain to poll the pose from.
 	 */
-	public ShooterSuperstructure() {
+	public ShooterSuperstructure(CommandSwerveDrivetrain drivetrain) {
+		this.drivetrain = drivetrain;
+
 		// Set up the state machine
 		stateMachineConfig.configure(ShooterState.HOME)
 				.onEntry(this::home)
@@ -125,7 +130,7 @@ public class ShooterSuperstructure {
 	 * updating the tracking for the shooter.
 	 */
 	public void update() {
-		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(testRobotPose);
+		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(drivetrain.getState().Pose);
 
 		// Check the current state and handle sequence transitions.
 		switch (stateMachine.getState()) {
@@ -260,6 +265,24 @@ public class ShooterSuperstructure {
 	}
 
 	/**
+	 * Gets the target pose for the current drivetrain position.
+	 * <p>
+	 * This mostly just exists for logging.
+	 *
+	 * @return
+	 *         The pose of the shooting target for the current drivetrain position.
+	 */
+	public Pose3d getTargetForPosition() {
+		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(drivetrain.getState().Pose);
+
+		if (targetPose.isPresent()) {
+			return targetPose.get();
+		} else {
+			return Pose3d.kZero;
+		}
+	}
+
+	/**
 	 * Prepares to shoot at a certain target pose from the drivetrain's current pose.
 	 *
 	 * @param targetPose
@@ -268,9 +291,7 @@ public class ShooterSuperstructure {
 	 *            Is the shooter currently tracking a target?
 	 */
 	private void prepareShootAtTarget(Pose3d targetPose, boolean tracking) {
-		// TODO: Update this once drivetrain is in place
-		// Pose2d robotPose = drivetrain.samplePoseAt(Utils.getCurrentTimeSeconds());
-		Pose2d robotPose = new Pose2d();
+		Pose2d robotPose = drivetrain.getState().Pose;
 
 		setValues(ShootingCalculator.solve(robotPose, targetPose), tracking);
 	}
