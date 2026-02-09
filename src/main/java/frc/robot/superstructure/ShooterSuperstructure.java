@@ -7,6 +7,7 @@ import com.github.oxo42.stateless4j.StateMachine;
 import com.github.oxo42.stateless4j.StateMachineConfig;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -15,6 +16,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.StubbedHood;
+import frc.robot.subsystems.StubbedHopperUptake;
+import frc.robot.subsystems.StubbedShooter;
+import frc.robot.subsystems.StubbedTurret;
 
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Degrees;
@@ -25,7 +30,16 @@ import static edu.wpi.first.units.Units.Degrees;
 @Logged
 public class ShooterSuperstructure {
 	// TODO: Implement things here for the various subsystems once those are added
+	@NotLogged
 	private final CommandSwerveDrivetrain drivetrain;
+	@NotLogged
+	private final StubbedTurret turret;
+	@NotLogged
+	private final StubbedHood hood;
+	@NotLogged
+	private final StubbedShooter flywheel;
+	@NotLogged
+	private final StubbedHopperUptake hopperUptake;
 
 	/**
 	 * The list of states the shooter can be in.
@@ -85,9 +99,21 @@ public class ShooterSuperstructure {
 	 *
 	 * @param drivetrain
 	 *            The drivetrain to poll the pose from.
+	 * @param shooter
+	 *            The shooter to control.
+	 * @param hood
+	 *            The hood to control.
+	 * @param turret
+	 *            The turret to control.
+	 * @param hopperUptake
+	 *            The hopper/uptake subsystem to control.
 	 */
-	public ShooterSuperstructure(CommandSwerveDrivetrain drivetrain) {
+	public ShooterSuperstructure(CommandSwerveDrivetrain drivetrain, StubbedShooter shooter, StubbedHood hood, StubbedTurret turret, StubbedHopperUptake hopperUptake) {
 		this.drivetrain = drivetrain;
+		this.flywheel = shooter;
+		this.hood = hood;
+		this.turret = turret;
+		this.hopperUptake = hopperUptake;
 
 		// Set up the state machine
 		stateMachineConfig.configure(ShooterState.HOME)
@@ -103,10 +129,9 @@ public class ShooterSuperstructure {
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL)
 				.permit(ShooterTrigger.INITIALIZING_DONE, ShooterState.SHOOTING);
 
-		// TODO: Update once feeder is in place
 		stateMachineConfig.configure(ShooterState.SHOOTING)
-				// .onEntry(feeder::start)
-				// .onExit(feeder::stop)
+				.onEntry(hopperUptake::start)
+				.onExit(hopperUptake::stop)
 				.permit(ShooterTrigger.HOME, ShooterState.HOME)
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL);
 
@@ -215,14 +240,13 @@ public class ShooterSuperstructure {
 	 *         Command to run.
 	 */
 	public Command setStateCommand(Supplier<ShooterValues> values) {
-		// TODO: Depend on all the subsystems involved once they are in here
 		return Commands.run(() -> {
 			if (stateMachine.isInState(ShooterState.MANUAL_CONTROL)) {
 				setValues(values.get(), false);
 			} else {
 				DriverStation.reportWarning("Attempted to execute setStateCommand without being in manual mode.", true);
 			}
-		});
+		}, flywheel, hood, turret);
 	}
 
 	/**
@@ -236,14 +260,13 @@ public class ShooterSuperstructure {
 	 *         Command to run.
 	 */
 	public Command prepareShootAtTargetCommand(Supplier<Pose3d> targetPose) {
-		// TODO: Depend on all the subsystems involved once they are in here
 		return Commands.run(() -> {
 			if (stateMachine.isInState(ShooterState.MANUAL_CONTROL)) {
 				prepareShootAtTarget(targetPose.get(), false);
 			} else {
 				DriverStation.reportWarning("Attempted to execute prepareShootAtTargetCommand without being in manual mode.", true);
 			}
-		});
+		}, flywheel, hood, turret);
 	}
 
 	/**
@@ -253,8 +276,7 @@ public class ShooterSuperstructure {
 	 *         Are all the shooter subsystems at their targets?
 	 */
 	public boolean subsystemsAtTargets() {
-		// TODO: Add logic here to check if the subsystems are at their targets
-		return true;
+		return flywheel.isAtTarget() && hood.isAtTarget() && turret.isAtTarget();
 	}
 
 	/**
@@ -306,14 +328,9 @@ public class ShooterSuperstructure {
 	 */
 	private void setValues(ShooterValues values, boolean tracking) {
 		// TODO: Update this once subsystems are in place
-		// shooter.setFlywheelSpeed(values.getShooterSpeed());
-		// shooter.setHoodAngle(values.getHoodAngle());
-		// turret.setAngle(values.getTurretAngle(), !tracking);
-
-		// Temporary debug stuff
-		System.out.println(String.format("Shooter Speed: %f RPM", values.getFlywheelSpeed().in(RPM)));
-		System.out.println(String.format("Hood Angle: %f degrees", values.getHoodAngle().in(Degrees)));
-		System.out.println(String.format("Turret Angle: %f degrees", values.getTurretAngle().in(Degrees)));
+		flywheel.startShooter(values.getFlywheelSpeed(), !tracking);
+		hood.setAngle(values.getHoodAngle(), !tracking);
+		turret.setPosition(values.getTurretAngle(), !tracking);
 	}
 
 	/**
@@ -321,11 +338,11 @@ public class ShooterSuperstructure {
 	 */
 	private void home() {
 		// TODO: Update this once subsystems are in place
-		// shooter.setFlywheelSpeed(ShooterConstants.IDLE_SPEED);
-		// shooter.setHoodAngle(HoodConstants.HOME_ANGLE);
-		// turret.unspool();
+		flywheel.startShooter(RPM.of(10), true);
+		hood.setAngle(Degrees.of(90), true);
+		turret.unspool();
 
 		// Temporary debug stuff
-		System.out.println("Homed turret");
+		System.out.println("Homed shooter");
 	}
 }
