@@ -86,7 +86,7 @@ public class RobotContainer {
 	/**
 	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
 	 */
-	private final ShooterSuperstructureDebug shooterSuperstructureDebug;
+	private ShooterSuperstructureDebug shooterSuperstructureDebug;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
