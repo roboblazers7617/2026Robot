@@ -72,7 +72,7 @@ public class RobotContainer {
 	/**
 	 * Superstructure that handles controlling the shooter and related subsystems.
 	 */
-	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure();
+	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure(drivetrain);
 	/**
 	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
 	 */
