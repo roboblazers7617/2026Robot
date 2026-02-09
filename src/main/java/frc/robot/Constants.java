@@ -173,6 +173,10 @@ public final class Constants {
 		 * The table name for the shooter superstructure.
 		 */
 		public static final String SHOOTER_SUPERSTRUCTURE_TABLE_NAME = "Shooter Superstructure";
+		/**
+		 * The table name for the intake superstructure.
+		 */
+		public static final String INTAKE_SUPERSTRUCTURE_TABLE_NAME = "Intake Superstructure";
 	}
 
 	/**
