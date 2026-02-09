@@ -10,8 +10,11 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.StubbedHood;
 import frc.robot.subsystems.StubbedHopperUptake;
+import frc.robot.subsystems.StubbedIntakeGrabber;
+import frc.robot.subsystems.StubbedIntakeShoulder;
 import frc.robot.subsystems.StubbedShooter;
 import frc.robot.subsystems.StubbedTurret;
+import frc.robot.superstructure.IntakeSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.Constants.DashboardConstants;
@@ -62,6 +65,8 @@ public class RobotContainer {
 	public final StubbedHood hood = new StubbedHood();
 	public final StubbedTurret turret = new StubbedTurret();
 	public final StubbedHopperUptake hopperUptake = new StubbedHopperUptake();
+	public final StubbedIntakeGrabber intakeGrabber = new StubbedIntakeGrabber();
+	public final StubbedIntakeShoulder intakeShoulder = new StubbedIntakeShoulder();
 
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
@@ -82,6 +87,11 @@ public class RobotContainer {
 	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
 	 */
 	private ShooterSuperstructureDebug shooterSuperstructureDebug;
+
+	/**
+	 * Superstructure that handles controlling the intake and related subsystems.
+	 */
+	private final IntakeSuperstructure intakeSuperstructure = new IntakeSuperstructure(intakeShoulder, intakeGrabber);
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
