@@ -8,6 +8,10 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.StubbedHood;
+import frc.robot.subsystems.StubbedHopperUptake;
+import frc.robot.subsystems.StubbedShooter;
+import frc.robot.subsystems.StubbedTurret;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.Constants.DashboardConstants;
@@ -51,7 +55,14 @@ public class RobotContainer {
 	private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
 	private final Telemetry logger = new Telemetry(MaxSpeed);
+
+	// Define subsystems
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+	public final StubbedShooter shooter = new StubbedShooter();
+	public final StubbedHood hood = new StubbedHood();
+	public final StubbedTurret turret = new StubbedTurret();
+	public final StubbedHopperUptake hopperUptake = new StubbedHopperUptake();
+
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */
@@ -66,7 +77,7 @@ public class RobotContainer {
 	/**
 	 * Superstructure that handles controlling the shooter and related subsystems.
 	 */
-	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure(drivetrain);
+	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure(drivetrain, shooter, hood, turret, hopperUptake);
 	/**
 	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
 	 */
