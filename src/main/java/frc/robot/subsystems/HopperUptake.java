@@ -22,7 +22,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
 
 /** Add your docs here. */
-public class Hopper extends SubsystemBase {
+public class HopperUptake extends SubsystemBase {
 	private NetworkTable Hopper;
 	private NetworkTable Uptake;
 	private DoubleEntry HopperSpeedEntry;
@@ -40,7 +40,7 @@ public class Hopper extends SubsystemBase {
 	 */
 	private final TalonFX bigSpinny;
 
-	public Hopper(NetworkTable table) {
+	public HopperUptake(NetworkTable table) {
 		if (LoggingConstants.DEBUG_MODE) {
 			setupNetworkTables(table);
 		}
