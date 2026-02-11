@@ -165,15 +165,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 		}
 	}
 
-	
 	public final ChassisSpeeds getFeildRelativeSpeeds() {
-		return getKinematics().toChassisSpeeds(getModule(0).getCurrentState(), getModule(1).getCurrentState(), getModule(2).getCurrentState(), getModule(3).getCurrentState());
+		return ChassisSpeeds.fromRobotRelativeSpeeds(getState().Speeds, getState().Pose.getRotation());
 	}
 
 	public final Pose2d getPose2d() {
 		return getState().Pose;
 	}
-
 
 	/**
 	 * Returns a command that applies the specified control request to this swerve drivetrain.
