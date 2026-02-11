@@ -315,7 +315,7 @@ public class ShooterSuperstructure {
 	private void prepareShootAtTarget(Pose3d targetPose, boolean tracking) {
 		Pose2d robotPose = drivetrain.getState().Pose;
 
-		setValues(ShootingCalculator.solve(robotPose, targetPose), tracking);
+		setValues(ShootingCalculator.solve(new Pose3d(robotPose), targetPose), tracking);
 	}
 
 	/**

@@ -5,15 +5,14 @@ import java.util.Optional;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants.FieldConstants;
-import frc.robot.Constants.ShootingConstants;
+import frc.robot.Constants.TurretConstants;
 
 import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 
 /**
  * Some static utility methods for calculating shooter values.
@@ -29,22 +28,18 @@ public class ShootingCalculator {
 	 * @return
 	 *         The resulting values to apply.
 	 */
-	public static ShooterValues solve(Pose2d robotPose, Pose3d targetPose) {
+	public static ShooterValues solve(Pose3d robotPose, Pose3d targetPose) {
 		ShooterValues values = new ShooterValues();
 
 		// TODO: Offset this according to turret position on the robot
-		Pose2d turretPose = robotPose;
+		Pose3d turretPose = robotPose.transformBy(TurretConstants.TURRET_OFFSET);
 
-		// TODO: Figure out what 2d pose we need to hit the 3d input in the travel path
-		Pose2d target2d = targetPose.toPose2d();
-
-		Distance shootingDistance = Meters.of(turretPose.getTranslation()
-				.getDistance(target2d.getTranslation()));
+		Transform3d gamepieceTransform = turretPose.minus(turretPose);
 
 		// Solve shooter values
-		values.setTurretAngle(solveTurretAngle(turretPose, target2d));
-		values.setHoodAngle(solveHoodAngle(turretPose, shootingDistance));
-		values.setFlywheelSpeed(solveFlywheelSpeed(turretPose, shootingDistance));
+		values.setTurretAngle(solveTurretAngle(turretPose.toPose2d(), targetPose.toPose2d()));
+		values.setHoodAngle(solveHoodAngle(gamepieceTransform));
+		values.setFlywheelSpeed(solveGamepieceSpeed(gamepieceTransform));
 
 		return values;
 	}
@@ -68,31 +63,29 @@ public class ShootingCalculator {
 	}
 
 	/**
-	 * Solves the hood angle required to hit the specified targetPose on the ground.
+	 * Solves the hood angle required to shoot the gamepiece to the desired transform.
 	 *
-	 * @param turretPose
-	 *            The pose of the turret.
-	 * @param targetPose
-	 *            The distance to the target
+	 * @param gamepieceTransform
+	 *            The transform to shoot the gamepiece to.
 	 * @return
 	 *         The resulting Angle to angle the hood at.
 	 */
-	private static Angle solveHoodAngle(Pose2d turretPose, Distance targetDistance) {
-		return Radians.of(ShootingConstants.hoodInterpolationTable.get(targetDistance.in(Meters)));
+	private static Angle solveHoodAngle(Transform3d gamepieceTransform) {
+		// TODO: uhhh fancy math things?
+		return Radians.zero();
 	}
 
 	/**
-	 * Solves the flywheel speed required to hit the specified targetPose on the ground.
+	 * Solves the gamepiece speed required to shoot the gamepiece to the desired transform.
 	 *
-	 * @param turretPose
-	 *            The pose of the turret.
-	 * @param targetPose
-	 *            The distance to the target
+	 * @param gamepieceTransform
+	 *            The transform to shoot the gamepiece to.
 	 * @return
-	 *         The resulting AngularVelocity to set the flywheel to.
+	 *         The resulting LinearVelocity to shoot the gamepiece at.
 	 */
-	private static AngularVelocity solveFlywheelSpeed(Pose2d turretPose, Distance targetDistance) {
-		return RadiansPerSecond.of(ShootingConstants.flywheelInterpolationTable.get(targetDistance.in(Meters)));
+	private static LinearVelocity solveGamepieceSpeed(Transform3d gamepieceTransform) {
+		// TODO: more fancy math things!
+		return MetersPerSecond.zero();
 	}
 
 	/**
