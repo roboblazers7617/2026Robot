@@ -85,7 +85,7 @@ public final class Constants {
 	 */
 	public static class IntakeConstants {
 		public static final int SHOULDER_CAN_ID = 2;
-		public static final int GRABBER_CAN_ID = 0;
+		public static final int GRABBER_CAN_ID = 1;
 		/**
 		 * The current limit for the motor.
 		 */
@@ -104,6 +104,8 @@ public final class Constants {
 		public static final double INTAKE_MM_CRUISE_VELOCITY = 80;
 		public static final double INTAKE_MM_ACCELERATION = 160;
 		public static final double INTAKE_MM_JERK = 1600;
-		public static final double GEARBOX_RATIO = 1;
+		public static final double GEARBOX_RATIO = 1; // to be replaced by talonfx config things
+		public static final double ROBOT_TO_SENSOR_RATIO = 0;
+		public static final double SENSOR_TO_MECHANISM_RATIO = 0;
 	}
 }

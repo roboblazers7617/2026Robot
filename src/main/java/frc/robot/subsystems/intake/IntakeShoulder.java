@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -58,6 +59,12 @@ public class IntakeShoulder extends SubsystemBase {
 		motionMagicConfigs.MotionMagicJerk = IntakeConstants.INTAKE_MM_JERK; // 1600; // Target jerk of 1600 rps/s/s (0.1 seconds)
 		motorConfigurator.apply(motionMagicConfigs);
 
+		// feedback configs for to change gear ratio stuff
+		FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
+		feedbackConfigs.RotorToSensorRatio = IntakeConstants.ROBOT_TO_SENSOR_RATIO;
+		feedbackConfigs.SensorToMechanismRatio = IntakeConstants.SENSOR_TO_MECHANISM_RATIO;
+		motorConfigurator.apply(feedbackConfigs);
+
 		/**
 		 * code to zero encoder when code is intially run (robot is turned on) so that it doesn't freak out and try to spin to the zero from a previous continuous motor run demo because the code of the shoulder has the motor spin to defined finite values and the leftover value in the encoder will be huge and it will zoom backward very powerfully. so it will not do that now as it takes a deep breath before going anywhere.
 		 */
@@ -68,13 +75,13 @@ public class IntakeShoulder extends SubsystemBase {
 	private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0);
 
 	private void setPositionPlease(Angle position) {
-		double positionDouble = position.in(Units.Degrees) / (360.0 * IntakeConstants.GEARBOX_RATIO);
-		motor.setControl(positionRequest.withPosition(positionDouble));
-	}
+		// solution one (post *360) (doesn't work)
+		// motor.setControl(positionRequest.withPosition(position.in(Units.Degrees)));
+		motor.setControl(positionRequest.withPosition(position)); // max's possible solution
 
-	// private void setPosition(double position) {
-	// motor.setControl(positionRequest.withPosition(position));
-	// }
+		// private void setPosition(double position) {
+		// motor.setControl(positionRequest.withPosition(position));
+	}
 
 	/**
 	 * command which raises shoulder of intake
