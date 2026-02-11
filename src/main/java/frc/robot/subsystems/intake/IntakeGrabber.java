@@ -41,12 +41,20 @@ public class IntakeGrabber extends SubsystemBase {
 		return runOnce(() -> stopIntake());
 	}
 
+	public Command outtakeCommand() {
+		return runOnce(() -> outtake());
+	}
+
 	public void startIntake() {
 		setSpeed(IntakeConstants.INTAKE_START_SPEED);
 	}
 
 	public void stopIntake() {
 		setSpeed(IntakeConstants.INTAKE_STOP_SPEED);
+	}
+
+	public void outtake() {
+		setSpeed(IntakeConstants.OUTTAKE_SPEED);
 	}
 
 	/**

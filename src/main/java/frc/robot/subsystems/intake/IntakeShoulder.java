@@ -88,8 +88,8 @@ public class IntakeShoulder extends SubsystemBase {
 	 * 
 	 * @return
 	 */
-	public Command raiseShoulderCommand() {
-		return runOnce(() -> raiseShoulder());
+	public Command raiseIntakeCommand() {
+		return runOnce(() -> raiseIntake());
 	}
 
 	/**
@@ -97,16 +97,16 @@ public class IntakeShoulder extends SubsystemBase {
 	 * 
 	 * @return
 	 */
-	public Command lowerShoulderCommand() {
-		return runOnce(() -> lowerShoulder());
+	public Command lowerIntakeCommand() {
+		return runOnce(() -> lowerIntake());
 	}
 
-	public void raiseShoulder() {
+	public void raiseIntake() {
 		setPositionPlease(IntakeConstants.SHOULDER_RAISED_ANGLE);
 		// setPosition(0.25);
 	}
 
-	public void lowerShoulder() {
+	public void lowerIntake() {
 		setPositionPlease(IntakeConstants.SHOULDER_LOWERED_ANGLE);
 		// setPosition(0);
 	}

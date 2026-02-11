@@ -107,5 +107,6 @@ public final class Constants {
 		public static final double GEARBOX_RATIO = 1; // to be replaced by talonfx config things
 		public static final double ROBOT_TO_SENSOR_RATIO = 0;
 		public static final double SENSOR_TO_MECHANISM_RATIO = 0;
+		public static final double OUTTAKE_SPEED = -0.2;
 	}
 }
