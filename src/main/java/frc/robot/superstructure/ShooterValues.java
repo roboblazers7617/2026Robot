@@ -2,8 +2,11 @@ package frc.robot.superstructure;
 
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
+import frc.robot.Constants.ShootingConstants;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
 /**
@@ -40,7 +43,7 @@ public class ShooterValues {
 	}
 
 	/**
-	 * Sets the flywheel speed.
+	 * Sets the flywheel speed to a specific {@link AngularVelocity}.
 	 *
 	 * @param flywheelSpeed
 	 *            The velocity to spin the flywheel up to.
@@ -49,6 +52,19 @@ public class ShooterValues {
 	 */
 	public ShooterValues setFlywheelSpeed(AngularVelocity flywheelSpeed) {
 		this.flywheelSpeed = flywheelSpeed;
+		return this;
+	}
+
+	/**
+	 * Sets the flywheel speed to shoot the gamepiece at a specific {@link LinearVelocity}.
+	 *
+	 * @param gamepieceSpeed
+	 *            The velocity to shoot the gamepiece at.
+	 * @return
+	 *         This object for method chaining.
+	 */
+	public ShooterValues setFlywheelSpeed(LinearVelocity gamepieceSpeed) {
+		this.flywheelSpeed = RadiansPerSecond.of(ShootingConstants.flywheelVelocityByGamepieceVelocity.get(gamepieceSpeed.in(MetersPerSecond)));
 		return this;
 	}
 

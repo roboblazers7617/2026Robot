@@ -27,8 +27,6 @@ import frc.robot.util.RectangleUtil;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
@@ -184,29 +182,26 @@ public final class Constants {
 	 */
 	public static class ShootingConstants {
 		/**
-		 * An interpolation table used for flywheel speed by distance.
+		 * An interpolation table used for flywheel speed by gamepiece velocity.
 		 * <p>
-		 * Keys are distance in meters, values are speed in radians per second.
+		 * Keys are velocity in meters per second, values are speed in radians per second.
 		 */
-		public static final InterpolatingDoubleTreeMap flywheelInterpolationTable = new InterpolatingDoubleTreeMap();
+		public static final InterpolatingDoubleTreeMap flywheelVelocityByGamepieceVelocity = new InterpolatingDoubleTreeMap();
 
 		static {
 			// Add values to the interpolation table
-			flywheelInterpolationTable.put(0.0, RPM.of(10.0).in(RadiansPerSecond));
-			flywheelInterpolationTable.put(10.0, RPM.of(50.0).in(RadiansPerSecond));
+			flywheelVelocityByGamepieceVelocity.put(0.0, RPM.of(10.0).in(RadiansPerSecond));
+			flywheelVelocityByGamepieceVelocity.put(10.0, RPM.of(50.0).in(RadiansPerSecond));
 		}
+	}
 
+	/**
+	 * Constants used to configure the turret.
+	 */
+	public static class TurretConstants {
 		/**
-		 * An interpolation table used for hood angle by distance.
-		 * <p>
-		 * Keys are distance in meters, values are angle in radians.
+		 * The turret's offset from the center of the robot (drivetrain pose).
 		 */
-		public static final InterpolatingDoubleTreeMap hoodInterpolationTable = new InterpolatingDoubleTreeMap();
-
-		static {
-			// Add values to the interpolation table
-			hoodInterpolationTable.put(0.0, Degrees.of(20.0).in(Radians));
-			hoodInterpolationTable.put(10.0, Degrees.of(80.0).in(Radians));
-		}
+		public static final Transform3d TURRET_OFFSET = new Transform3d(Inches.of(5.0), Inches.of(5.062), Meters.of(0.0), Rotation3d.kZero);
 	}
 }
