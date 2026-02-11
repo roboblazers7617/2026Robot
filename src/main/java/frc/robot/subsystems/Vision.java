@@ -23,6 +23,8 @@ import java.util.Optional;
 public class Vision extends SubsystemBase {
 	private final PhotonCamera frontCamera;
 	private final PhotonPoseEstimator photonFrontEstimator;
+	private final PhotonCamera sideCamera;
+	private final PhotonPoseEstimator photonSideEstimator;
 	private final CommandSwerveDrivetrain drivetrain;
 
 	private Matrix<N3, N1> curStdDevs;
@@ -31,22 +33,41 @@ public class Vision extends SubsystemBase {
 	public Vision(CommandSwerveDrivetrain drivetrain) {
 		frontCamera = new PhotonCamera(VisionConstants.FRONT_CAM_NAME);
 		photonFrontEstimator = new PhotonPoseEstimator(FieldConstants.FIELD_LAYOUT, VisionConstants.ROBOT_TO_FRONT_CAM_TRANSFORM);
+		sideCamera = new PhotonCamera(VisionConstants.SIDE_CAM_NAME);
+		photonSideEstimator = new PhotonPoseEstimator(FieldConstants.FIELD_LAYOUT, VisionConstants.ROBOT_TO_SIDE_CAM_TRANSFORM);
 		this.drivetrain = drivetrain;
 	}
 
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
+		// front cam data yoinking
 		Optional<EstimatedRobotPose> frontVisionEst = Optional.empty();
 		for (var result : frontCamera.getAllUnreadResults()) {
 			frontVisionEst = photonFrontEstimator.estimateCoprocMultiTagPose(result);
 			if (frontVisionEst.isEmpty()) {
 				frontVisionEst = photonFrontEstimator.estimateLowestAmbiguityPose(result);
 			}
-			updateEstimationStdDevs(frontVisionEst, result.getTargets());
+			updateEstimationStdDevs(frontVisionEst, result.getTargets(), photonFrontEstimator);
 
 			if (frontVisionEst.isPresent()) {
 				var est = frontVisionEst.get();
+				var estStdDevs = getEstimationStdDevs();
+				drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+			}
+		}
+
+		// side cam data yoinking
+		Optional<EstimatedRobotPose> sideVisionEst = Optional.empty();
+		for (var result : sideCamera.getAllUnreadResults()) {
+			sideVisionEst = photonSideEstimator.estimateCoprocMultiTagPose(result);
+			if (sideVisionEst.isEmpty()) {
+				sideVisionEst = photonSideEstimator.estimateLowestAmbiguityPose(result);
+			}
+			updateEstimationStdDevs(sideVisionEst, result.getTargets(), photonSideEstimator);
+
+			if (sideVisionEst.isPresent()) {
+				var est = sideVisionEst.get();
 				var estStdDevs = getEstimationStdDevs();
 				drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
 			}
@@ -62,7 +83,7 @@ public class Vision extends SubsystemBase {
 	 * @param targets
 	 *            All targets in this camera frame
 	 */
-	private void updateEstimationStdDevs(Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets) {
+	private void updateEstimationStdDevs(Optional<EstimatedRobotPose> estimatedPose, List<PhotonTrackedTarget> targets, PhotonPoseEstimator photonEitherEstimator) {
 		if (estimatedPose.isEmpty()) {
 			// No pose input. Default to single-tag std devs
 			curStdDevs = VisionConstants.SINGLE_TAG_STD_DEVS;
@@ -74,7 +95,7 @@ public class Vision extends SubsystemBase {
 
 			// Precalculation - see how many tags we found, and calculate an average-distance metric
 			for (var tgt : targets) {
-				var tagPose = photonFrontEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
+				var tagPose = photonEitherEstimator.getFieldTags().getTagPose(tgt.getFiducialId());
 				if (tagPose.isEmpty())
 					continue;
 				numTags++;
