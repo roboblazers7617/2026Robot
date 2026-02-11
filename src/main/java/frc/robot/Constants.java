@@ -85,6 +85,7 @@ public final class Constants {
 	}
 
 	public static class VisionConstants {
+		public static final Boolean isGoPro = true;
 		public static final String FRONT_CAM_NAME = "Arducam";
 		// transform numbers are placeholders as of now
 		public static final Transform3d ROBOT_TO_FRONT_CAM_TRANSFORM = new Transform3d(new Translation3d(0.5, 0.0, 0.0), new Rotation3d(0, 0, 0));
