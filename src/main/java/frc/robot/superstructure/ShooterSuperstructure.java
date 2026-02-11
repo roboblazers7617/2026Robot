@@ -18,7 +18,7 @@ import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.StubbedHood;
 import frc.robot.subsystems.StubbedHopperUptake;
-import frc.robot.subsystems.StubbedShooter;
+import frc.robot.subsystems.StubbedFlywheel;
 import frc.robot.subsystems.StubbedTurret;
 
 import static edu.wpi.first.units.Units.RPM;
@@ -37,7 +37,7 @@ public class ShooterSuperstructure {
 	@NotLogged
 	private final StubbedHood hood;
 	@NotLogged
-	private final StubbedShooter flywheel;
+	private final StubbedFlywheel flywheel;
 	@NotLogged
 	private final StubbedHopperUptake hopperUptake;
 
@@ -108,7 +108,7 @@ public class ShooterSuperstructure {
 	 * @param hopperUptake
 	 *            The hopper/uptake subsystem to control.
 	 */
-	public ShooterSuperstructure(CommandSwerveDrivetrain drivetrain, StubbedShooter shooter, StubbedHood hood, StubbedTurret turret, StubbedHopperUptake hopperUptake) {
+	public ShooterSuperstructure(CommandSwerveDrivetrain drivetrain, StubbedFlywheel shooter, StubbedHood hood, StubbedTurret turret, StubbedHopperUptake hopperUptake) {
 		this.drivetrain = drivetrain;
 		this.flywheel = shooter;
 		this.hood = hood;
@@ -276,7 +276,7 @@ public class ShooterSuperstructure {
 	 *         Are all the shooter subsystems at their targets?
 	 */
 	public boolean subsystemsAtTargets() {
-		return flywheel.isAtTarget() && hood.isAtTarget() && turret.isAtTarget();
+		return flywheel.isAtCruiseVelocity() && hood.isAtPosition() && turret.isAtTarget();
 	}
 
 	/**
@@ -328,8 +328,8 @@ public class ShooterSuperstructure {
 	 */
 	private void setValues(ShooterValues values, boolean tracking) {
 		// TODO: Update this once subsystems are in place
-		flywheel.startShooter(values.getFlywheelSpeed(), !tracking);
-		hood.setAngle(values.getHoodAngle(), !tracking);
+		flywheel.startFlywheel(values.getFlywheelSpeed());
+		hood.moveToPosition(values.getHoodAngle());
 		turret.setPosition(values.getTurretAngle(), !tracking);
 	}
 
@@ -338,8 +338,8 @@ public class ShooterSuperstructure {
 	 */
 	private void home() {
 		// TODO: Update this once subsystems are in place
-		flywheel.startShooter(RPM.of(10), true);
-		hood.setAngle(Degrees.of(90), true);
+		flywheel.startFlywheel(RPM.of(10));
+		hood.moveToPosition(Degrees.of(90));
 		turret.unspool();
 
 		// Temporary debug stuff

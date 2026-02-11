@@ -13,7 +13,7 @@ import frc.robot.subsystems.StubbedHood;
 import frc.robot.subsystems.StubbedHopperUptake;
 import frc.robot.subsystems.StubbedIntakeGrabber;
 import frc.robot.subsystems.StubbedIntakeShoulder;
-import frc.robot.subsystems.StubbedShooter;
+import frc.robot.subsystems.StubbedFlywheel;
 import frc.robot.subsystems.StubbedTurret;
 import frc.robot.superstructure.IntakeSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructure;
@@ -63,7 +63,7 @@ public class RobotContainer {
 	// Define subsystems
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
-	public final StubbedShooter shooter = new StubbedShooter();
+	public final StubbedFlywheel shooter = new StubbedFlywheel();
 	public final StubbedHood hood = new StubbedHood();
 	public final StubbedTurret turret = new StubbedTurret();
 	public final StubbedHopperUptake hopperUptake = new StubbedHopperUptake();

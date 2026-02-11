@@ -10,11 +10,11 @@ public class StubbedHood extends SubsystemBase {
 
 	public StubbedHood() {}
 
-	public void setAngle(Angle angle, boolean motionMagic) {
+	public void moveToPosition(Angle angle) {
 		this.angle = angle;
 	}
 
-	public boolean isAtTarget() {
+	public boolean isAtPosition() {
 		return true;
 	}
 }

@@ -5,16 +5,20 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 @Logged
-public class StubbedShooter extends SubsystemBase {
+public class StubbedFlywheel extends SubsystemBase {
 	private AngularVelocity speed;
 
-	public StubbedShooter() {}
+	public StubbedFlywheel() {}
 
-	public void startShooter(AngularVelocity speed, boolean motionMagic) {
+	public void startFlywheel(AngularVelocity speed) {
 		this.speed = speed;
 	}
 
-	public boolean isAtTarget() {
+	public void stopFlywheel() {
+		System.out.println("Stopped flywheel");
+	}
+
+	public boolean isAtCruiseVelocity() {
 		return true;
 	}
 }
