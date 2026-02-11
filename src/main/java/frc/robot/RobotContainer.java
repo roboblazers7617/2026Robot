@@ -4,14 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.Constants.DashboardConstants;
-import frc.robot.Constants.LoggingConstants;
-import frc.robot.util.Elastic;
-
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -26,8 +18,14 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+import frc.robot.Constants.DashboardConstants;
+import frc.robot.Constants.LoggingConstants;
+import frc.robot.Constants.OperatorConstants;
+import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.util.Elastic;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -107,29 +105,33 @@ public class RobotContainer {
 		// Note that X is defined as forward according to WPILib convention,
 		// and Y is defined as to the left according to WPILib convention.
 		drivetrain.setDefaultCommand(
+
 				// Drivetrain will execute this command periodically
 				drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
 						.withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
 						.withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
 				));
+		driverController.leftBumper().whileTrue(Commands.runOnce(() -> System.out.println("fast drivetrain"))); // placeholders
+		driverController.rightBumper().whileTrue(Commands.runOnce(() -> System.out.println("fast drivetrain")));
+		driverController.rightTrigger().whileFalse(Commands.runOnce(() -> System.out.println("turn to face direction mode")));
 
 		// Idle while the robot is disabled. This ensures the configured
 		// neutral mode is applied to the drive motors while disabled.
 		final var idle = new SwerveRequest.Idle();
 		RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-		driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-		driverController.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))));
+		// driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
+		// driverController.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))));
 
 		// Run SysId routines when holding back/start and X/Y.
 		// Note that each routine should be run exactly once in a single log.
-		driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-		driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-		driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-		driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+		// driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+		// driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+		// driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+		// driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
 		// Reset the field-centric heading on left bumper press.
-		driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+		driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
 		drivetrain.registerTelemetry(logger::telemeterize);
 	}
@@ -137,7 +139,16 @@ public class RobotContainer {
 	/**
 	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
 	 */
-	private void configureOperatorControls() {}
+	private void configureOperatorControls() {
+		driverController.rightTrigger().onTrue(Commands.runOnce(() -> System.out.println("deploy intake")));
+		driverController.rightBumper().onTrue(Commands.runOnce(() -> System.out.println("stow intake")));
+		driverController.leftTrigger().onTrue(Commands.runOnce(() -> System.out.println("shoot shoot shoot")));
+		driverController.leftBumper().onTrue(Commands.runOnce(() -> System.out.println("agitate hopper")));
+		driverController.y().onTrue(Commands.runOnce(() -> System.out.println("Outtake")));
+		driverController.x().onTrue(Commands.runOnce(() -> System.out.println("Toggle Turret Tracking")));
+		driverController.a().onTrue(Commands.runOnce(() -> System.out.println("Preset Shoot (defined angle)")));
+		// manual turret to be made
+	}
 
 	/**
 	 * Use this to pass the autonomous command to the main {@link Robot} class.
