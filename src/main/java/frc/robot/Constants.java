@@ -76,4 +76,83 @@ public final class Constants {
 		 */
 		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 	}
+
+	public static class ClimbConstants {
+		public final static int ELEVATOR_LEADER_MOTOR_CAN_ID;
+		public final static int ELEVATOR_FOLLOWER_MOTOR_CAN_ID;
+		public final static int TOP_HOOK_MOTOR_CAN_ID;
+		public final static int BOTTOM_HOOK_MOTOR_CAN_ID;
+
+		public final static int TOP_HOOK_ENCODER_CAN_ID;
+		public final static int BOTTOM_HOOK_ENCODER_CAN_ID;
+
+		public final static double KS;
+		public final static double KV;
+		public final static double KG;
+		public final static double KA;
+
+		public final static double KP;
+		public final static double KI;
+		public final static double KD;
+
+		/**
+		 * Elevator kMinOutput as a percentage.
+		 */
+		public static final double KMIN_OUTPUT = -1.0;
+		/**
+		 * Elevator kMaxOutput as a percentage.
+		 */
+		public static final double KMAX_OUTPUT = 1.0;
+		/**
+		 * Maximum velocity in m/s.
+		 */
+		public static final double MAX_VELOCITY;
+		/**
+		 * Maximum acceleration in m/s^2.
+		 */
+		public static final double MAX_ACCELERATION;
+
+		/**
+		 * Maximum velocity in m/s.
+		 */
+		public static final double MAX_HOOK_VELOCITY;
+		/**
+		 * Maximum acceleration in m/s^2.
+		 */
+		public static final double MAX_HOOK_ACCELERATION;
+
+		/**
+		 * Maximum position in meters.
+		 */
+		public static final double MAX_POSITION;
+		/**
+		 * Minimum position in meters.
+		 */
+		public static final double MIN_POSITION = 0.0;
+		/**
+		 * Zero offset, meters.
+		 */
+		public static final double ZERO_OFFSET = 0;
+		/**
+		 * Current limit in amps.
+		 */
+		public static final int CURRENT_LIMIT = 40;
+		/**
+		 * Tolerance for the target to be considered reached in meters.
+		 */
+		public static final double TOLERANCE = .02;
+
+		/*
+		 * the IN/link of the chain driving the elevator
+		 */
+		public static final double ELEVATOR_CHAIN_IN_PER_TOOTH = .25;
+		/*
+		 * the amount of teeth on the sprocket driving the elevator
+		 */
+		public static final double ELEVATOR_CHAIN_SPROCKET_TEETH;
+		/*
+		 * the gearbox ratio of the elevator
+		 */
+		public static final double ELEVATOR_GEARBOX_RATIO;
+	}
 }
