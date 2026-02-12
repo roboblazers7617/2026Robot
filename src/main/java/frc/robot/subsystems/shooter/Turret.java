@@ -11,9 +11,10 @@ import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.sim.CANdiSimState;
 import com.ctre.phoenix6.sim.ChassisReference;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 
@@ -48,18 +49,18 @@ public class Turret extends SubsystemBase {
 	private TalonFX motor = new TalonFX(TurretConstants.MOTOR_ID);
 
 	/**
-	 * The primary encoder on the turret. This is 1:1 with the motor, and {@link TurretConstants#PRIMARY_ENCODER_RATIO} to the mechanism.
+	 * The CANdi for the encoders.
+	 * <p>
+	 * PWM1 is the primary encoder on the turret. This is 1:1 with the motor, and {@link TurretConstants#PRIMARY_ENCODER_RATIO} to the mechanism.
+	 * <p>
+	 * PWM2 is the secondary encoder on the turret. This is {@link TurretConstants#SECONDARY_ENCODER_RATIO} to the mechanism.
 	 */
-	private final CANcoder primaryEncoder = new CANcoder(TurretConstants.PRIMARY_ENCODER_ID);
-	/**
-	 * The secondary encoder on the turret. This is {@link TurretConstants#SECONDARY_ENCODER_RATIO} to the mechanism.
-	 */
-	private final CANcoder secondaryEncoder = new CANcoder(TurretConstants.SECONDARY_ENCODER_ID);
+	private final CANdi encoderCandi = new CANdi(TurretConstants.CANDI_ID);
 
 	/**
 	 * The configuration for the {@link #encoder}.
 	 */
-	private final EasyCRTConfig encoderConfig = new EasyCRTConfig(primaryEncoder.getPosition().asSupplier(), secondaryEncoder.getPosition().asSupplier())
+	private final EasyCRTConfig encoderConfig = new EasyCRTConfig(encoderCandi.getPWM1Position().asSupplier(), encoderCandi.getPWM2Position().asSupplier())
 			.withEncoderRatios(TurretConstants.PRIMARY_ENCODER_RATIO, TurretConstants.SECONDARY_ENCODER_RATIO)
 			.withCrtGearRecommendationInputs(200, 0.1)
 			.withCrtGearRecommendationConstraints(3, 20, 70, 100);
@@ -129,8 +130,8 @@ public class Turret extends SubsystemBase {
 		// Sensor feedback configuration
 		// TODO: Get this set up so the rotor to mechanism ratio works properly
 		FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
-		feedbackConfigs.FeedbackRemoteSensorID = primaryEncoder.getDeviceID();
-		feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
+		feedbackConfigs.FeedbackRemoteSensorID = encoderCandi.getDeviceID();
+		feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANdiPWM1;
 		feedbackConfigs.SensorToMechanismRatio = TurretConstants.PRIMARY_ENCODER_RATIO;
 		feedbackConfigs.RotorToSensorRatio = TurretConstants.MOTOR_TO_PRIMARY_ENCODER_RATIO;
 		talonFXConfigurator.apply(feedbackConfigs);
@@ -195,8 +196,9 @@ public class Turret extends SubsystemBase {
 		motor.getSimState().setRawRotorPosition(simPosition.times(TurretConstants.MOTOR_GEAR_RATIO));
 
 		// Update simulated encoder values
-		primaryEncoder.getSimState().setRawPosition(simPosition.times(TurretConstants.PRIMARY_ENCODER_RATIO));
-		secondaryEncoder.getSimState().setRawPosition(simPosition.times(TurretConstants.SECONDARY_ENCODER_RATIO));
+		CANdiSimState encoderSimState = encoderCandi.getSimState();
+		encoderSimState.setPwm1Position(simPosition.times(TurretConstants.PRIMARY_ENCODER_RATIO));
+		encoderSimState.setPwm2Position(simPosition.times(TurretConstants.SECONDARY_ENCODER_RATIO));
 	}
 
 	/**
