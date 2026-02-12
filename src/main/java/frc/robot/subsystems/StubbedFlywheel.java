@@ -4,9 +4,11 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 @Logged
 public class StubbedFlywheel extends SubsystemBase {
-	private AngularVelocity speed;
+	private AngularVelocity speed = RadiansPerSecond.zero();
 
 	public StubbedFlywheel() {}
 
