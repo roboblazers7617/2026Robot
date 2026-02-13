@@ -112,7 +112,7 @@ public class RobotContainer {
 						.withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
 				));
 
-		driverController.leftBumper().whileTrue(Commands.runOnce(() -> System.out.println("fast drivetrain"))); // placeholders
+		driverController.leftBumper().whileTrue(Commands.runOnce(() -> System.out.println("slow drivetrain"))); // placeholders
 		driverController.rightBumper().whileTrue(Commands.runOnce(() -> System.out.println("fast drivetrain")));
 		driverController.rightTrigger().whileFalse(Commands.runOnce(() -> System.out.println("turn to face direction mode")));
 
