@@ -111,6 +111,7 @@ public class RobotContainer {
 						.withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
 						.withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
 				));
+
 		driverController.leftBumper().whileTrue(Commands.runOnce(() -> System.out.println("fast drivetrain"))); // placeholders
 		driverController.rightBumper().whileTrue(Commands.runOnce(() -> System.out.println("fast drivetrain")));
 		driverController.rightTrigger().whileFalse(Commands.runOnce(() -> System.out.println("turn to face direction mode")));
@@ -140,13 +141,13 @@ public class RobotContainer {
 	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
 	 */
 	private void configureOperatorControls() {
-		driverController.rightTrigger().onTrue(Commands.runOnce(() -> System.out.println("deploy intake")));
-		driverController.rightBumper().onTrue(Commands.runOnce(() -> System.out.println("stow intake")));
-		driverController.leftTrigger().onTrue(Commands.runOnce(() -> System.out.println("shoot shoot shoot")));
-		driverController.leftBumper().onTrue(Commands.runOnce(() -> System.out.println("agitate hopper")));
-		driverController.y().onTrue(Commands.runOnce(() -> System.out.println("Outtake")));
-		driverController.x().onTrue(Commands.runOnce(() -> System.out.println("Toggle Turret Tracking")));
-		driverController.a().onTrue(Commands.runOnce(() -> System.out.println("Preset Shoot (defined angle)")));
+		operatorController.rightTrigger().onTrue(Commands.runOnce(() -> System.out.println("deploy intake")));
+		operatorController.rightBumper().onTrue(Commands.runOnce(() -> System.out.println("stow intake")));
+		operatorController.leftTrigger().onTrue(Commands.runOnce(() -> System.out.println("shoot shoot shoot")));
+		operatorController.leftBumper().onTrue(Commands.runOnce(() -> System.out.println("agitate hopper")));
+		operatorController.y().onTrue(Commands.runOnce(() -> System.out.println("Outtake")));
+		operatorController.x().onTrue(Commands.runOnce(() -> System.out.println("Toggle Turret Tracking")));
+		operatorController.a().onTrue(Commands.runOnce(() -> System.out.println("Preset Shoot (defined angle)")));
 		// manual turret to be made
 	}
 
