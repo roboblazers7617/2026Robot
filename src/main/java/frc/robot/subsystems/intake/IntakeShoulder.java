@@ -1,6 +1,5 @@
 package frc.robot.subsystems.intake;
 
-import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -30,12 +29,16 @@ public class IntakeShoulder extends SubsystemBase {
 
 		// Current limit configuration
 		CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-		limitConfigs.SupplyCurrentLimit = IntakeConstants.MOTOR_CURRENT_LIMIT;
+		limitConfigs.SupplyCurrentLowerLimit = IntakeConstants.SHOULDER_SUPPLY_CURRENT_LOWER_LIMIT;
+		limitConfigs.SupplyCurrentLimit = IntakeConstants.SHOULDER_SUPPLY_CURRENT_LIMIT;
+		limitConfigs.SupplyCurrentLowerTime = IntakeConstants.SHOULDER_SUPPLY_CURRENT_LOWER_TIME;
 		limitConfigs.SupplyCurrentLimitEnable = true;
+		limitConfigs.StatorCurrentLimit = IntakeConstants.SHOULDER_STATOR_CURRENT_LIMIT;
+		limitConfigs.StatorCurrentLimitEnable = true;
 		motorConfigurator.apply(limitConfigs);
 
 		MotorOutputConfigs motorOutputConfigs = new MotorOutputConfigs();
-		// Put's the motor in Coast mode to make it easier to move by hand
+		// Puts the motor in Coast mode to make it easier to move by hand
 		motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
 		// Configure the motor to make sure positive voltage is counter clockwise
 		motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -77,7 +80,7 @@ public class IntakeShoulder extends SubsystemBase {
 	private void setPositionPlease(Angle position) {
 		// solution one (post *360) (doesn't work)
 		// motor.setControl(positionRequest.withPosition(position.in(Units.Degrees)));
-		motor.setControl(positionRequest.withPosition(position)); // max's possible solution
+		motor.setControl(positionRequest.withPosition(position)); // max's possible solution (seems to work)
 
 		// private void setPosition(double position) {
 		// motor.setControl(positionRequest.withPosition(position));
@@ -110,4 +113,12 @@ public class IntakeShoulder extends SubsystemBase {
 		setPositionPlease(IntakeConstants.SHOULDER_LOWERED_ANGLE);
 		// setPosition(0);
 	}
+
+	// (incomplete) method which will \continuously move the arm up and down when button is held
+	// public void agitate() {
+	// setPositionPlease(IntakeConstants.AGITATE_RAISED_ANGLE);
+	// if (motor.getPosition() > Radians.of(69)) {
+	// setPositionPlease(IntakeConstants.AGITATE_LOWERED_ANGLE);
+	// }
+	// }
 }
