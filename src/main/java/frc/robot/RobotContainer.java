@@ -17,6 +17,8 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentricFacingAngle;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.epilogue.Logged;
@@ -41,7 +43,7 @@ public class RobotContainer {
 	private double MaxAngularRate = 0 * RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
 	/* Setting up bindings for necessary control of the swerve drive platform */
-	private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+	private final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
 			.withDeadband(MaxSpeed * 0.1)
 			.withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
 			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
@@ -100,6 +102,8 @@ public class RobotContainer {
 	 */
 	private void configureNamedCommands() {}
 
+	// (driverController.getRightX() * MaxAngularRate,driverController.getRightY() * MaxAngularRate)
+
 	/**
 	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller buttons.
 	 */
@@ -109,9 +113,9 @@ public class RobotContainer {
 		drivetrain.setDefaultCommand(
 				// Drivetrain will execute this command periodically
 				drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-						.withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-						.withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-				));
+						.withVelocityY(-driverController.getLeftX() * MaxSpeed)// Drive left with negative X (left)
+						// .withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+						.withTargetDirection(new Rotation2d(driverController.getRightX(), driverController.getRightY()))));
 
 		// Idle while the robot is disabled. This ensures the configured
 		// neutral mode is applied to the drive motors while disabled.
@@ -145,18 +149,18 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		// Simple drive forward auton
-		final var idle = new SwerveRequest.Idle();
-		return Commands.sequence(
-				// Reset our field centric heading to match the robot
-				// facing away from our alliance station wall (0 deg).
-				drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-				// Then slowly drive forward (away from us) for 5 seconds.
-				drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
-						.withVelocityY(0)
-						.withRotationalRate(0))
-						.withTimeout(5.0),
-				// Finally idle for the rest of auton
-				drivetrain.applyRequest(() -> idle));
+		// // Simple drive forward auton
+		// final var idle = new SwerveRequest.Idle();
+		return Commands.sequence();
+		// // // Reset our field centric heading to match the robot
+		// // // facing away from our alliance station wall (0 deg).
+		// // drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
+		// // // Then slowly drive forward (away from us) for 5 seconds.
+		// // drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
+		// // .withVelocityY(0)
+		// // .withRotationalRate(0))
+		// // .withTimeout(5.0),
+		// // // Finally idle for the rest of auton
+		// // drivetrain.applyRequest(() -> idle));
 	}
 }
