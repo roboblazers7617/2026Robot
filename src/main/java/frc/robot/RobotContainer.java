@@ -116,7 +116,7 @@ public class RobotContainer {
 				drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
 						.withVelocityY(-driverController.getLeftX() * MaxSpeed)// Drive left with negative X (left)
 						// .withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-						.withTargetDirection(new Rotation2d(driverController.getRightX(), driverController.getRightY()))));
+						.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()))));
 
 		// Idle while the robot is disabled. This ensures the configured
 		// neutral mode is applied to the drive motors while disabled.
