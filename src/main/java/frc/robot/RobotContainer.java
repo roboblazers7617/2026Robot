@@ -144,8 +144,6 @@ public class RobotContainer {
 	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
 	 */
 	private void configureOperatorControls() {
-		// turret.setDefaultCommand(turret.setPositionCommand(() -> Rotations.of(operatorController.getRightTriggerAxis())));
-
 		// Set turret to D-pad position
 		operatorController.povCenter()
 				.whileFalse(turret.setPositionMotionMagicCommand(() -> Degrees.of(operatorController.getHID().getPOV())));
