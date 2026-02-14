@@ -13,6 +13,7 @@ import edu.wpi.first.units.measure.Angle;
 import yams.math.SmartMath;
 
 import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Degrees;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -144,7 +145,7 @@ public final class Constants {
 		/**
 		 * The PID kP for the turret closed loop controller.
 		 */
-		public static final double TURRET_KP = 1.0;
+		public static final double TURRET_KP = 10.0;
 		/**
 		 * The PID kI for the turret closed loop controller.
 		 */
@@ -190,6 +191,6 @@ public final class Constants {
 		/**
 		 * How close does the Turret have to be to its setpoint to be counted as being there.
 		 */
-		public static final Measure<AngleUnit> SETPOINT_THRESHOLD = Rotations.of(0.1);
+		public static final Measure<AngleUnit> SETPOINT_THRESHOLD = Degrees.of(3.0);
 	}
 }
