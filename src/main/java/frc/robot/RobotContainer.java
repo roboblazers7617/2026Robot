@@ -17,7 +17,6 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest.RobotCentricFacingAngle;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -103,8 +102,6 @@ public class RobotContainer {
 	 */
 	private void configureNamedCommands() {}
 
-	// (driverController.getRightX() * MaxAngularRate,driverController.getRightY() * MaxAngularRate)
-
 	/**
 	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller buttons.
 	 */
@@ -115,7 +112,6 @@ public class RobotContainer {
 				// Drivetrain will execute this command periodically
 				drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
 						.withVelocityY(-driverController.getLeftX() * MaxSpeed)// Drive left with negative X (left)
-						// .withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
 						.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()))));
 
 		// Idle while the robot is disabled. This ensures the configured
