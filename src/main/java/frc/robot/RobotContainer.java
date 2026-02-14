@@ -8,6 +8,15 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.StubbedHood;
+import frc.robot.subsystems.StubbedHopperUptake;
+import frc.robot.subsystems.StubbedIntakeGrabber;
+import frc.robot.subsystems.StubbedIntakeShoulder;
+import frc.robot.subsystems.StubbedFlywheel;
+import frc.robot.subsystems.StubbedTurret;
+import frc.robot.superstructure.IntakeSuperstructure;
+import frc.robot.superstructure.ShooterSuperstructure;
+import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
@@ -49,7 +58,16 @@ public class RobotContainer {
 	private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
 	private final Telemetry logger = new Telemetry(MaxSpeed);
+
+	// Define subsystems
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+	public final StubbedFlywheel shooter = new StubbedFlywheel();
+	public final StubbedHood hood = new StubbedHood();
+	public final StubbedTurret turret = new StubbedTurret();
+	public final StubbedHopperUptake hopperUptake = new StubbedHopperUptake();
+	public final StubbedIntakeGrabber intakeGrabber = new StubbedIntakeGrabber();
+	public final StubbedIntakeShoulder intakeShoulder = new StubbedIntakeShoulder();
+
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */
@@ -60,6 +78,20 @@ public class RobotContainer {
 	 */
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
+
+	/**
+	 * Superstructure that handles controlling the shooter and related subsystems.
+	 */
+	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure(drivetrain, shooter, hood, turret, hopperUptake);
+	/**
+	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
+	 */
+	private ShooterSuperstructureDebug shooterSuperstructureDebug;
+
+	/**
+	 * Superstructure that handles controlling the intake and related subsystems.
+	 */
+	private final IntakeSuperstructure intakeSuperstructure = new IntakeSuperstructure(intakeShoulder, intakeGrabber);
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -73,6 +105,10 @@ public class RobotContainer {
 		configureNamedCommands();
 		configureDriverControls();
 		configureOperatorControls();
+
+		if (LoggingConstants.DEBUG_MODE) {
+			shooterSuperstructureDebug = new ShooterSuperstructureDebug(shooterSuperstructure);
+		}
 	}
 
 	/**
@@ -93,6 +129,14 @@ public class RobotContainer {
 		if (!LoggingConstants.DEBUG_MODE) {
 			Elastic.selectTab(DashboardConstants.TELEOP_TAB_NAME);
 		}
+	}
+
+	/**
+	 * This method handles the periodic functionality for the superstructure.
+	 * This is done seperate from the subsystem periodic so it can be updated more frequently.
+	 */
+	public void superstructurePeriodic() {
+		shooterSuperstructure.update();
 	}
 
 	/**
