@@ -6,8 +6,10 @@ package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.Constants.DashboardConstants;
+import frc.robot.Constants.HoodConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
 
@@ -40,7 +42,9 @@ public class RobotContainer {
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
-	private final Shooter m_ShooterSubsystem;
+	private final Shooter shooterSubsystem;
+
+	private final Hood hoodSubsystem;
 
 	private final NetworkTable networkTableInst = (NetworkTableInstance.getDefault().getTable("/RoboBlazers"));
 
@@ -52,7 +56,9 @@ public class RobotContainer {
 		VersionConstants.publishNetworkTables(NetworkTableInstance.getDefault().getTable("/Metadata"));
 		VersionConstants.logSignals();
 
-		m_ShooterSubsystem = new Shooter(networkTableInst.getSubTable("Shooter"));
+		shooterSubsystem = new Shooter(networkTableInst.getSubTable("Shooter"));
+
+		hoodSubsystem = new Hood(networkTableInst.getSubTable("Hood"));
 
 		// Configure the trigger bindings
 		configureNamedCommands();
@@ -97,12 +103,16 @@ public class RobotContainer {
 	 */
 	private void configureOperatorControls() {
 		operatorController.a()
-				.whileTrue(m_ShooterSubsystem.startFlywheelCommand(() -> SmartDashboard.getNumber("Shooter speed", 10)))
-				.onFalse(m_ShooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
-		operatorController.b().whileTrue(m_ShooterSubsystem.stopFlywheelCommand());
+				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.FAST_SPEED))
+				.onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
+		operatorController.b().whileTrue(shooterSubsystem.stopFlywheelCommand());
 		operatorController.x()
-				.whileTrue(m_ShooterSubsystem.startFlywheelCommand(() -> ShooterConstants.SLOW_SPEED))
-				.onFalse(m_ShooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
+				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.SLOW_SPEED))
+				.onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
+		operatorController.y()
+				.whileTrue(hoodSubsystem.MoveToPositionCommand(() -> HoodConstants.ANGLE));
+		operatorController.leftTrigger()
+				.whileTrue(hoodSubsystem.MoveToPositionCommand(() -> HoodConstants.ANGLE1));
 	}
 
 	/**

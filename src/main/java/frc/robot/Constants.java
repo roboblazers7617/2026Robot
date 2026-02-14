@@ -7,6 +7,9 @@ package frc.robot;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -78,23 +81,47 @@ public final class Constants {
 	}
 
 	public static class ShooterConstants {
-		public final static int LEADER_CAN_ID = 0;
-		public final static int FOLLOWER_CAN_ID = 0;
-		public final static int HOOD_MOTOR_CAN_ID = 0;
-		public final static double KP = 0.15;
-		public final static double KI = 0;
-		public final static double KD = 0;
-		public final static double KV = 0.115;
-		public final static double KS = 0;
+		public static final int LEADER_CAN_ID = 2;
+		public static final int FOLLOWER_CAN_ID = 0;
+		public static final double KP = 0.15;
+		public static final double KI = 0;
+		public static final double KD = 0;
+		public static final double KV = 0.115;
+		public static final double KS = 0;
+		public static final AngularVelocity RPS = Units.RotationsPerSecond.of(20);
+		public static final AngularVelocity CRUISE_VELOCITY = RPS;
+		public static final double ACCELERATION = 20;
+		public static final boolean ENABLE_STATOR_LIMIT = true;
+		public static final double STATOR_CURRENT_LIMIT = 40;
+		public static final boolean ENABLE_SUPPLY_LIMIT = false;
+		public static final double SUPPLY_CURRENT_LIMIT = 60.0;
+		public static final AngularVelocity FAST_SPEED = CRUISE_VELOCITY;
+		public static final AngularVelocity SLOW_SPEED = CRUISE_VELOCITY.div(2.0);
+		public static final AngularVelocity COAST_SPEED = CRUISE_VELOCITY.div(2.0);
+		public static final AngularVelocity TOLERANCE = Units.RotationsPerSecond.of(80);
+		public static final double SUPPLY_CURRENT_LOWER_LIMIT = 40.0;
+		public static final double SUPPLY_CURRENT_LOWER_TIME = 0.1;
+		public static final boolean SUPPLY_CURRENT_LIMIT_ENABLE = true;
+	}
+
+	public static class HoodConstants {
+		public static final int HOOD_MOTOR_CAN_ID = 0;
+		public static final double KP = 10;
+		public static final double KS = 0;
+		public static final double KD = 0;
+		public static final double KV = 0.115;
+		public static final double KG = 0;
+		public static final Angle ANGLE = Units.Degrees.of(90);
 		public static final double RPS = 20.0;
-		public static final double CRUISE_VELOCITY = RPS * 0.8; // 0.8 is 80% effeciancy
+		public static final double CRUISE_VELOCITY = RPS;
 		public static final double ACCELERATION = 2.0 * CRUISE_VELOCITY;
-		public final static boolean ENABLE_STATOR_LIMIT = true;
-		public final static double STATOR_CURRENT_LIMIT = 40;
-		public final static boolean ENABLE_SUPPLY_LIMIT = false;
-		public final static double SUPPLY_CURRENT_LIMIT = 40;
-		public final static double FAST_SPEED = CRUISE_VELOCITY;
-		public final static double SLOW_SPEED = CRUISE_VELOCITY / 2.0;
-		public final static double COAST_SPEED = CRUISE_VELOCITY / 4.0;
+		public static final Angle TOLERANCE = Units.Degrees.of(5.0);
+		public static final Angle ANGLE1 = Units.Degrees.of(180);
+		public static final double SUPPLY_CURRENT_LOWER_LIMIT = 30.0;
+		public static final double SUPPLY_CURRENT_LIMIT = 50.0;
+		public static final double SUPPLY_CURRENT_LOWER_TIME = 0.15;
+		public static final boolean SUPPLY_CURRENT_LIMIT_ENABLE = true;
+		public static final double STATOR_CURRENT_LIMIT = 60.0;
+		public static final boolean STATOR_CURRENT_LIMIT_ENABLE = true;
 	}
 }
