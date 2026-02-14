@@ -93,7 +93,7 @@ public class RobotContainer {
 		 */
 		// Press A to start and lower intake
 		operatorController.a()
-				// .onTrue(intakeGrabber.startIntakeCommand()); // original 4 bind
+				// .onTrue(intakeGrabber.startIntakeCommand()); // from original 4 bind
 				.onTrue(intakeGrabber.startIntakeCommand())
 				.onTrue(intakeShoulder.lowerIntakeCommand());
 		// Press B to stop raise intake
@@ -109,6 +109,8 @@ public class RobotContainer {
 		// .onTrue(intakeShoulder.lowerIntakeCommand()); // original 4 bind
 		operatorController.x()
 				.whileTrue(intakeGrabber.outtakeCommand());
+		operatorController.leftBumper()
+				.whileTrue(intakeShoulder.agitateCommand());
 	}
 
 	/**

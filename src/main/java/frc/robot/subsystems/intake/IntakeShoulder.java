@@ -104,6 +104,10 @@ public class IntakeShoulder extends SubsystemBase {
 		return runOnce(() -> lowerIntake());
 	}
 
+	public Command agitateCommand() {
+		return run(() -> agitate());
+	}
+
 	public void raiseIntake() {
 		setPositionPlease(IntakeConstants.SHOULDER_RAISED_ANGLE);
 		// setPosition(0.25);
@@ -114,11 +118,37 @@ public class IntakeShoulder extends SubsystemBase {
 		// setPosition(0);
 	}
 
-	// (incomplete) method which will \continuously move the arm up and down when button is held
-	// public void agitate() {
-	// setPositionPlease(IntakeConstants.AGITATE_RAISED_ANGLE);
-	// if (motor.getPosition() > Radians.of(69)) {
-	// setPositionPlease(IntakeConstants.AGITATE_LOWERED_ANGLE);
-	// }
-	// }
+	public void lowerAgitate() {
+		setPositionPlease(IntakeConstants.AGITATE_LOWERED_ANGLE);
+	}
+
+	public void raiseAgitate() {
+		setPositionPlease(IntakeConstants.AGITATE_RAISED_ANGLE);
+	}
+
+	private boolean getIsAtTarget(Angle angle, Angle tolerance) {
+		return motor.getPosition()
+				.getValue()
+				.isNear(angle, tolerance);
+	}
+
+	private boolean getIsRaised() {
+		return getIsAtTarget(IntakeConstants.AGITATE_RAISED_ANGLE, IntakeConstants.AGITATE_TOLERANCE);
+	}
+
+	private boolean getIsLowered() {
+		return getIsAtTarget(IntakeConstants.AGITATE_LOWERED_ANGLE, IntakeConstants.AGITATE_TOLERANCE);
+	}
+
+	// untested method which will continuously move the arm up and down when button is held then ask john about if up or down after button released
+	// also SHOULD PROBABLY be runcommand
+	// update I think I have it figured out must be tested now
+	public void agitate() {
+		// this if system is downright dubious
+		if (getIsRaised()) {
+			lowerAgitate();
+		} else if (getIsLowered()) {
+			raiseAgitate();
+		}
+	}
 }

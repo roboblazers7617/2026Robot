@@ -70,6 +70,7 @@ public class IntakeGrabber extends SubsystemBase {
 		setTorque(IntakeConstants.INTAKE_STOP_TORQUE);
 	}
 
+	// SHOULD by an instantcommand but I am not sure how this works
 	public void outtake() {
 		// setSpeed(IntakeConstants.OUTTAKE_SPEED);
 		setTorque(IntakeConstants.INTAKE_STOP_TORQUE);

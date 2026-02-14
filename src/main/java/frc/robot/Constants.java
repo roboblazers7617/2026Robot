@@ -114,6 +114,7 @@ public final class Constants {
 		public static final double SENSOR_TO_MECHANISM_RATIO = 0;
 		public static final Angle AGITATE_RAISED_ANGLE = Degrees.of(70);
 		public static final Angle AGITATE_LOWERED_ANGLE = Degrees.of(0);
+		public static final Angle AGITATE_TOLERANCE = Degrees.of(5);
 		public static final double GRABBER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
 		public static final double GRABBER_SUPPLY_CURRENT_LOWER_TIME = 0.1;
 		public static final double GRABBER_STATOR_CURRENT_LIMIT = 40.0;
