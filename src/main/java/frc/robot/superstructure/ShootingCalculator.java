@@ -2,16 +2,21 @@ package frc.robot.superstructure;
 
 import java.util.Optional;
 
+import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.Constants.SuperstructureConstants;
 
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 /**
@@ -31,15 +36,27 @@ public class ShootingCalculator {
 	public static ShooterValues solve(Pose3d robotPose, Pose3d targetPose) {
 		ShooterValues values = new ShooterValues();
 
-		// TODO: Offset this according to turret position on the robot
 		Pose3d turretPose = robotPose.transformBy(TurretConstants.TURRET_OFFSET);
+		SignalLogger.writeStruct(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Turret Pose", Pose3d.struct, turretPose);
 
-		Transform3d gamepieceTransform = turretPose.minus(turretPose);
+		// Solve the turret rotation. This is done now because it's needed in a few different spots
+		Angle turretRotation = solveTurretAngle(turretPose.toPose2d(), targetPose.toPose2d());
+
+		/**
+		 * The transform from the turret to the target as a 2d plane where X is horizontal distance and Y is vertical distance.
+		 */
+		Translation2d gamepieceTranslation = targetPose.minus(turretPose)
+				.getTranslation()
+				.rotateBy(new Rotation3d(Radians.zero(), Radians.zero(), turretRotation.unaryMinus()))
+				.rotateBy(new Rotation3d(Rotations.of(0.75), Radians.zero(), Radians.zero()))
+				.toTranslation2d();
+
+		SignalLogger.writeStruct(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Gamepiece Translation", Translation2d.struct, gamepieceTranslation);
 
 		// Solve shooter values
-		values.setTurretAngle(solveTurretAngle(turretPose.toPose2d(), targetPose.toPose2d()));
-		values.setHoodAngle(solveHoodAngle(gamepieceTransform));
-		values.setFlywheelSpeed(solveGamepieceSpeed(gamepieceTransform));
+		values.setTurretAngle(turretRotation);
+		values.setHoodAngle(solveHoodAngle(gamepieceTranslation));
+		values.setFlywheelSpeed(solveGamepieceSpeed(gamepieceTranslation));
 
 		return values;
 	}
@@ -63,27 +80,27 @@ public class ShootingCalculator {
 	}
 
 	/**
-	 * Solves the hood angle required to shoot the gamepiece to the desired transform.
+	 * Solves the hood angle required to shoot the gamepiece to the desired translation.
 	 *
-	 * @param gamepieceTransform
-	 *            The transform to shoot the gamepiece to.
+	 * @param gamepieceTranslation
+	 *            The translation to shoot the gamepiece to.
 	 * @return
 	 *         The resulting Angle to angle the hood at.
 	 */
-	private static Angle solveHoodAngle(Transform3d gamepieceTransform) {
+	private static Angle solveHoodAngle(Translation2d gamepieceTranslation) {
 		// TODO: uhhh fancy math things?
 		return Radians.zero();
 	}
 
 	/**
-	 * Solves the gamepiece speed required to shoot the gamepiece to the desired transform.
+	 * Solves the gamepiece speed required to shoot the gamepiece to the desired translation.
 	 *
-	 * @param gamepieceTransform
-	 *            The transform to shoot the gamepiece to.
+	 * @param gamepieceTranslation
+	 *            The translation to shoot the gamepiece to.
 	 * @return
 	 *         The resulting LinearVelocity to shoot the gamepiece at.
 	 */
-	private static LinearVelocity solveGamepieceSpeed(Transform3d gamepieceTransform) {
+	private static LinearVelocity solveGamepieceSpeed(Translation2d gamepieceTranslation) {
 		// TODO: more fancy math things!
 		return MetersPerSecond.zero();
 	}
