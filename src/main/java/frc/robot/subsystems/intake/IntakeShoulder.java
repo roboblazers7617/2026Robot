@@ -72,7 +72,8 @@ public class IntakeShoulder extends SubsystemBase {
 		 * code to zero encoder when code is intially run (robot is turned on) so that it doesn't freak out and try to spin to the zero from a previous continuous motor run demo because the code of the shoulder has the motor spin to defined finite values and the leftover value in the encoder will be huge and it will zoom backward very powerfully. so it will not do that now as it takes a deep breath before going anywhere.
 		 */
 
-		motor.setPosition(0);
+		// TODO: hook up to absolute encoder on actual bot
+		motor.setPosition(IntakeConstants.SHOULDER_STOWED_ANGLE);
 	}
 
 	private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0);
@@ -105,11 +106,11 @@ public class IntakeShoulder extends SubsystemBase {
 	}
 
 	public Command agitateCommand() {
-		return run(() -> agitate());
+		return run(() -> agitate()).finallyDo(() -> raiseIntake());
 	}
 
 	public void raiseIntake() {
-		setPositionPlease(IntakeConstants.SHOULDER_RAISED_ANGLE);
+		setPositionPlease(IntakeConstants.SHOULDER_STOWED_ANGLE);
 		// setPosition(0.25);
 	}
 
@@ -141,7 +142,6 @@ public class IntakeShoulder extends SubsystemBase {
 	}
 
 	// untested method which will continuously move the arm up and down when button is held then ask john about if up or down after button released
-	// also SHOULD PROBABLY be runcommand
 	// update I think I have it figured out must be tested now
 	public void agitate() {
 		// this if system is downright dubious

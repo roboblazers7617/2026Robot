@@ -109,7 +109,8 @@ public class RobotContainer {
 		// .onTrue(intakeShoulder.lowerIntakeCommand()); // original 4 bind
 		operatorController.x()
 				.whileTrue(intakeGrabber.outtakeCommand());
-		operatorController.leftBumper()
+		operatorController.y()
+				.onTrue(intakeShoulder.lowerIntakeCommand())
 				.whileTrue(intakeShoulder.agitateCommand());
 	}
 

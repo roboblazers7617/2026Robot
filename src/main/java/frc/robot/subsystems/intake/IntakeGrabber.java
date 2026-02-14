@@ -57,7 +57,7 @@ public class IntakeGrabber extends SubsystemBase {
 	}
 
 	public Command outtakeCommand() {
-		return runOnce(() -> outtake());
+		return run(() -> outtake()).finallyDo(() -> stopIntake());
 	}
 
 	public void startIntake() {
@@ -70,10 +70,9 @@ public class IntakeGrabber extends SubsystemBase {
 		setTorque(IntakeConstants.INTAKE_STOP_TORQUE);
 	}
 
-	// SHOULD by an instantcommand but I am not sure how this works
 	public void outtake() {
 		// setSpeed(IntakeConstants.OUTTAKE_SPEED);
-		setTorque(IntakeConstants.INTAKE_STOP_TORQUE);
+		setTorque(IntakeConstants.OUTTAKE_TORQUE);
 	}
 
 	/**

@@ -85,19 +85,19 @@ public final class Constants {
 	 * This is MY intake constant class which I balcantara made btw I don't know what it does YET (it contains constants for my dogwater code for intake)
 	 */
 	public static class IntakeConstants {
-		public static final int SHOULDER_CAN_ID = 2;
-		public static final int GRABBER_CAN_ID = 1;
+		public static final int SHOULDER_CAN_ID = 0;
+		public static final int GRABBER_CAN_ID = 2;
 		/**
 		 * The current limit for the motor.
 		 */
 		public static final double GRABBER_SUPPLY_CURRENT_LIMIT = 30.0;
 		// public static final double INTAKE_START_SPEED = 0.2; //ts is old (as are the following three)
-		public static final double INTAKE_START_TORQUE = 40.0;
+		public static final double INTAKE_START_TORQUE = 5.0; // 40 recommended
 		// public static final double INTAKE_STOP_SPEED = 0.0;
 		public static final double INTAKE_STOP_TORQUE = 0.0;
 		// public static final double OUTTAKE_SPEED = -0.2;
-		public static final double OUTTAKE_SPEED_TORQUE = -40.0;
-		public static final Angle SHOULDER_RAISED_ANGLE = Degrees.of(90);
+		public static final double OUTTAKE_TORQUE = -5.0; // -40 recommended
+		public static final Angle SHOULDER_STOWED_ANGLE = Degrees.of(90);
 		public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
 		public static final double INTAKE_KG = 0;
 		public static final double INTAKE_KS = 0.2;
@@ -114,7 +114,7 @@ public final class Constants {
 		public static final double SENSOR_TO_MECHANISM_RATIO = 0;
 		public static final Angle AGITATE_RAISED_ANGLE = Degrees.of(70);
 		public static final Angle AGITATE_LOWERED_ANGLE = Degrees.of(0);
-		public static final Angle AGITATE_TOLERANCE = Degrees.of(5);
+		public static final Angle AGITATE_TOLERANCE = Degrees.of(10);
 		public static final double GRABBER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
 		public static final double GRABBER_SUPPLY_CURRENT_LOWER_TIME = 0.1;
 		public static final double GRABBER_STATOR_CURRENT_LIMIT = 40.0;
