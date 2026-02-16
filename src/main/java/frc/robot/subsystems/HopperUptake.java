@@ -4,31 +4,19 @@
 
 package frc.robot.subsystems;
 
-import java.util.function.Supplier;
-
-import com.ctre.phoenix6.Orchestra;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
-import frc.robot.Constants.LoggingConstants;
-
-import edu.wpi.first.networktables.DoubleEntry;
-import edu.wpi.first.networktables.DoublePublisher;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperConstants;
 
 /** Add your docs here. */
 public class HopperUptake extends SubsystemBase {
-	private NetworkTable Hopper;
-	private NetworkTable Uptake;
-	private DoubleEntry HopperSpeedEntry;
-	private DoubleEntry UptakeSpeedEntry;
-	private DoublePublisher HopperSpeedDisplayPublisher;
-	private DoublePublisher UptakeSpeedDisplayPublisher;
 
 	// Motors private final TalonFX bigSpinny;
 	/**
@@ -40,98 +28,95 @@ public class HopperUptake extends SubsystemBase {
 	 */
 	private final TalonFX bigSpinny;
 
-	public HopperUptake(NetworkTable table) {
-		if (LoggingConstants.DEBUG_MODE) {
-			setupNetworkTables(table);
-		}
+	VelocityVoltage velocity = new VelocityVoltage(0);
+
+	private final DigitalInput isTrippedBeamBreak;
+
+	public HopperUptake() {
+		isTrippedBeamBreak = new DigitalInput(HopperConstants.BEAM_BREAK_DIO_PIN);
 		bigSpinny = new TalonFX(HopperConstants.BIG_SPINNY_CAN_ID);
 		littleSpinny = new TalonFX(HopperConstants.LITTLE_SPINNY_CAN_ID);
-		TalonFXConfiguration config = new TalonFXConfiguration();
-		// Put's the motor in Coast mode to make it easier to move by hand
-		config.MotorOutput.NeutralMode = NeutralModeValue.Coast;
-		config.Slot0.kS = HopperConstants.KS; // Static gain
-		config.Slot0.kV = HopperConstants.KV; // Velocity gain
-		config.Slot0.kP = HopperConstants.KP; // Proportional gain
-		config.MotionMagic.MotionMagicCruiseVelocity = HopperConstants.CRUISE_VELOCITY; // Max velocity
-		config.MotionMagic.MotionMagicAcceleration = HopperConstants.ACCELERATION; // Max acceleration allowed
+		// The configuration for uptake
+		TalonFXConfiguration uptakeConfig = new TalonFXConfiguration();
+		uptakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+		uptakeConfig.CurrentLimits.StatorCurrentLimit = HopperConstants.UPTAKE_SUPPLY_CURRENT_LIMIT;
+		uptakeConfig.CurrentLimits.SupplyCurrentLimit = HopperConstants.UPTAKE_SUPPLY_CURRENT_LIMIT;
+		uptakeConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperConstants.UPTAKE_LOWER_CURRENT_LIMIT;
+		uptakeConfig.CurrentLimits.StatorCurrentLimitEnable = HopperConstants.UPTAKE_ENABLE_STATOR_LIMIT;
+		uptakeConfig.CurrentLimits.SupplyCurrentLimitEnable = HopperConstants.UPTAKE_ENABLE_SUPPLY_LIMIT;
+		// Uptake PID
+		uptakeConfig.Slot0.kP = HopperConstants.UPTAKE_KP;
+		uptakeConfig.Slot0.kI = HopperConstants.UPTAKE_KI;
+		uptakeConfig.Slot0.kD = HopperConstants.UPTAKE_KD;
+		uptakeConfig.Slot0.kV = HopperConstants.UPTAKE_KV;
+		uptakeConfig.Slot0.kS = HopperConstants.UPTAKE_KS;
+		// The configuration for hopper
+		TalonFXConfiguration hopperConfig = new TalonFXConfiguration();
+		hopperConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+		hopperConfig.CurrentLimits.StatorCurrentLimit = HopperConstants.HOPPER_SUPPLY_CURRENT_LIMIT;
+		hopperConfig.CurrentLimits.SupplyCurrentLimit = HopperConstants.HOPPER_SUPPLY_CURRENT_LIMIT;
+		hopperConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperConstants.HOPPER_LOWER_CURRENT_LIMIT;
+		hopperConfig.CurrentLimits.StatorCurrentLimitEnable = HopperConstants.HOPPER_ENABLE_STATOR_LIMIT;
+		hopperConfig.CurrentLimits.SupplyCurrentLimitEnable = HopperConstants.HOPPER_ENABLE_SUPPLY_LIMIT;
+		// Hopper PID
+		hopperConfig.Slot0.kP = HopperConstants.HOPPER_KP;
+		hopperConfig.Slot0.kI = HopperConstants.HOPPER_KI;
+		hopperConfig.Slot0.kD = HopperConstants.HOPPER_KD;
+		hopperConfig.Slot0.kV = HopperConstants.HOPPER_KV;
+		hopperConfig.Slot0.kS = HopperConstants.HOPPER_KS;
 		// Try to apply config multiple time. Break after successfully applying
 		for (int i = 0; i < 2; ++i) {
-			var status = bigSpinny.getConfigurator().apply(config);
-			var status2 = littleSpinny.getConfigurator().apply(config);
+			var status = bigSpinny.getConfigurator().apply(uptakeConfig);
+			var status2 = littleSpinny.getConfigurator().apply(hopperConfig);
 			if (status.isOK() && status2.isOK())
 				break;
 		}
 	}
 
-	public void startHopperMotor(double Speed) {
-		bigSpinny.set(Speed);
+	public boolean isTripped() {
+		return !isTrippedBeamBreak.get();
 	}
 
-	public void stopHopperMotor() {
-		bigSpinny.stopMotor();
+	public void startHopperMotor(double RPM) {
+		littleSpinny.setControl(velocity.withVelocity(RPM)); // 80 rotations/sec
 	}
 
-	public void startUptakeMotor(double Speed) {
-		littleSpinny.set(Speed);
+	public void startUptakeMotor(double RPM) {
+		bigSpinny.setControl(velocity.withVelocity(RPM));
 	}
 
-	public void stopUptakeMotor() {
-		littleSpinny.stopMotor();
-	}
-
-	public void stopAll() {
+	public void stopAllMotors() {
 		bigSpinny.stopMotor();
 		littleSpinny.stopMotor();
 	}
 
-	public Command startHopperMotorCommand(Supplier<Double> Speed) {
-		return runOnce(() -> startHopperMotor(Speed.get()));
+	public void startAllMotors() {
+		startHopperMotor(HopperConstants.FORWARD_HOPPER_RPM);
+		startUptakeMotor(HopperConstants.FORWARD_UPTAKE_RPM);
 	}
 
-	public Command stopHopperMotorCommand() {
-		return runOnce(() -> stopHopperMotor());
+	public void startMotorsUnjam() {
+		startHopperMotor(HopperConstants.BACKWARD_HOPPER_RPM);
+		startUptakeMotor(HopperConstants.BACKWARD_UPTAKE_RPM);
 	}
 
-	public Command startUptakeMotorCommand(Supplier<Double> Speed) {
-		return runOnce(() -> startUptakeMotor(Speed.get()));
-	}
-
-	public Command stopUptakeMotorCommand() {
-		return runOnce(() -> stopUptakeMotor());
+	public Command startBothCommand() {
+		return runOnce(() -> startAllMotors());
 	}
 
 	public Command stopBothCommand() {
-		return runOnce(() -> stopAll());
+		return runOnce(() -> stopAllMotors());
+	}
+
+	public Command startUnJamCommand() {
+		return runOnce(() -> startMotorsUnjam());
+	}
+
+	public Command stopBeamBreakCommand() {
+		return startBothCommand().andThen(Commands.waitUntil(() -> isTrippedBeamBreak.get()))
+				.finallyDo(this::stopAllMotors);
 	}
 
 	@Override
-	public void periodic() {
-		// This method will be called once per scheduler run
-		HopperSpeedDisplayPublisher.set(HopperSpeedEntry.getAsDouble());
-		UptakeSpeedDisplayPublisher.set(UptakeSpeedEntry.getAsDouble());
-	}
-
-	private void setupNetworkTables(NetworkTable table) {
-		// Create a link to the subtable for the shooter data
-		Hopper = table;
-		Uptake = table;
-
-		// Display the current speed
-		HopperSpeedDisplayPublisher = table.getDoubleTopic("Hopper Speed").publish();
-		UptakeSpeedDisplayPublisher = table.getDoubleTopic("Uptake Speed").publish();
-
-		// Create an entry that allows you to vary the speed of the shooter
-		HopperSpeedEntry = Hopper.getDoubleTopic(("Hopper Speed")).getEntry(10);
-		UptakeSpeedEntry = Uptake.getDoubleTopic(("Uptake Speed")).getEntry(10);
-		HopperSpeedEntry.set(20);
-		UptakeSpeedEntry.set(20);
-
-		// Put commands on the Dashboard to allow testing different shooter speeds
-		// This uses the value from the slider on the Dashboard
-		SmartDashboard.putData("Stop Hopper", stopHopperMotorCommand());
-		SmartDashboard.putData("Stop Uptake", stopUptakeMotorCommand());
-		SmartDashboard.putData("Stop Both", stopBothCommand());
-		SmartDashboard.putData("Start Hopper", startHopperMotorCommand(() -> HopperSpeedEntry.getAsDouble()));
-		SmartDashboard.putData("Start Uptake", startUptakeMotorCommand(() -> UptakeSpeedEntry.getAsDouble()));
-	}
+	public void periodic() {}
 }

@@ -78,19 +78,40 @@ public final class Constants {
 	}
 
 	public static class HopperConstants {
-		public final static int BIG_SPINNY_CAN_ID = 1;
-		public final static int LITTLE_SPINNY_CAN_ID = 2;
-		public final static double KP = 0.15;
-		public final static double KI = 0;
-		public final static double KD = 0;
-		public final static double KV = 0.115;
-		public final static double KS = 0;
-		public static final double RPS = 20.0;
-		public static final double CRUISE_VELOCITY = RPS * 0.8; // 0.8 is 80% effeciancy
-		public static final double ACCELERATION = 2.0 * CRUISE_VELOCITY;
-		public final static boolean ENABLE_STATOR_LIMIT = true;
-		public final static double STATOR_CURRENT_LIMIT = 40;
-		public final static boolean ENABLE_SUPPLY_LIMIT = false;
-		public final static double SUPPLY_CURRENT_LIMIT = 40;
+		// Can ID and DIO pins
+		// UPTAKE MOTOR
+		public static final int BIG_SPINNY_CAN_ID = 0;
+		// HOPPER MOTOR
+		public static final int LITTLE_SPINNY_CAN_ID = 2;
+		public static final int BEAM_BREAK_DIO_PIN = 0;
+		// UPTAKE PID values
+		public static final double UPTAKE_KP = 0.15;
+		public static final double UPTAKE_KI = 0;
+		public static final double UPTAKE_KD = 0;
+		public static final double UPTAKE_KV = 0.115;
+		public static final double UPTAKE_KS = 0;
+		// UPTAKE Config setup
+		public static final int UPTAKE_STATOR_CURRENT_LIMIT = 40;
+		public static final double UPTAKE_SUPPLY_CURRENT_LIMIT = 60;
+		public static final int UPTAKE_LOWER_CURRENT_LIMIT = 40;
+		public static final boolean UPTAKE_ENABLE_STATOR_LIMIT = true;
+		public static final boolean UPTAKE_ENABLE_SUPPLY_LIMIT = false;
+		// HOPPER PID values
+		public static final double HOPPER_KP = 0.15;
+		public static final double HOPPER_KI = 0;
+		public static final double HOPPER_KD = 0;
+		public static final double HOPPER_KV = 0.115;
+		public static final double HOPPER_KS = 0;
+		// HOPPER Config setup
+		public static final int HOPPER_STATOR_CURRENT_LIMIT = 40;
+		public static final double HOPPER_SUPPLY_CURRENT_LIMIT = 50;
+		public static final int HOPPER_LOWER_CURRENT_LIMIT = 40;
+		public static final boolean HOPPER_ENABLE_STATOR_LIMIT = true;
+		public static final boolean HOPPER_ENABLE_SUPPLY_LIMIT = false;
+		// Speed Values in RPM
+		public static final double FORWARD_HOPPER_RPM = 10;
+		public static final double FORWARD_UPTAKE_RPM = 15;
+		public static final double BACKWARD_HOPPER_RPM = -15;
+		public static final double BACKWARD_UPTAKE_RPM = -15;
 	}
 }
