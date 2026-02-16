@@ -110,9 +110,14 @@ public class RobotContainer {
 		// and Y is defined as to the left according to WPILib convention.
 		drivetrain.setDefaultCommand(
 				// Drivetrain will execute this command periodically
-				drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-						.withVelocityY(-driverController.getLeftX() * MaxSpeed)// Drive left with negative X (left)
-						.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()))));
+				drivetrain.applyRequest(() -> {
+					if (Math.abs(driverController.getRightY()) >= 0.05 || Math.abs(driverController.getRightX()) >= 0.05) {
+						drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
+					}
+
+					return drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+							.withVelocityY(-driverController.getLeftX() * MaxSpeed);// Drive left with negative X (left)
+				}));
 
 		// Idle while the robot is disabled. This ensures the configured
 		// neutral mode is applied to the drive motors while disabled.
