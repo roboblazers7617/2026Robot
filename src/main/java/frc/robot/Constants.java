@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -80,9 +83,9 @@ public final class Constants {
 	public static class HopperConstants {
 		// Can ID and DIO pins
 		// UPTAKE MOTOR
-		public static final int BIG_SPINNY_CAN_ID = 0;
+		public static final int BIG_SPINNY_CAN_ID = 2;
 		// HOPPER MOTOR
-		public static final int LITTLE_SPINNY_CAN_ID = 2;
+		public static final int LITTLE_SPINNY_CAN_ID = 0;
 		public static final int BEAM_BREAK_DIO_PIN = 0;
 		// UPTAKE PID values
 		public static final double UPTAKE_KP = 0.15;
@@ -91,8 +94,8 @@ public final class Constants {
 		public static final double UPTAKE_KV = 0.115;
 		public static final double UPTAKE_KS = 0;
 		// UPTAKE Config setup
-		public static final int UPTAKE_STATOR_CURRENT_LIMIT = 40;
-		public static final double UPTAKE_SUPPLY_CURRENT_LIMIT = 60;
+		public static final int UPTAKE_STATOR_CURRENT_LIMIT = 120;
+		public static final double UPTAKE_SUPPLY_CURRENT_LIMIT = 70;
 		public static final int UPTAKE_LOWER_CURRENT_LIMIT = 40;
 		public static final boolean UPTAKE_ENABLE_STATOR_LIMIT = true;
 		public static final boolean UPTAKE_ENABLE_SUPPLY_LIMIT = false;
@@ -103,15 +106,17 @@ public final class Constants {
 		public static final double HOPPER_KV = 0.115;
 		public static final double HOPPER_KS = 0;
 		// HOPPER Config setup
-		public static final int HOPPER_STATOR_CURRENT_LIMIT = 40;
+		public static final int HOPPER_STATOR_CURRENT_LIMIT = 80;
 		public static final double HOPPER_SUPPLY_CURRENT_LIMIT = 50;
-		public static final int HOPPER_LOWER_CURRENT_LIMIT = 40;
+		public static final int HOPPER_LOWER_CURRENT_LIMIT = 30;
 		public static final boolean HOPPER_ENABLE_STATOR_LIMIT = true;
 		public static final boolean HOPPER_ENABLE_SUPPLY_LIMIT = false;
 		// Speed Values in RPM
-		public static final double FORWARD_HOPPER_RPM = 10;
-		public static final double FORWARD_UPTAKE_RPM = 15;
-		public static final double BACKWARD_HOPPER_RPM = -15;
-		public static final double BACKWARD_UPTAKE_RPM = -15;
+
+		public static final AngularVelocity TOLERANCE = RotationsPerSecond.of(5);
+		public static final AngularVelocity FORWARD_HOPPER_RPS = RotationsPerSecond.of(10.0);
+		public static final AngularVelocity FORWARD_UPTAKE_RPS = RotationsPerSecond.of(100);
+		public static final AngularVelocity BACKWARD_HOPPER_RPS = RotationsPerSecond.of(-15.0);
+		public static final AngularVelocity BACKWARD_UPTAKE_RPS = RotationsPerSecond.of(-15.0);
 	}
 }

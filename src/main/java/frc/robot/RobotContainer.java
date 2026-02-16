@@ -122,7 +122,7 @@ public class RobotContainer {
 
 		driverController.a().whileTrue(hopperUptake.startBothCommand());
 		driverController.b().whileTrue(hopperUptake.startUnJamCommand());
-		driverController.x().whileTrue(hopperUptake.stopBothCommand());
+		driverController.x().whileTrue(hopperUptake.stopBothMotorsCommand());
 
 		// Run SysId routines when holding back/start and X/Y.
 		// Note that each routine should be run exactly once in a single log.

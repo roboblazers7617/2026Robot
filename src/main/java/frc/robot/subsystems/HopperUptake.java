@@ -4,11 +4,14 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -32,13 +35,17 @@ public class HopperUptake extends SubsystemBase {
 
 	private final DigitalInput isTrippedBeamBreak;
 
+	private AngularVelocity setpoint = RadiansPerSecond.zero();
+
+	public Boolean bingus;
+
 	public HopperUptake() {
 		isTrippedBeamBreak = new DigitalInput(HopperConstants.BEAM_BREAK_DIO_PIN);
 		bigSpinny = new TalonFX(HopperConstants.BIG_SPINNY_CAN_ID);
 		littleSpinny = new TalonFX(HopperConstants.LITTLE_SPINNY_CAN_ID);
 		// The configuration for uptake
 		TalonFXConfiguration uptakeConfig = new TalonFXConfiguration();
-		uptakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+		uptakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 		uptakeConfig.CurrentLimits.StatorCurrentLimit = HopperConstants.UPTAKE_SUPPLY_CURRENT_LIMIT;
 		uptakeConfig.CurrentLimits.SupplyCurrentLimit = HopperConstants.UPTAKE_SUPPLY_CURRENT_LIMIT;
 		uptakeConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperConstants.UPTAKE_LOWER_CURRENT_LIMIT;
@@ -77,44 +84,76 @@ public class HopperUptake extends SubsystemBase {
 		return !isTrippedBeamBreak.get();
 	}
 
-	public void startHopperMotor(double RPM) {
-		littleSpinny.setControl(velocity.withVelocity(RPM)); // 80 rotations/sec
+	public boolean isUptakeAtTarget() {
+		boolean bingus = bigSpinny.getVelocity()
+				.getValue()
+				.isNear(setpoint, HopperConstants.TOLERANCE);
+		return bingus;
 	}
 
-	public void startUptakeMotor(double RPM) {
-		bigSpinny.setControl(velocity.withVelocity(RPM));
+	private void startHopperMotorRPM(AngularVelocity RPS) {
+		littleSpinny.setControl(velocity.withVelocity(RPS));
 	}
 
-	public void stopAllMotors() {
-		bigSpinny.stopMotor();
+	private void startUptakeMotorRPM(AngularVelocity RPS) {
+		bigSpinny.setControl(velocity.withVelocity(RPS));
+	}
+
+	public void startHopperForward() {
+		startHopperMotorRPM(HopperConstants.FORWARD_HOPPER_RPS);
+	}
+
+	public void startUptakeForward() {
+		startUptakeMotorRPM(HopperConstants.FORWARD_UPTAKE_RPS);
+	}
+
+	public void startHopperUnjam() {
+		startHopperMotorRPM(HopperConstants.BACKWARD_HOPPER_RPS);
+	}
+
+	public void startUptakeUnjam() {
+		startUptakeMotorRPM(HopperConstants.BACKWARD_UPTAKE_RPS);
+	}
+
+	public void stopHopper() {
 		littleSpinny.stopMotor();
+		setpoint = RadiansPerSecond.zero();
+	}
+
+	public void stopUptake() {
+		bigSpinny.stopMotor();
+		setpoint = RadiansPerSecond.zero();
 	}
 
 	public void startAllMotors() {
-		startHopperMotor(HopperConstants.FORWARD_HOPPER_RPM);
-		startUptakeMotor(HopperConstants.FORWARD_UPTAKE_RPM);
+		startHopperMotorRPM(HopperConstants.FORWARD_HOPPER_RPS);
+		startUptakeMotorRPM(HopperConstants.FORWARD_UPTAKE_RPS);
 	}
 
 	public void startMotorsUnjam() {
-		startHopperMotor(HopperConstants.BACKWARD_HOPPER_RPM);
-		startUptakeMotor(HopperConstants.BACKWARD_UPTAKE_RPM);
+		startHopperMotorRPM(HopperConstants.BACKWARD_HOPPER_RPS);
+		startUptakeMotorRPM(HopperConstants.BACKWARD_UPTAKE_RPS);
+	}
+
+	public void stopBothMotors() {
+		littleSpinny.stopMotor();
+		bigSpinny.stopMotor();
+	}
+
+	public Command start() {
+		return runOnce(() -> startUptakeForward());
 	}
 
 	public Command startBothCommand() {
-		return runOnce(() -> startAllMotors());
-	}
-
-	public Command stopBothCommand() {
-		return runOnce(() -> stopAllMotors());
+		return start().andThen(Commands.waitUntil(() -> isUptakeAtTarget()).finallyDo(this::startHopperForward));
 	}
 
 	public Command startUnJamCommand() {
 		return runOnce(() -> startMotorsUnjam());
 	}
 
-	public Command stopBeamBreakCommand() {
-		return startBothCommand().andThen(Commands.waitUntil(() -> isTrippedBeamBreak.get()))
-				.finallyDo(this::stopAllMotors);
+	public Command stopBothMotorsCommand() {
+		return runOnce(() -> stopBothMotors());
 	}
 
 	@Override
