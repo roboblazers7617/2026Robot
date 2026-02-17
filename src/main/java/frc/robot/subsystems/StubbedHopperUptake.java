@@ -15,7 +15,7 @@ public class StubbedHopperUptake extends SubsystemBase {
 	}
 
 	@Override
-	public void periodic() {
+	public void simulationPeriodic() {
 		uptakeBeamBreakSim.setValue(isHopperEmpty());
 	}
 
