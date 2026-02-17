@@ -64,7 +64,11 @@ public class ShooterSuperstructure {
 		 */
 		INITIALIZING,
 		/**
-		 * Initialized and currently tracking and shooting at a target.
+		 * Initialized and ready to shoot.
+		 */
+		READY_TO_SHOOT,
+		/**
+		 * Currently tracking and shooting at a target.
 		 */
 		SHOOTING,
 	}
@@ -85,6 +89,10 @@ public class ShooterSuperstructure {
 		 * Starts initializing the shooter. At this point the shooter has a target.
 		 */
 		INITIALIZE,
+		/**
+		 * Signals to the superstructure that we are ready to shoot.
+		 */
+		READY_TO_SHOOT,
 		/**
 		 * Signals to the shooter to start shooting.
 		 */
@@ -144,6 +152,14 @@ public class ShooterSuperstructure {
 				.onExit(hopperUptake::stopUptake)
 				.permit(ShooterTrigger.HOME, ShooterState.HOME)
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL)
+				.permit(ShooterTrigger.READY_TO_SHOOT, ShooterState.READY_TO_SHOOT);
+
+		stateMachineConfig.configure(ShooterState.READY_TO_SHOOT)
+				// Spin up uptake while awaiting shoot command
+				.onEntry(hopperUptake::startUptakeForward)
+				.onExit(hopperUptake::stopUptake)
+				.permit(ShooterTrigger.HOME, ShooterState.HOME)
+				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL)
 				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING);
 
 		stateMachineConfig.configure(ShooterState.SHOOTING)
@@ -197,9 +213,27 @@ public class ShooterSuperstructure {
 			case INITIALIZING:
 				// Preparing to track a target
 
+				// Once we reach the target, start to track
+				if (subsystemsAtTargets()) {
+					stateMachine.fire(ShooterTrigger.READY_TO_SHOOT);
+					break;
+				}
+
 				// Get the shooter to an initial setpoint with MotionMagic so we can start tracking
 				if (targetPose.isPresent()) {
 					prepareShootAtTarget(targetPose.get(), false);
+				} else {
+					// If we don't have a target anymore, home the shooter
+					stateMachine.fire(ShooterTrigger.HOME);
+				}
+				break;
+
+			case READY_TO_SHOOT:
+				// Tracking the target without MotionMagic
+
+				// We don't use MotionMagic here because it should improve tracking accuracy
+				if (targetPose.isPresent()) {
+					prepareShootAtTarget(targetPose.get(), true);
 				} else {
 					// If we don't have a target anymore, home the shooter
 					stateMachine.fire(ShooterTrigger.HOME);
@@ -307,6 +341,16 @@ public class ShooterSuperstructure {
 	}
 
 	/**
+	 * Trigger that returns true when ready to shoot. Should be useful for triggering controller haptics.
+	 *
+	 * @return
+	 *         Trigger, true when in {@link ShooterState#READY_TO_SHOOT}, false otherwise.
+	 */
+	public Trigger readyToShootTrigger() {
+		return new Trigger(() -> stateMachine.isInState(ShooterState.READY_TO_SHOOT));
+	}
+
+	/**
 	 * Checks if the subsystems are at their targets. This checks flywheel speed, hood position, and turret position.
 	 *
 	 * @return
@@ -314,16 +358,6 @@ public class ShooterSuperstructure {
 	 */
 	public boolean subsystemsAtTargets() {
 		return flywheel.isAtCruiseVelocity() && hood.isAtPosition() && turret.isAtTarget();
-	}
-
-	/**
-	 * Trigger that returns true when ready to shoot. Should be useful for triggering controller haptics.
-	 *
-	 * @return
-	 *         Trigger, true when in {@link ShooterState#INITIALIZING} and everything is spun up, false otherwise.
-	 */
-	public Trigger readyToShootTrigger() {
-		return new Trigger(() -> stateMachine.isInState(ShooterState.INITIALIZING) && subsystemsAtTargets());
 	}
 
 	/**
