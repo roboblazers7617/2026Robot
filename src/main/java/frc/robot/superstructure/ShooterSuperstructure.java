@@ -10,10 +10,13 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.StubbedHood;
@@ -23,6 +26,7 @@ import frc.robot.subsystems.StubbedTurret;
 
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Seconds;
 
 /**
  * A superstructure that controls the functionality of the shooter. This helps coordinate the various subsystems involved with the shooter.
@@ -40,6 +44,8 @@ public class ShooterSuperstructure {
 	private final StubbedFlywheel flywheel;
 	@NotLogged
 	private final StubbedHopperUptake hopperUptake;
+	@NotLogged
+	private final DigitalInput uptakeBeamBreak;
 
 	/**
 	 * The list of states the shooter can be in.
@@ -80,9 +86,9 @@ public class ShooterSuperstructure {
 		 */
 		INITIALIZE,
 		/**
-		 * Signals to the shooter that initialization is done.
+		 * Signals to the shooter to start shooting.
 		 */
-		INITIALIZING_DONE,
+		START_SHOOTING,
 	}
 
 	/**
@@ -93,6 +99,11 @@ public class ShooterSuperstructure {
 	 * The state machine.
 	 */
 	private final StateMachine<ShooterState, ShooterTrigger> stateMachine;
+
+	/**
+	 * Timer used to time the stopping of the shooter.
+	 */
+	private final Timer shooterTimeout = new Timer();
 
 	/**
 	 * Creates a new ShooterController.
@@ -107,13 +118,16 @@ public class ShooterSuperstructure {
 	 *            The turret to control.
 	 * @param hopperUptake
 	 *            The hopper/uptake subsystem to control.
+	 * @param uptakeBeamBreak
+	 *            The beam break for the uptake.
 	 */
-	public ShooterSuperstructure(CommandSwerveDrivetrain drivetrain, StubbedFlywheel shooter, StubbedHood hood, StubbedTurret turret, StubbedHopperUptake hopperUptake) {
+	public ShooterSuperstructure(CommandSwerveDrivetrain drivetrain, StubbedFlywheel shooter, StubbedHood hood, StubbedTurret turret, StubbedHopperUptake hopperUptake, DigitalInput uptakeBeamBreak) {
 		this.drivetrain = drivetrain;
 		this.flywheel = shooter;
 		this.hood = hood;
 		this.turret = turret;
 		this.hopperUptake = hopperUptake;
+		this.uptakeBeamBreak = uptakeBeamBreak;
 
 		// Set up the state machine
 		stateMachineConfig.configure(ShooterState.HOME)
@@ -125,13 +139,20 @@ public class ShooterSuperstructure {
 				.permit(ShooterTrigger.HOME, ShooterState.HOME);
 
 		stateMachineConfig.configure(ShooterState.INITIALIZING)
+				// Spin up uptake while initializing
+				.onEntry(hopperUptake::startUptakeForward)
+				.onExit(hopperUptake::stopUptake)
 				.permit(ShooterTrigger.HOME, ShooterState.HOME)
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL)
-				.permit(ShooterTrigger.INITIALIZING_DONE, ShooterState.SHOOTING);
+				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING);
 
 		stateMachineConfig.configure(ShooterState.SHOOTING)
-				.onEntry(hopperUptake::start)
-				.onExit(hopperUptake::stop)
+				// Run uptake while shooting
+				.onEntry(hopperUptake::startUptakeForward)
+				.onExit(hopperUptake::stopUptake)
+				// Run hopper while shooting
+				.onEntry(hopperUptake::startHopperForward)
+				.onExit(hopperUptake::stopHopper)
 				.permit(ShooterTrigger.HOME, ShooterState.HOME)
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL);
 
@@ -144,6 +165,7 @@ public class ShooterSuperstructure {
 		// Put commands on SmartDashboard
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Home", homeCommand());
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Start Manual Control", startManualControlCommand());
+		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Start Shooting", startShootingCommand());
 	}
 
 	/**
@@ -175,12 +197,6 @@ public class ShooterSuperstructure {
 			case INITIALIZING:
 				// Preparing to track a target
 
-				// Once we reach the target, start to track and shoot
-				if (subsystemsAtTargets()) {
-					stateMachine.fire(ShooterTrigger.INITIALIZING_DONE);
-					break;
-				}
-
 				// Get the shooter to an initial setpoint with MotionMagic so we can start tracking
 				if (targetPose.isPresent()) {
 					prepareShootAtTarget(targetPose.get(), false);
@@ -191,7 +207,18 @@ public class ShooterSuperstructure {
 				break;
 
 			case SHOOTING:
-				// Track the target without MotionMagic
+				// Tracking the target without MotionMagic and shooting
+
+				// Shooter timeout
+				if (uptakeBeamBreak.get()) {
+					shooterTimeout.restart();
+				} else {
+					// After a little while of the beam break being off, stop the shooter
+					if (shooterTimeout.hasElapsed(Seconds.of(2.0))) {
+						stateMachine.fire(ShooterTrigger.HOME);
+					}
+				}
+
 				// We don't use MotionMagic here because it should improve tracking accuracy
 				if (targetPose.isPresent()) {
 					prepareShootAtTarget(targetPose.get(), true);
@@ -227,6 +254,16 @@ public class ShooterSuperstructure {
 	public Command startManualControlCommand() {
 		return Commands.runOnce(() -> stateMachine.fire(ShooterTrigger.START_MANUAL_CONTROL))
 				.ignoringDisable(true);
+	}
+
+	/**
+	 * Command to start shooting. This can only be called from the INITIALIZING state.
+	 *
+	 * @return
+	 *         Command to run.
+	 */
+	public Command startShootingCommand() {
+		return Commands.runOnce(() -> stateMachine.fire(ShooterTrigger.START_SHOOTING));
 	}
 
 	/**
@@ -277,6 +314,16 @@ public class ShooterSuperstructure {
 	 */
 	public boolean subsystemsAtTargets() {
 		return flywheel.isAtCruiseVelocity() && hood.isAtPosition() && turret.isAtTarget();
+	}
+
+	/**
+	 * Trigger that returns true when ready to shoot. Should be useful for triggering controller haptics.
+	 *
+	 * @return
+	 *         Trigger, true when in {@link ShooterState#INITIALIZING} and everything is spun up, false otherwise.
+	 */
+	public Trigger readyToShootTrigger() {
+		return new Trigger(() -> stateMachine.isInState(ShooterState.INITIALIZING) && subsystemsAtTargets());
 	}
 
 	/**

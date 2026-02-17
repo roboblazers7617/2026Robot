@@ -204,4 +204,11 @@ public final class Constants {
 		 */
 		public static final Transform3d TURRET_OFFSET = new Transform3d(Inches.of(5.0), Inches.of(5.062), Meters.of(0.0), Rotation3d.kZero);
 	}
+
+	/**
+	 * Constants used to configure the hopper.
+	 */
+	public static class HopperConstants {
+		public static final int BEAM_BREAK_DIO_PIN = 0;
+	}
 }

@@ -20,6 +20,7 @@ import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
 
@@ -33,6 +34,8 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -60,13 +63,21 @@ public class RobotContainer {
 			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1) // Add a 10% deadband
 			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // se open-loop control for drive motors
 
+	/**
+	 * The beam break on the uptake.
+	 * <p>
+	 * Reads true if there is a ball going through uptake, false otherwise.
+	 */
+	public final DigitalInput uptakeBeamBreak = new DigitalInput(HopperConstants.BEAM_BREAK_DIO_PIN);
+	public final DIOSim uptakeBeamBreakSim = new DIOSim(uptakeBeamBreak);
+
 	// Define subsystems
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
 	public final StubbedFlywheel shooter = new StubbedFlywheel();
 	public final StubbedHood hood = new StubbedHood();
 	public final StubbedTurret turret = new StubbedTurret();
-	public final StubbedHopperUptake hopperUptake = new StubbedHopperUptake();
+	public final StubbedHopperUptake hopperUptake = new StubbedHopperUptake(uptakeBeamBreakSim);
 	public final StubbedIntakeGrabber intakeGrabber = new StubbedIntakeGrabber();
 	public final StubbedIntakeShoulder intakeShoulder = new StubbedIntakeShoulder();
 
@@ -87,7 +98,7 @@ public class RobotContainer {
 	/**
 	 * Superstructure that handles controlling the shooter and related subsystems.
 	 */
-	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure(drivetrain, shooter, hood, turret, hopperUptake);
+	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure(drivetrain, shooter, hood, turret, hopperUptake, uptakeBeamBreak);
 	/**
 	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
 	 */
