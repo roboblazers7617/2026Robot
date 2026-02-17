@@ -244,12 +244,18 @@ public class ShooterSuperstructure {
 				// Tracking the target without MotionMagic and shooting
 
 				// Shooter timeout
-				if (uptakeBeamBreak.get()) {
+				if (!uptakeBeamBreak.get()) {
 					shooterTimeout.restart();
+					System.out.println("Reset the shooting timeout");
 				} else {
 					// After a little while of the beam break being off, stop the shooter
 					if (shooterTimeout.hasElapsed(Seconds.of(2.0))) {
 						stateMachine.fire(ShooterTrigger.HOME);
+
+						shooterTimeout.stop();
+						shooterTimeout.reset();
+
+						break;
 					}
 				}
 
