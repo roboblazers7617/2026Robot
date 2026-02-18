@@ -81,8 +81,8 @@ public final class Constants {
 	}
 
 	public static class ShooterConstants {
-		public static final int LEADER_CAN_ID = 2;
-		public static final int FOLLOWER_CAN_ID = 0;
+		public static final int LEADER_CAN_ID = 30;
+		public static final int FOLLOWER_CAN_ID = 31;
 		public static final double KP = 0.15;
 		public static final double KI = 0;
 		public static final double KD = 0;
@@ -96,7 +96,7 @@ public final class Constants {
 		public static final boolean ENABLE_SUPPLY_LIMIT = false;
 		public static final double SUPPLY_CURRENT_LIMIT = 60.0;
 		public static final AngularVelocity FAST_SPEED = CRUISE_VELOCITY;
-		public static final AngularVelocity SLOW_SPEED = CRUISE_VELOCITY.div(2.0);
+		public static final AngularVelocity SLOW_SPEED = CRUISE_VELOCITY.div(4.0);
 		public static final AngularVelocity COAST_SPEED = CRUISE_VELOCITY.div(2.0);
 		public static final AngularVelocity TOLERANCE = Units.RotationsPerSecond.of(80);
 		public static final double SUPPLY_CURRENT_LOWER_LIMIT = 40.0;
@@ -105,7 +105,7 @@ public final class Constants {
 	}
 
 	public static class HoodConstants {
-		public static final int HOOD_MOTOR_CAN_ID = 0;
+		public static final int HOOD_MOTOR_CAN_ID = 40;
 		public static final double KP = 10;
 		public static final double KS = 0;
 		public static final double KD = 0;

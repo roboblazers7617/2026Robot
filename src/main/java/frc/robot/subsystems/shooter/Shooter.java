@@ -16,7 +16,6 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.Follower;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -32,7 +31,6 @@ public class Shooter extends SubsystemBase {
 	private final VelocityVoltage velocityOut = new VelocityVoltage(0);
 	private NetworkTable shooterTable;
 	private DoubleEntry shooterSpeedEntry;
-	private BooleanEntry isShooterSpeedAtTargetEntry;
 	private AngularVelocity requestedSpeed;
 
 	/** Creates a new Shooter. */
@@ -42,7 +40,7 @@ public class Shooter extends SubsystemBase {
 
 		leaderMotor = new TalonFX(ShooterConstants.LEADER_CAN_ID);
 		followermotor = new TalonFX(ShooterConstants.FOLLOWER_CAN_ID);
-		followermotor.setControl(new Follower(leaderMotor.getDeviceID(), MotorAlignmentValue.Opposed));
+		followermotor.setControl(new Follower(leaderMotor.getDeviceID(), MotorAlignmentValue.Aligned));
 
 		TalonFXConfiguration shooterConfig = new TalonFXConfiguration();
 		// Put's the motor in Coast mode to make it easier to move by hand
@@ -67,7 +65,6 @@ public class Shooter extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
-		isShooterSpeedAtTargetEntry.set(isAtTarget());
 	}
 
 	public boolean isAtTarget() {
@@ -98,7 +95,5 @@ public class Shooter extends SubsystemBase {
 		shooterTable = table;
 		shooterSpeedEntry = shooterTable.getDoubleTopic(("shooterVelocity")).getEntry(10);
 		shooterSpeedEntry.set(10);
-		isShooterSpeedAtTargetEntry = shooterTable.getBooleanTopic(("shooter is at target speed")).getEntry(false);
-		isShooterSpeedAtTargetEntry.set(false);
 	}
 }

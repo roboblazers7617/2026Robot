@@ -17,7 +17,6 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.networktables.BooleanEntry;
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.units.Units;
@@ -34,7 +33,6 @@ public class Hood extends SubsystemBase {
 	// private final DutyCycleEncoder hoodEncoder;
 	private NetworkTable hoodTable;
 	private DoubleEntry hoodPositionEntry;
-	private BooleanEntry isHoodPositionAtTargetEntry;
 	private Angle requestedAngle;
 
 	public Hood(NetworkTable table) {
@@ -78,17 +76,8 @@ public class Hood extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
-
-		isHoodPositionAtTargetEntry.set(IsAtPosition());
 	}
 
-	// private void setPosition(Angle position, boolean motionMagic) {
-	// if (motionMagic) {
-	// hoodMotor.setControl(positionMotionMagic.withPosition(position));
-	// } else {
-	// hoodMotor.setControl(positionMotionMagic.withPosition(position));
-	// }
-	// }
 	public boolean IsAtPosition() {
 		return hoodMotor.getPosition()
 				.getValue()
@@ -109,7 +98,5 @@ public class Hood extends SubsystemBase {
 		hoodTable = table;
 		hoodPositionEntry = hoodTable.getDoubleTopic(("hood angle")).getEntry(10);
 		hoodPositionEntry.set(10);
-		isHoodPositionAtTargetEntry = hoodTable.getBooleanTopic(("is at target")).getEntry(false);
-		isHoodPositionAtTargetEntry.set(false);
 	}
 }
