@@ -29,9 +29,10 @@ import frc.robot.util.RectangleUtil;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
 /**
@@ -196,6 +197,19 @@ public final class Constants {
 			// Add values to the interpolation table
 			flywheelVelocityByGamepieceVelocity.put(0.0, RPM.of(10.0).in(RadiansPerSecond));
 			flywheelVelocityByGamepieceVelocity.put(10.0, RPM.of(50.0).in(RadiansPerSecond));
+		}
+
+		/**
+		 * An interpolation table used for hood angle by gamepiece velocity.
+		 * <p>
+		 * Keys are angle in radians, values are angle in radians.
+		 */
+		public static final InterpolatingDoubleTreeMap HOOD_ANGLE_BY_GAMEPIECE_THETA = new InterpolatingDoubleTreeMap();
+
+		static {
+			// Add values to the interpolation table
+			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(0.0).in(Radians), Degrees.of(0.0).in(Radians));
+			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(90.0).in(Radians), Degrees.of(90.0).in(Radians));
 		}
 
 		/**

@@ -61,7 +61,7 @@ public class ShootingCalculator {
 		LinearVelocity gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 
 		values.setTurretAngle(turretRotation);
-		values.setHoodAngle(gamepieceTheta);
+		values.setGamepieceTheta(gamepieceTheta);
 		values.setFlywheelSpeed(gamepieceSpeed);
 
 		return values;
