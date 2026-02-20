@@ -12,12 +12,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.Constants.SuperstructureConstants;
 
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
 /**
  * Some static utility methods for calculating shooter values.
@@ -54,9 +57,12 @@ public class ShootingCalculator {
 		SignalLogger.writeStruct(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Gamepiece Translation", Translation2d.struct, gamepieceTranslation);
 
 		// Solve shooter values
+		Angle gamepieceTheta = Degrees.of(80.0);
+		LinearVelocity gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
+
 		values.setTurretAngle(turretRotation);
-		values.setHoodAngle(solveHoodAngle(gamepieceTranslation));
-		values.setFlywheelSpeed(solveGamepieceSpeed(gamepieceTranslation));
+		values.setHoodAngle(gamepieceTheta);
+		values.setFlywheelSpeed(gamepieceSpeed);
 
 		return values;
 	}
@@ -80,29 +86,30 @@ public class ShootingCalculator {
 	}
 
 	/**
-	 * Solves the hood angle required to shoot the gamepiece to the desired translation.
-	 *
-	 * @param gamepieceTranslation
-	 *            The translation to shoot the gamepiece to.
-	 * @return
-	 *         The resulting Angle to angle the hood at.
-	 */
-	private static Angle solveHoodAngle(Translation2d gamepieceTranslation) {
-		// TODO: uhhh fancy math things?
-		return Radians.zero();
-	}
-
-	/**
 	 * Solves the gamepiece speed required to shoot the gamepiece to the desired translation.
 	 *
 	 * @param gamepieceTranslation
 	 *            The translation to shoot the gamepiece to.
+	 * @param gamepieceTheta
+	 *            The theta that the gamepiece is being shot at.
 	 * @return
 	 *         The resulting LinearVelocity to shoot the gamepiece at.
 	 */
-	private static LinearVelocity solveGamepieceSpeed(Translation2d gamepieceTranslation) {
-		// TODO: more fancy math things!
-		return MetersPerSecond.zero();
+	private static LinearVelocity solveGamepieceSpeed(Translation2d gamepieceTranslation, Angle gamepieceTheta) {
+		double deltaX = gamepieceTranslation.getX();
+		double deltaY = gamepieceTranslation.getY();
+		double g = ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
+		double theta = gamepieceTheta.in(Radians);
+
+		// @formatter:off
+		double velocity = Math.sqrt(
+				(g * Math.pow(deltaX, 2.0))
+				/
+				(2.0 * Math.pow(Math.cos(theta), 2.0) * (deltaY - (deltaX * Math.tan(theta))))
+			);
+		// @formatter:on
+
+		return MetersPerSecond.of(velocity);
 	}
 
 	/**

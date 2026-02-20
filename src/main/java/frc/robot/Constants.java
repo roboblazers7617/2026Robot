@@ -21,6 +21,8 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.LinearAcceleration;
 import frc.robot.util.BiAlliancePose3d;
 import frc.robot.util.PoseUtil;
 import frc.robot.util.RectangleUtil;
@@ -29,6 +31,8 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -193,6 +197,16 @@ public final class Constants {
 			flywheelVelocityByGamepieceVelocity.put(0.0, RPM.of(10.0).in(RadiansPerSecond));
 			flywheelVelocityByGamepieceVelocity.put(10.0, RPM.of(50.0).in(RadiansPerSecond));
 		}
+
+		/**
+		 * The angle to shoot the gamepiece at.
+		 */
+		public static final Angle GAMEPIECE_THETA = Degrees.of(80.0);
+
+		/**
+		 * The acceleration due to gravity imposed on the gamepiece.
+		 */
+		public static final LinearAcceleration GAMEPIECE_G = MetersPerSecondPerSecond.of(-9.81);
 	}
 
 	/**
