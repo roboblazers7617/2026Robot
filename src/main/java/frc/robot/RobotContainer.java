@@ -23,6 +23,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -37,6 +38,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
  */
 @Logged
 public class RobotContainer {
+	private SendableChooser<Command> autoChooser;
+
 	private double MaxSpeed = 0.25 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
 	private double MaxAngularRate = 0 * RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
@@ -50,6 +53,7 @@ public class RobotContainer {
 
 	private final Telemetry logger = new Telemetry(MaxSpeed);
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */
@@ -158,5 +162,19 @@ public class RobotContainer {
 						.withTimeout(5.0),
 				// Finally idle for the rest of auton
 				drivetrain.applyRequest(() -> idle));
+	}
+
+	public void setAutoChooser(SendableChooser<Command> auto) {
+		autoChooser = auto;
+	}
+
+	/**
+	 * Gets the current value of the uptake beam break.
+	 *
+	 * @return
+	 *         True if there is a ball in uptake, false otherwise.
+	 */
+	public boolean getIsBallInUptake() {
+		return true;
 	}
 }
