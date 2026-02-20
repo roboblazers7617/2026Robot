@@ -64,7 +64,7 @@ public class ShooterValues {
 	 *         This object for method chaining.
 	 */
 	public ShooterValues setFlywheelSpeed(LinearVelocity gamepieceSpeed) {
-		this.flywheelSpeed = RadiansPerSecond.of(ShootingConstants.flywheelVelocityByGamepieceVelocity.get(gamepieceSpeed.in(MetersPerSecond)));
+		this.flywheelSpeed = RadiansPerSecond.of(ShootingConstants.FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.get(gamepieceSpeed.in(MetersPerSecond)));
 		return this;
 	}
 

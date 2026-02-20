@@ -191,12 +191,12 @@ public final class Constants {
 		 * <p>
 		 * Keys are velocity in meters per second, values are speed in radians per second.
 		 */
-		public static final InterpolatingDoubleTreeMap flywheelVelocityByGamepieceVelocity = new InterpolatingDoubleTreeMap();
+		public static final InterpolatingDoubleTreeMap FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY = new InterpolatingDoubleTreeMap();
 
 		static {
 			// Add values to the interpolation table
-			flywheelVelocityByGamepieceVelocity.put(0.0, RPM.of(10.0).in(RadiansPerSecond));
-			flywheelVelocityByGamepieceVelocity.put(10.0, RPM.of(50.0).in(RadiansPerSecond));
+			FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.put(0.0, RPM.of(10.0).in(RadiansPerSecond));
+			FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.put(10.0, RPM.of(50.0).in(RadiansPerSecond));
 		}
 
 		/**
