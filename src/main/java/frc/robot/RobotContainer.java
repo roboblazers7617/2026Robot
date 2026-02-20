@@ -38,13 +38,13 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
  */
 @Logged
 public class RobotContainer {
-	private double MaxSpeed = 0.25 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+	private double MaxSpeed = 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
 	private double MaxAngularRate = 0 * RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
 	/* Setting up bindings for necessary control of the swerve drive platform */
 	private final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
 			.withDeadband(MaxSpeed * 0.1)
-			.withHeadingPID(20, 0, 0)
+			.withHeadingPID(6, 0, 0.1)
 			.withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
 			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 	private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -111,7 +111,7 @@ public class RobotContainer {
 		drivetrain.setDefaultCommand(
 				// Drivetrain will execute this command periodically
 				drivetrain.applyRequest(() -> {
-					if (Math.abs(driverController.getRightY()) >= 0.05 || Math.abs(driverController.getRightX()) >= 0.05) {
+					if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
 						drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
 					}
 
