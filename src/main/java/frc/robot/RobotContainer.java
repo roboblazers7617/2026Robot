@@ -214,4 +214,14 @@ public class RobotContainer {
 				// Finally idle for the rest of auton
 				drivetrain.applyRequest(() -> idle));
 	}
+
+	/**
+	 * Gets the current value of the uptake beam break.
+	 *
+	 * @return
+	 *         True if there is a ball in uptake, false otherwise.
+	 */
+	public boolean getIsBallInUptake() {
+		return uptakeBeamBreak.get();
+	}
 }
