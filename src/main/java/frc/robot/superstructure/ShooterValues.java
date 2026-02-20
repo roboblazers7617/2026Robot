@@ -95,6 +95,19 @@ public class ShooterValues {
 	}
 
 	/**
+	 * Sets the hood angle to shoot the gamepiece at a specific {@link Angle}.
+	 *
+	 * @param gamepieceTheta
+	 *            The angle to shoot the gamepiece at.
+	 * @return
+	 *         This object for method chaining.
+	 */
+	public ShooterValues setGamepieceTheta(Angle gamepieceTheta) {
+		this.hoodAngle = Radians.of(ShootingConstants.HOOD_ANGLE_BY_GAMEPIECE_THETA.get(gamepieceTheta.in(Radians)));
+		return this;
+	}
+
+	/**
 	 * Gets the flywheel speed.
 	 *
 	 * @return
