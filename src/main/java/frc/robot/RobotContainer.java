@@ -8,7 +8,14 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.StubbedHood;
+import frc.robot.subsystems.StubbedHopperUptake;
+import frc.robot.subsystems.StubbedFlywheel;
+import frc.robot.subsystems.StubbedTurret;
+import frc.robot.superstructure.ShooterSuperstructure;
+import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.Constants.DashboardConstants;
+import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
 
@@ -23,6 +30,8 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -49,7 +58,22 @@ public class RobotContainer {
 	private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
 	private final Telemetry logger = new Telemetry(MaxSpeed);
+
+	/**
+	 * The beam break on the uptake.
+	 * <p>
+	 * Reads true if there is a ball going through uptake, false otherwise.
+	 */
+	public final DigitalInput uptakeBeamBreak = new DigitalInput(HopperConstants.BEAM_BREAK_DIO_PIN);
+	public final DIOSim uptakeBeamBreakSim = new DIOSim(uptakeBeamBreak);
+
+	// Define subsystems
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+	public final StubbedFlywheel shooter = new StubbedFlywheel();
+	public final StubbedHood hood = new StubbedHood();
+	public final StubbedTurret turret = new StubbedTurret();
+	public final StubbedHopperUptake hopperUptake = new StubbedHopperUptake(uptakeBeamBreakSim);
+
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */
@@ -60,6 +84,15 @@ public class RobotContainer {
 	 */
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
+
+	/**
+	 * Superstructure that handles controlling the shooter and related subsystems.
+	 */
+	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure(drivetrain, shooter, hood, turret, hopperUptake, uptakeBeamBreak);
+	/**
+	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
+	 */
+	private ShooterSuperstructureDebug shooterSuperstructureDebug;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -73,6 +106,10 @@ public class RobotContainer {
 		configureNamedCommands();
 		configureDriverControls();
 		configureOperatorControls();
+
+		if (LoggingConstants.DEBUG_MODE) {
+			shooterSuperstructureDebug = new ShooterSuperstructureDebug(shooterSuperstructure);
+		}
 	}
 
 	/**
@@ -93,6 +130,14 @@ public class RobotContainer {
 		if (!LoggingConstants.DEBUG_MODE) {
 			Elastic.selectTab(DashboardConstants.TELEOP_TAB_NAME);
 		}
+	}
+
+	/**
+	 * This method handles the periodic functionality for the superstructure.
+	 * This is done seperate from the subsystem periodic so it can be updated more frequently.
+	 */
+	public void superstructurePeriodic() {
+		shooterSuperstructure.update();
 	}
 
 	/**
@@ -158,5 +203,15 @@ public class RobotContainer {
 						.withTimeout(5.0),
 				// Finally idle for the rest of auton
 				drivetrain.applyRequest(() -> idle));
+	}
+
+	/**
+	 * Gets the current value of the uptake beam break.
+	 *
+	 * @return
+	 *         True if there is a ball in uptake, false otherwise.
+	 */
+	public boolean getIsBallInUptake() {
+		return uptakeBeamBreak.get();
 	}
 }
