@@ -6,7 +6,6 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants.ShootingConstants;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 
 /**
@@ -64,7 +63,7 @@ public class ShooterValues {
 	 *         This object for method chaining.
 	 */
 	public ShooterValues setFlywheelSpeed(LinearVelocity gamepieceSpeed) {
-		this.flywheelSpeed = RadiansPerSecond.of(ShootingConstants.FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.get(gamepieceSpeed.in(MetersPerSecond)));
+		this.flywheelSpeed = ShootingConstants.FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.get(gamepieceSpeed);
 		return this;
 	}
 
@@ -103,7 +102,7 @@ public class ShooterValues {
 	 *         This object for method chaining.
 	 */
 	public ShooterValues setGamepieceTheta(Angle gamepieceTheta) {
-		this.hoodAngle = Radians.of(ShootingConstants.HOOD_ANGLE_BY_GAMEPIECE_THETA.get(gamepieceTheta.in(Radians)));
+		this.hoodAngle = ShootingConstants.HOOD_ANGLE_BY_GAMEPIECE_THETA.get(gamepieceTheta);
 		return this;
 	}
 
