@@ -11,11 +11,8 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.DrivetrainControls;
 import frc.robot.subsystems.StubbedHood;
 import frc.robot.subsystems.StubbedHopperUptake;
-import frc.robot.subsystems.StubbedIntakeGrabber;
-import frc.robot.subsystems.StubbedIntakeShoulder;
 import frc.robot.subsystems.StubbedFlywheel;
 import frc.robot.subsystems.StubbedTurret;
-import frc.robot.superstructure.IntakeSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.Constants.DashboardConstants;
@@ -78,8 +75,6 @@ public class RobotContainer {
 	public final StubbedHood hood = new StubbedHood();
 	public final StubbedTurret turret = new StubbedTurret();
 	public final StubbedHopperUptake hopperUptake = new StubbedHopperUptake(uptakeBeamBreakSim);
-	public final StubbedIntakeGrabber intakeGrabber = new StubbedIntakeGrabber();
-	public final StubbedIntakeShoulder intakeShoulder = new StubbedIntakeShoulder();
 
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
 	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
@@ -103,11 +98,6 @@ public class RobotContainer {
 	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
 	 */
 	private ShooterSuperstructureDebug shooterSuperstructureDebug;
-
-	/**
-	 * Superstructure that handles controlling the intake and related subsystems.
-	 */
-	private final IntakeSuperstructure intakeSuperstructure = new IntakeSuperstructure(intakeShoulder, intakeGrabber);
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
