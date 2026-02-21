@@ -20,19 +20,23 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.LinearVelocityUnit;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.util.BiAlliancePose3d;
+import frc.robot.util.InterpolatingMeasureTreeMap;
 import frc.robot.util.PoseUtil;
 import frc.robot.util.RectangleUtil;
 
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RPM;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
 /**
@@ -188,28 +192,24 @@ public final class Constants {
 	public static class ShootingConstants {
 		/**
 		 * An interpolation table used for flywheel speed by gamepiece velocity.
-		 * <p>
-		 * Keys are velocity in meters per second, values are speed in radians per second.
 		 */
-		public static final InterpolatingDoubleTreeMap FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY = new InterpolatingDoubleTreeMap();
+		public static final InterpolatingMeasureTreeMap<LinearVelocity, LinearVelocityUnit, AngularVelocity, AngularVelocityUnit> FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY = new InterpolatingMeasureTreeMap<>();
 
 		static {
 			// Add values to the interpolation table
-			FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.put(0.0, RPM.of(10.0).in(RadiansPerSecond));
-			FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.put(10.0, RPM.of(50.0).in(RadiansPerSecond));
+			FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.put(MetersPerSecond.of(0.0), RPM.of(10.0));
+			FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.put(MetersPerSecond.of(10.0), RPM.of(50.0));
 		}
 
 		/**
 		 * An interpolation table used for hood angle by gamepiece velocity.
-		 * <p>
-		 * Keys are angle in radians, values are angle in radians.
 		 */
-		public static final InterpolatingDoubleTreeMap HOOD_ANGLE_BY_GAMEPIECE_THETA = new InterpolatingDoubleTreeMap();
+		public static final InterpolatingMeasureTreeMap<Angle, AngleUnit, Angle, AngleUnit> HOOD_ANGLE_BY_GAMEPIECE_THETA = new InterpolatingMeasureTreeMap<>();
 
 		static {
 			// Add values to the interpolation table
-			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(0.0).in(Radians), Degrees.of(0.0).in(Radians));
-			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(90.0).in(Radians), Degrees.of(90.0).in(Radians));
+			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(0.0), Degrees.of(0.0));
+			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(90.0), Degrees.of(90.0));
 		}
 
 		/**
