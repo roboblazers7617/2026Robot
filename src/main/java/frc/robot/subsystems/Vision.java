@@ -54,6 +54,7 @@ public class Vision extends SubsystemBase {
 				var est = frontVisionEst.get();
 				var estStdDevs = getEstimationStdDevs();
 				drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+				System.out.println("front measurement added");
 			}
 		}
 
@@ -70,6 +71,7 @@ public class Vision extends SubsystemBase {
 				var est = sideVisionEst.get();
 				var estStdDevs = getEstimationStdDevs();
 				drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+				System.out.println("side measurement added");
 			}
 		}
 	}
