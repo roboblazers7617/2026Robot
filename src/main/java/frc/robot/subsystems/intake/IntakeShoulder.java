@@ -22,6 +22,9 @@ public class IntakeShoulder extends SubsystemBase {
 	// controller for motor which moves intake
 	private final TalonFX motor;
 
+	/**
+	 * Constructor for motor which raises and lowers intakes with associated configurations, sets up Motion Magic, and configures gear ratios.
+	 */
 	public IntakeShoulder() {
 		motor = new TalonFX(IntakeConstants.SHOULDER_CAN_ID);
 
@@ -68,16 +71,18 @@ public class IntakeShoulder extends SubsystemBase {
 		feedbackConfigs.SensorToMechanismRatio = IntakeConstants.SENSOR_TO_MECHANISM_RATIO;
 		motorConfigurator.apply(feedbackConfigs);
 
-		/**
-		 * code to zero encoder when code is intially run (robot is turned on) so that it doesn't freak out and try to spin to the zero from a previous continuous motor run demo because the code of the shoulder has the motor spin to defined finite values and the leftover value in the encoder will be huge and it will zoom backward very powerfully. so it will not do that now as it takes a deep breath before going anywhere.
-		 */
-
+		// code to zero encoder when code is intially run (robot is turned on) so that it doesn't freak out and try to spin to the zero from a previous continuous motor run demo because the code of the shoulder has the motor spin to defined finite values and the leftover value in the encoder will be huge and it will zoom backward very powerfully. so it will not do that now as it takes a deep breath before going anywhere.
 		// TODO: hook up to absolute encoder on actual bot
 		motor.setPosition(IntakeConstants.SHOULDER_STOWED_ANGLE);
 	}
 
 	private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0);
 
+	/**
+	 * Method which takes Angle values and sets Kraken to angle. Should compensate for gear ratios.
+	 * 
+	 * @param position
+	 */
 	private void setPositionPlease(Angle position) {
 		// solution one (post *360) (doesn't work)
 		// motor.setControl(positionRequest.withPosition(position.in(Units.Degrees)));
@@ -88,61 +93,115 @@ public class IntakeShoulder extends SubsystemBase {
 	}
 
 	/**
-	 * command which raises shoulder of intake
+	 * Command which raises shoulder of intake
 	 * 
-	 * @return
+	 * @return runOnce(() -> raiseIntake());
 	 */
 	public Command raiseIntakeCommand() {
 		return runOnce(() -> raiseIntake());
 	}
 
 	/**
-	 * command which lowers shoulder of intake
+	 * Command which lowers shoulder of intake
 	 * 
-	 * @return
+	 * @return runOnce(() - > lowerIntake());
 	 */
 	public Command lowerIntakeCommand() {
 		return runOnce(() -> lowerIntake());
 	}
 
+	/**
+	 * Command which continously runs agitate method when triggered and raises intake when cancelled.
+	 * 
+	 * @return run(() -> agitate()).finallyDo(() -> raiseIntake());
+	 */
 	public Command agitateCommand() {
 		return run(() -> agitate()).finallyDo(() -> raiseIntake());
 	}
 
+	/**
+	 * Command which calls lowerToDepot method.
+	 * 
+	 * @return runOnce(() -> lowerToDepot());
+	 */
+	public Command lowerToDepotCommand() {
+		return runOnce(() -> lowerToDepot());
+	}
+
+	/**
+	 * Method which sets motor position to specified stowed angle.
+	 */
 	public void raiseIntake() {
 		setPositionPlease(IntakeConstants.SHOULDER_STOWED_ANGLE);
 		// setPosition(0.25);
 	}
 
+	/**
+	 * Method which sets motor position to specified lowered angle.
+	 */
 	public void lowerIntake() {
 		setPositionPlease(IntakeConstants.SHOULDER_LOWERED_ANGLE);
 		// setPosition(0);
 	}
 
+	/**
+	 * Method which sets motor position to specified depot angle.
+	 */
+	public void lowerToDepot() {
+		setPositionPlease(IntakeConstants.SHOULDER_DEPOT_ANGLE);
+	}
+
+	/**
+	 * Method which sets motor position to specified low angle. To be used in agitate command
+	 */
 	public void lowerAgitate() {
 		setPositionPlease(IntakeConstants.AGITATE_LOWERED_ANGLE);
 	}
 
+	/**
+	 * Method which sets motor position to specified high angle. To be used in agitate command
+	 */
 	public void raiseAgitate() {
 		setPositionPlease(IntakeConstants.AGITATE_RAISED_ANGLE);
 	}
 
+	// TODO: utilize absolute encoder rather than internal encoder
+	/**
+	 * Method which checks angle of motor using Phoenix and WPILib commands.
+	 * 
+	 * @param angle
+	 *            - angle to be chcked as Angle
+	 * @param tolerance
+	 *            - acceptable range as Angle
+	 * @return boolean indicating if motor position is within tolerance to angle
+	 */
 	private boolean getIsAtTarget(Angle angle, Angle tolerance) {
 		return motor.getPosition()
 				.getValue()
 				.isNear(angle, tolerance);
 	}
 
+	/**
+	 * Runs getIsAtTarget() for specified raised angle (for agitate system)
+	 * 
+	 * @return boolean value
+	 */
 	private boolean getIsRaised() {
 		return getIsAtTarget(IntakeConstants.AGITATE_RAISED_ANGLE, IntakeConstants.AGITATE_TOLERANCE);
 	}
 
+	/**
+	 * Runs getIsAtTarget() for specified lowered angle (for agitate system)
+	 * 
+	 * @return boolean value
+	 */
 	private boolean getIsLowered() {
 		return getIsAtTarget(IntakeConstants.AGITATE_LOWERED_ANGLE, IntakeConstants.AGITATE_TOLERANCE);
 	}
 
-	// untested method which will continuously move the arm up and down when button is held then ask john about if up or down after button released
-	// update I think I have it figured out must be tested now
+	/**
+	 * Method which moves arm to a raised position when in lowered position and vice versa. This is intended to be called through a continuous RunCommand triggered by a held button. Does not have an end state by default, this must be implemented in said Command.
+	 */
 	public void agitate() {
 		// this if system is downright dubious
 		if (getIsRaised()) {

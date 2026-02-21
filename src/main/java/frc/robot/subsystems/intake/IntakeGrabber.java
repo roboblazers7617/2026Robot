@@ -16,6 +16,9 @@ public class IntakeGrabber extends SubsystemBase {
 	// controller for motor which intakes
 	private final TalonFX Motor;
 
+	/**
+	 * Constructor for motor for actual intaking part of intake. Uses TorqueCurrentFOC.
+	 */
 	public IntakeGrabber() {
 		Motor = new TalonFX(IntakeConstants.GRABBER_CAN_ID);
 
@@ -41,45 +44,61 @@ public class IntakeGrabber extends SubsystemBase {
 	// Motor.setControl(torqueCurrent.withOutput(40.0));
 
 	/**
-	 * command which toggles intake on
+	 * Command which toggles intake on
 	 * 
-	 * @param speed
+	 * @return runOnce(() -> startIntake());
 	 */
 	public Command startIntakeCommand() {
 		return runOnce(() -> startIntake());
 	}
 
 	/**
-	 * command which toggles intake off
+	 * Command which toggles intake off
+	 * 
+	 * @return runOnce(() -> stopIntake());
 	 */
 	public Command stopIntakeCommand() {
 		return runOnce(() -> stopIntake());
 	}
 
+	/**
+	 * Command which initiates outtake, to be triggered with held button. Stops intake when released.
+	 * 
+	 * @return run(() -> outtake()).finallyDo(() -> stopIntake());
+	 */
 	public Command outtakeCommand() {
 		return run(() -> outtake()).finallyDo(() -> stopIntake());
 	}
 
+	/**
+	 * Method which starts the intake with a TorqueCurrentFOC method.
+	 */
 	public void startIntake() {
 		// setSpeed(IntakeConstants.INTAKE_START_SPEED);
 		setTorque(IntakeConstants.INTAKE_START_TORQUE);
 	}
 
+	/**
+	 * Method which stops the intake with a TorqueCurrentFOC method.
+	 */
 	public void stopIntake() {
 		// setSpeed(IntakeConstants.INTAKE_STOP_SPEED);
 		setTorque(IntakeConstants.INTAKE_STOP_TORQUE);
 	}
 
+	/**
+	 * Method which starts the intake in reverse with a TorqueCurrentFOC method.
+	 */
 	public void outtake() {
 		// setSpeed(IntakeConstants.OUTTAKE_SPEED);
 		setTorque(IntakeConstants.OUTTAKE_TORQUE);
 	}
 
 	/**
-	 * method to make intake wheels go at
+	 * Method which makes intake motors spin at a certain speed utilizing TorqueCurrentFOC.
 	 * 
-	 * @param speed
-	 *            Speed [-1,1].
+	 * @param torque
+	 *            [-1,1].
 	 */
 	// private void setSpeed(double speed) {
 	// Motor.set(speed);

@@ -122,5 +122,6 @@ public final class Constants {
 		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_LIMIT = 30.0;
 		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_TIME = 0.15;
 		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 60.0;
+		public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 	}
 }
