@@ -28,10 +28,18 @@ public class RebuiltDashboard {
 	SendableChooser<Command> auto;
 	private final BooleanPublisher isEmpty;
 
+	/**
+	 * Constructor for dashboard
+	 * 
+	 * @param commandSwerveDrivetrain
+	 * @param robotContainer
+	 */
 	public RebuiltDashboard(CommandSwerveDrivetrain commandSwerveDrivetrain, RobotContainer robotContainer) {
+		// attaches object variables to class variables
 		this.commandSwerveDrivetrain = commandSwerveDrivetrain;
 		this.robotContainer = robotContainer;
 
+		// makes alliance selection menu in gui
 		alliancePicker = new SendableChooser<DriverStation.Alliance>();
 		alliancePicker.setDefaultOption("None", null);
 		alliancePicker.addOption("Blue", DriverStation.Alliance.Blue);
@@ -47,6 +55,7 @@ public class RebuiltDashboard {
 			}).ignoringDisable(true).schedule();
 		});
 
+		// makes pose selection menu in gui ?
 		pose = new SendableChooser<Pose2d>();
 		pose.setDefaultOption("center edge on blue side", new Pose2d(.5, 4, new Rotation2d(0)));
 		pose.addOption("position 2", new Pose2d(0, 0, new Rotation2d(45)));
@@ -79,6 +88,11 @@ public class RebuiltDashboard {
 		robotContainer.setAutoChooser(auto);
 	}
 
+	/**
+	 * I don't know what this does
+	 * 
+	 * @return
+	 */
 	private Command resetPose() {
 		return new InstantCommand(() -> {
 			commandSwerveDrivetrain.resetPose(pose.getSelected());
