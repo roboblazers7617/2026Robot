@@ -86,14 +86,23 @@ public final class Constants {
 		public final static int TOP_HOOK_ENCODER_CAN_ID;
 		public final static int BOTTOM_HOOK_ENCODER_CAN_ID;
 
-		public final static double KS;
-		public final static double KV;
-		public final static double KG;
-		public final static double KA;
+		public final static double ELEVATOR_KS;
+		public final static double ELEVATOR_KV;
+		public final static double ELEVATOR_KG;
+		public final static double ELEVATOR_KA;
 
-		public final static double KP;
-		public final static double KI;
-		public final static double KD;
+		public final static double ELEVATOR_KP;
+		public final static double ELEVATOR_KI;
+		public final static double ELEVATOR_KD;
+
+		public final static double HOOK_KS;
+		public final static double HOOK_KV;
+		public final static double HOOK_KG;
+		public final static double HOOK_KA;
+
+		public final static double HOOK_KP;
+		public final static double HOOK_KI;
+		public final static double HOOK_KD;
 
 		/**
 		 * Elevator kMinOutput as a percentage.
@@ -124,11 +133,15 @@ public final class Constants {
 		/**
 		 * Maximum position in meters.
 		 */
-		public static final double MAX_POSITION;
+		public static final double ELEVATOR_MAX_POSITION;
+		public static final double TOP_HOOK_MAX_POSITION;
+		public static final double BOTTOM_HOOK_MAX_POSITION;
 		/**
 		 * Minimum position in meters.
 		 */
-		public static final double MIN_POSITION = 0.0;
+		public static final double ELEVATOR_MIN_POSITION = 0.0;
+		public static final double TOP_HOOK_MIN_POSITION;
+		public static final double BOTTOM_HOOK_MIN_POSITION;
 		/**
 		 * Zero offset, meters.
 		 */
