@@ -91,11 +91,11 @@ public final class Constants {
 		/**
 		 * The CAN ID for the turret motor.
 		 */
-		public static final int MOTOR_ID = 0;
+		public static final int MOTOR_ID = 20;
 		/**
 		 * The CAN ID for the encoder CANdi.
 		 */
-		public static final int CANDI_ID = 0;
+		public static final int CANDI_ID = 20;
 
 		/**
 		 * The number of teeth on the main turret gear.
