@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.shooter.Turret;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
@@ -28,6 +29,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
+
+import static edu.wpi.first.units.Units.Degrees;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -60,6 +63,9 @@ public class RobotContainer {
 	 */
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
+
+	// Subsystems
+	private final Turret turret = new Turret();
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -137,7 +143,14 @@ public class RobotContainer {
 	/**
 	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
 	 */
-	private void configureOperatorControls() {}
+	private void configureOperatorControls() {
+		// Set turret to D-pad position
+		operatorController.povCenter()
+				.whileFalse(turret.setPositionMotionMagicCommand(() -> Degrees.of(operatorController.getHID().getPOV())));
+
+		operatorController.a()
+				.onTrue(turret.unspoolCommand());
+	}
 
 	/**
 	 * Use this to pass the autonomous command to the main {@link Robot} class.
