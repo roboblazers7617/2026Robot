@@ -219,7 +219,7 @@ public class ShooterSuperstructure {
 					break;
 				}
 
-				// Get the shooter to an initial setpoint with MotionMagic so we can start tracking
+				// Get the shooter to an initial setpoint so we can start tracking
 				if (targetPose.isPresent()) {
 					prepareShootAtTarget(targetPose.get(), false);
 				} else {
@@ -229,10 +229,10 @@ public class ShooterSuperstructure {
 				break;
 
 			case READY_TO_SHOOT:
-				// Tracking the target without MotionMagic
+				// Ready to shoot at a target, waiting for a command from drivers or auto to start shooting
 
-				// We don't use MotionMagic here because it should improve tracking accuracy
 				if (targetPose.isPresent()) {
+					// Keep tracking the target if we still have a target
 					prepareShootAtTarget(targetPose.get(), true);
 				} else {
 					// If we don't have a target anymore, home the shooter
@@ -241,7 +241,7 @@ public class ShooterSuperstructure {
 				break;
 
 			case SHOOTING:
-				// Tracking the target without MotionMagic and shooting
+				// Tracking the target and shooting
 
 				// Shooter timeout
 				if (!uptakeBeamBreak.get()) {
@@ -259,8 +259,8 @@ public class ShooterSuperstructure {
 					}
 				}
 
-				// We don't use MotionMagic here because it should improve tracking accuracy
 				if (targetPose.isPresent()) {
+					// Keep tracking the target if we still have a target
 					prepareShootAtTarget(targetPose.get(), true);
 				} else {
 					// If we don't have a target anymore, home the shooter
