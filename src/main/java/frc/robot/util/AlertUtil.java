@@ -1,6 +1,9 @@
 package frc.robot.util;
 
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
+
+import static edu.wpi.first.units.Units.Milliseconds;
 
 /**
  * A utility class used for sending alerts to Elastic and Driver Station.
@@ -35,8 +38,10 @@ public class AlertUtil {
 	 *            The title for the notification. This only gets displayed on Elastic, not on Driver Station.
 	 * @param message
 	 *            The description for the notification.
+	 * @param timeout
+	 *            The amount of time for the notification to show in Elastic. If set to zero, the notification will persist indefinitely.
 	 */
-	public static void sendNotification(AlertLevel level, String title, String message) {
+	public static void sendNotification(AlertLevel level, String title, String message, Time timeout) {
 		switch (level) {
 			case INFO:
 				System.out.println(message);
@@ -54,7 +59,7 @@ public class AlertUtil {
 		Elastic.Notification notification = new Elastic.Notification()
 				.withTitle(title)
 				.withDescription(message)
-				.withDisplayMilliseconds(5000);
+				.withDisplayMilliseconds((int) timeout.in(Milliseconds));
 
 		switch (level) {
 			case INFO:
