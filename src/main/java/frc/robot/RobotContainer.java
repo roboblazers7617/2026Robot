@@ -149,7 +149,7 @@ public class RobotContainer {
 		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
 		driverController.b().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))));
 		// bumpers
-		driverController.leftBumper().onTrue(drivetrain.applyRequest(() -> drivetrainControls.spin.withRotationalRate(-driverController.getRightX() * MaxAngularRate_Local)));
+		driverController.leftBumper().whileTrue(drivetrain.applyRequest(() -> spin.withRotationalRate(-driverController.getRightX() * MaxAngularRate_Local))).onFalse(drivetrain.resetRotation());
 		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
 		// triggers
 		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
