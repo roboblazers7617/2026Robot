@@ -297,7 +297,7 @@ public class ShooterSuperstructure {
 	}
 
 	/**
-	 * Command to start shooting. This can only be called from the {@link ShooterState#INITIALIZING} state.
+	 * Command to start shooting. This can only be called from the {@link ShooterState#READY_TO_SHOOT} state.
 	 * <p>
 	 * Exits when exiting the {@link ShooterState#SHOOTING} state.
 	 *
