@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.Constants.OperatorConstants;
@@ -121,15 +122,12 @@ public class RobotContainer {
 		final var idle = new SwerveRequest.Idle();
 		RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-		// driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-		// driverController.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))));
-
 		// Run SysId routines when holding back/start and X/Y.
 		// Note that each routine should be run exactly once in a single log.
-		// driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-		// driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-		// driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-		// driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+		driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+		driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+		driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+		driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
 		// Reset the field-centric heading on left bumper press.
 		driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
@@ -143,8 +141,8 @@ public class RobotContainer {
 	private void configureOperatorControls() {
 		operatorController.rightTrigger().onTrue(Commands.runOnce(() -> System.out.println("deploy intake")));
 		operatorController.rightBumper().onTrue(Commands.runOnce(() -> System.out.println("stow intake")));
-		operatorController.leftTrigger().onTrue(Commands.runOnce(() -> System.out.println("shoot shoot shoot")));
-		operatorController.leftBumper().onTrue(Commands.runOnce(() -> System.out.println("agitate hopper")));
+		operatorController.leftTrigger().whileTrue(Commands.runOnce(() -> System.out.println("shoot shoot shoot"))).onFalse(Commands.runOnce(() -> System.out.println("stop shooty (hopper -> uptake -> flywheel)")));
+		operatorController.leftBumper().whileTrue(Commands.runOnce(() -> System.out.println("agitate hopper"))).onFalse(Commands.runOnce(() -> System.out.println("stop agitation -> re-deploy intake")));
 		operatorController.y().onTrue(Commands.runOnce(() -> System.out.println("Outtake")));
 		operatorController.x().onTrue(Commands.runOnce(() -> System.out.println("Toggle Turret Tracking")));
 		operatorController.a().onTrue(Commands.runOnce(() -> System.out.println("Preset Shoot (defined angle)")));
