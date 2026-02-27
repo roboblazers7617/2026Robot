@@ -47,13 +47,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 @Logged
 public class RobotContainer {
 	private double local_max_speed = 0.35 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
-	private double MaxAngularRate_Local = 0.2 * RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+	private double MaxAngularRate_Local = 0.5 * RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
 			.withDeadband(local_max_speed * 0.1)
 			.withHeadingPID(6, 0, 0.1)
 			.withRotationalDeadband(MaxAngularRate_Local * 0.1) // Add a 10% deadband
 			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 	public final SwerveRequest.FieldCentric spin = new SwerveRequest.FieldCentric()
+			.withDeadband(local_max_speed * 0.1)
 			.withRotationalDeadband(MaxAngularRate_Local * 0.1) // Add a 10% deadband
 			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // se open-loop control for drive motors
 	private double MaxAngularRate = 0 * RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
@@ -130,12 +131,9 @@ public class RobotContainer {
 		drivetrain.setDefaultCommand(
 				// Drivetrain will execute this command periodically
 				drivetrain.applyRequest(() -> {
-					if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
-						drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
-					}
-
-					return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
+					return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
+							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier)
+							.withRotationalRate(-driverController.getRightX() * MaxAngularRate_Local);// Drive left with negative X (left)
 				}));
 
 		// Idle while the robot is disabled. This ensures the configured
@@ -149,7 +147,15 @@ public class RobotContainer {
 		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
 		driverController.b().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))));
 		// bumpers
-		driverController.leftBumper().whileTrue(drivetrain.applyRequest(() -> spin.withRotationalRate(-driverController.getRightX() * MaxAngularRate_Local))).onFalse(drivetrain.resetRotation());
+		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
+			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
+				drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
+			}
+
+			return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
+					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
+		})));
+		// .whileTrue(drivetrain.applyRequest(() -> spin.withRotationalRate(-driverController.getRightX() * MaxAngularRate_Local))).onFalse(Commands.runOnce(() -> drivetrain.resetRotation(drivetrain.getPigeon2().getRotation2d())));
 		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
 		// triggers
 		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
