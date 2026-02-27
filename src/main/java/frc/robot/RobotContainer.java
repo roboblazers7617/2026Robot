@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.DrivetrainControls;
 import frc.robot.Constants.DashboardConstants;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
 
@@ -16,14 +18,20 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.MissingFormatWidthException;
+
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -38,20 +46,11 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
  */
 @Logged
 public class RobotContainer {
-	private double MaxSpeed = 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-	private double MaxAngularRate = 0 * RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+	private double MaxAngularRate = 0 * RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
+	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED);
 
-	/* Setting up bindings for necessary control of the swerve drive platform */
-	private final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
-			.withDeadband(MaxSpeed * 0.1)
-			.withHeadingPID(6, 0, 0.1)
-			.withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-	private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-	private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
-
-	private final Telemetry logger = new Telemetry(MaxSpeed);
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */
@@ -66,15 +65,25 @@ public class RobotContainer {
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
+
+	/* Path follower */
+	// private final SendableChooser<Command> autoChooser;
+
 	public RobotContainer() {
 		// Publish version metadata
 		VersionConstants.publishNetworkTables(NetworkTableInstance.getDefault().getTable("/Metadata"));
 		VersionConstants.logSignals();
 
+		// autoChooser = AutoBuilder.buildAutoChooser("Tests");
+		// SmartDashboard.putData("Auto Mode", autoChooser);
+
 		// Configure the trigger bindings
 		configureNamedCommands();
 		configureDriverControls();
 		configureOperatorControls();
+
+		// Warmup PathPlanner to avoid Java pauses
+		FollowPathCommand.warmupCommand().schedule();
 	}
 
 	/**
@@ -112,11 +121,11 @@ public class RobotContainer {
 				// Drivetrain will execute this command periodically
 				drivetrain.applyRequest(() -> {
 					if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
-						drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
+						drivetrainControls.drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
 					}
 
-					return drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-							.withVelocityY(-driverController.getLeftX() * MaxSpeed);// Drive left with negative X (left)
+					return drivetrainControls.drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
+							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
 				}));
 
 		// Idle while the robot is disabled. This ensures the configured
@@ -124,18 +133,16 @@ public class RobotContainer {
 		final var idle = new SwerveRequest.Idle();
 		RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-		driverController.a().whileTrue(drivetrain.applyRequest(() -> brake));
-		driverController.b().whileTrue(drivetrain.applyRequest(() -> point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))));
-
-		// Run SysId routines when holding back/start and X/Y.
-		// Note that each routine should be run exactly once in a single log.
-		driverController.back().and(driverController.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-		driverController.back().and(driverController.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-		driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-		driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-
-		// Reset the field-centric heading on left bumper press.
-		driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+		// start and stop
+		driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+		// letter buttons
+		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
+		driverController.b().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.point.withModuleDirection(new Rotation2d(-driverController.getLeftY(), -driverController.getLeftX()))));
+		// bumpers
+		driverController.leftBumper().onTrue(drivetrain.applyRequest(() -> drivetrainControls.spin.withRotationalRate(-driverController.getRightX() * MaxAngularRate)));
+		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
+		// triggers
+		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
 
 		drivetrain.registerTelemetry(logger::telemeterize);
 	}
@@ -154,6 +161,7 @@ public class RobotContainer {
 		// // Simple drive forward auton
 		// final var idle = new SwerveRequest.Idle();
 		return Commands.sequence();
+		// return autoChooser.getSelected();
 		// // // Reset our field centric heading to match the robot
 		// // // facing away from our alliance station wall (0 deg).
 		// // drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
