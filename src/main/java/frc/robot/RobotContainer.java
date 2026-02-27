@@ -161,7 +161,8 @@ public class RobotContainer {
 	 */
 	private void configureNamedCommands() {
 		NamedCommands.registerCommand("home", shooterSuperstructure.homeCommand());
-		NamedCommands.registerCommand("shoot", shooterSuperstructure.startShootingCommand());
+		NamedCommands.registerCommand("shoot", Commands.waitUntil(shooterSuperstructure.readyToShootTrigger())
+				.andThen(shooterSuperstructure.startShootingCommand()));
 	}
 
 	/**
