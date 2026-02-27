@@ -26,6 +26,8 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -157,7 +159,10 @@ public class RobotContainer {
 	/**
 	 * Sets up the {@link NamedCommands} used by the autonomous routine.
 	 */
-	private void configureNamedCommands() {}
+	private void configureNamedCommands() {
+		NamedCommands.registerCommand("home", shooterSuperstructure.homeCommand());
+		NamedCommands.registerCommand("shoot", shooterSuperstructure.startShootingCommand());
+	}
 
 	/**
 	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller buttons.
