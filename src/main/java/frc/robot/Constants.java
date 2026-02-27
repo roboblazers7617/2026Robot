@@ -84,8 +84,8 @@ public final class Constants {
 
 	public static class DrivetrainConstants {
 		public static final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
-		public static final double MAX_SPEED_MULTIPLIER = 0.8;
-		public static final double NORMAL_SPEED_MULTIPLIER = 0.5;
+		public static final double MAX_SPEED_MULTIPLIER = 0.5;
+		public static final double NORMAL_SPEED_MULTIPLIER = 0.35;
 		public static final double SLOW_SPEED_MULTIPLIER = 0.25;
 		public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
 	}

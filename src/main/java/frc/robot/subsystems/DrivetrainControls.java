@@ -80,14 +80,14 @@ public class DrivetrainControls {
 				.finallyDo(this::resetSpeedMultiplier);
 	}
 
-	public Command defualtSwerveCommand() {
-		return drivetrain.applyRequest(() -> {
-			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
-				drivetrainControls.drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
-			}
+	// public Command defualtSwerveCommand() {
+	// 	return drivetrain.applyRequest(() -> {
+	// 		if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
+	// 			drivetrainControls.drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
+	// 		}
 
-			return drivetrainControls.drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
-		});
-	}
+	// 		return drivetrainControls.drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
+	// 				.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
+	// 	});
+	// }
 }

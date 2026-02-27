@@ -48,7 +48,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 public class RobotContainer {
 	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
 			.withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
-			.withHeadingPID(6, 0, 0.1)
+			.withHeadingPID(3, 0, 0.1)
 			.withRotationalDeadband(DrivetrainConstants.MaxAngularRate * 0.1) // Add a 10% deadband
 			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 	public final SwerveRequest.FieldCentric spin = new SwerveRequest.FieldCentric()
