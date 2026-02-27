@@ -46,6 +46,14 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
  */
 @Logged
 public class RobotContainer {
+	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
+			.withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
+			.withHeadingPID(6, 0, 0.1)
+			.withRotationalDeadband(DrivetrainConstants.MaxAngularRate * 0.1) // Add a 10% deadband
+			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+	public final SwerveRequest.FieldCentric spin = new SwerveRequest.FieldCentric()
+			.withRotationalDeadband(DrivetrainConstants.MaxAngularRate * 0.1) // Add a 10% deadband
+			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // se open-loop control for drive motors
 	private double MaxAngularRate = 0 * RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second
 	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED);
 
@@ -121,10 +129,10 @@ public class RobotContainer {
 				// Drivetrain will execute this command periodically
 				drivetrain.applyRequest(() -> {
 					if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
-						drivetrainControls.drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
+						drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
 					}
 
-					return drivetrainControls.drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
+					return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
 							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
 				}));
 
