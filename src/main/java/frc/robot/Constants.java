@@ -4,11 +4,15 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
+import frc.robot.generated.TunerConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -82,5 +86,21 @@ public final class Constants {
 		 * AprilTag Field Layout for the current game.
 		 */
 		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+	}
+
+	public static class DrivetrainConstants {
+		/**
+		 * Speed Multipliers
+		 */
+
+		public static final double MAX_SPEED_MULTIPLIER = 0.5;
+		public static final double NORMAL_SPEED_MULTIPLIER = 0.35;
+		public static final double SLOW_SPEED_MULTIPLIER = 0.25;
+		// for use in speed multiplier ONLY
+		public static final double MAX_SPEED_SWERVE = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+		// for use in other things that do not need to have maximum speed/speed multiplier
+		public static final double MAX_SPEED_DEADBAND = 0.35 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+		// will set spinny mode turn speed
+		public static final double MAX_ANGULAR_RATE_DEADBAND = 0.5 * RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 	}
 }
