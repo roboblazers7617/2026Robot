@@ -2,15 +2,11 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.DrivetrainConstants;
-import frc.robot.Telemetry;
-import frc.robot.generated.TunerConstants;
 
 public class DrivetrainControls {
 	public final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
