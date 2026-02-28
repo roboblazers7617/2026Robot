@@ -23,8 +23,8 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -37,6 +37,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
  */
 @Logged
 public class RobotContainer {
+	private SendableChooser<Command> autoChooser;
+
 	private double MaxSpeed = 0.25 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
 	private double MaxAngularRate = 0 * RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
@@ -50,6 +52,7 @@ public class RobotContainer {
 
 	private final Telemetry logger = new Telemetry(MaxSpeed);
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */
@@ -145,18 +148,34 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		// Simple drive forward auton
-		final var idle = new SwerveRequest.Idle();
-		return Commands.sequence(
-				// Reset our field centric heading to match the robot
-				// facing away from our alliance station wall (0 deg).
-				drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-				// Then slowly drive forward (away from us) for 5 seconds.
-				drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
-						.withVelocityY(0)
-						.withRotationalRate(0))
-						.withTimeout(5.0),
-				// Finally idle for the rest of auton
-				drivetrain.applyRequest(() -> idle));
+		// TODO: I removed the simple auton and use the selected one instead, do we still need this.
+		return autoChooser.getSelected();
+		// // Simple drive forward auton
+		// final var idle = new SwerveRequest.Idle();
+		// return Commands.sequence(
+		// // Reset our field centric heading to match the robot
+		// // facing away from our alliance station wall (0 deg).
+		// drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
+		// // Then slowly drive forward (away from us) for 5 seconds.
+		// drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
+		// .withVelocityY(0)
+		// .withRotationalRate(0))
+		// .withTimeout(5.0),
+		// // Finally idle for the rest of auton
+		// drivetrain.applyRequest(() -> idle));
+	}
+
+	public void setAutoChooser(SendableChooser<Command> auto) {
+		autoChooser = auto;
+	}
+
+	/**
+	 * Gets the current value of the uptake beam break.
+	 *
+	 * @return
+	 *         True if there is a ball in uptake, false otherwise.
+	 */
+	public boolean getIsBallInUptake() {
+		return true;
 	}
 }

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.config.PIDConstants;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
@@ -17,6 +19,11 @@ import edu.wpi.first.epilogue.Logged;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+	public static class AutoConstants {
+		public static final PIDConstants TRANSLATION_PID_CONSTANTS = new PIDConstants(5.0, 0.0, 0.0);
+		public static final PIDConstants ROTATION_PID_CONSTANTS = new PIDConstants(5.0, 0.0, 0.0);
+	}
+
 	/**
 	 * Constants used to configure the operator controllers.
 	 */
