@@ -40,7 +40,7 @@ public class DrivetrainControls {
 	 * @param speedMultiplier
 	 *            Multiplier to set (0, 1].
 	 */
-	public void setSpeedMultiplier(double speedMultiplier) {
+	private void setSpeedMultiplier(double speedMultiplier) {
 		this.speedMultiplier = speedMultiplier;
 		System.out.println(speedMultiplier);
 	}
@@ -48,7 +48,7 @@ public class DrivetrainControls {
 	/**
 	 * Sets the controller speed multiplier back to normal
 	 */
-	public void resetSpeedMultiplier() {
+	private void resetSpeedMultiplier() {
 		setSpeedMultiplier(DrivetrainConstants.NORMAL_SPEED_MULTIPLIER);
 	}
 

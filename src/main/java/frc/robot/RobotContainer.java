@@ -14,9 +14,6 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
 
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
@@ -39,7 +36,6 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 @Logged
 public class RobotContainer {
-	private double MaxAngularRate_Local = 0.5 * RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 	// swerve request for face heading on right stick
 	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
 			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
@@ -127,7 +123,7 @@ public class RobotContainer {
 				drivetrain.applyRequest(() -> {
 					return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
 							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
-							.withRotationalRate(-driverController.getRightX() * MaxAngularRate_Local);// Drive left with negative X (left)
+							.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
 				}));
 
 		// Idle while the robot is disabled. This ensures the configured
