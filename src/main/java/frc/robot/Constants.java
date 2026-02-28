@@ -83,10 +83,14 @@ public final class Constants {
 	}
 
 	public static class DrivetrainConstants {
-		public static final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+		// Speed Multipliers
 		public static final double MAX_SPEED_MULTIPLIER = 0.5;
 		public static final double NORMAL_SPEED_MULTIPLIER = 0.35;
 		public static final double SLOW_SPEED_MULTIPLIER = 0.25;
-		public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+		// for use in speed multiplier ONLY
+		public static final double MAX_SPEED_SWERVE = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+		// for use in other things that do not need to have maximum speed/speed multiplier
+		public static final double MAX_SPEED_DEADBAND = 0.35 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+		public static final double MAX_ANGULAR_RATE_DEADBAND = 0.5 * RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 	}
 }

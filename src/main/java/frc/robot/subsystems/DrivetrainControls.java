@@ -13,17 +13,6 @@ import frc.robot.Telemetry;
 import frc.robot.generated.TunerConstants;
 
 public class DrivetrainControls {
-
-	/* Setting up bindings for necessary control of the swerve drive platform */
-	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
-			.withDeadband(DrivetrainConstants.MAX_SPEED * 0.1)
-			.withHeadingPID(6, 0, 0.1)
-			.withRotationalDeadband(DrivetrainConstants.MaxAngularRate * 0.1) // Add a 10% deadband
-			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-	public final SwerveRequest.FieldCentric spin = new SwerveRequest.FieldCentric()
-			.withRotationalDeadband(DrivetrainConstants.MaxAngularRate * 0.1) // Add a 10% deadband
-			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // se open-loop control for drive motors
-
 	public final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 	public final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -79,15 +68,4 @@ public class DrivetrainControls {
 		return Commands.run(() -> setSpeedMultiplier(speedMultiplier.get()))
 				.finallyDo(this::resetSpeedMultiplier);
 	}
-
-	// public Command defualtSwerveCommand() {
-	// 	return drivetrain.applyRequest(() -> {
-	// 		if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
-	// 			drivetrainControls.drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
-	// 		}
-
-	// 		return drivetrainControls.drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-	// 				.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
-	// 	});
-	// }
 }
