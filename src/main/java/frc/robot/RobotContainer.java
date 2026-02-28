@@ -25,6 +25,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -40,12 +41,10 @@ public class RobotContainer {
 	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
 			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
 			.withHeadingPID(5, 0, 0.1)
-			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1) // Add a 10% deadband
+			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1)
+			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Add a 10% deadband
 	private SendableChooser<Command> autoChooser;
 
-	
-
-	
 	// swerve request for regular spinny (the defualt this year)
 	public final SwerveRequest.FieldCentric spin = new SwerveRequest.FieldCentric()
 			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
