@@ -13,6 +13,31 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
 import frc.robot.generated.TunerConstants;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rectangle2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.LinearVelocityUnit;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
+import frc.robot.util.BiAlliancePose3d;
+import frc.robot.util.InterpolatingMeasureTreeMap;
+import frc.robot.util.PoseUtil;
+import frc.robot.util.RectangleUtil;
+
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -86,6 +111,49 @@ public final class Constants {
 		 * AprilTag Field Layout for the current game.
 		 */
 		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+		/**
+		 * A pose at the center of the field.
+		 */
+		public static final Pose2d FIELD_CENTER = new Pose2d(FIELD_LAYOUT.getFieldLength() / 2, FIELD_LAYOUT.getFieldWidth() / 2, Rotation2d.kZero);
+		/**
+		 * A rectangle encompassing the neutral (center) zone of the field.
+		 */
+		public static final Rectangle2d NEUTRAL_RECTANGLE = new Rectangle2d(FIELD_CENTER, Inches.of(287.0), Meters.of(FIELD_LAYOUT.getFieldWidth()));
+
+		/**
+		 * Zones and poses to shoot from and to.
+		 */
+		public static class ShootingZones {
+			/**
+			 * A rectangle encompassing the shooting zone for the top half (towards negative Y) of the neutral rectangle (when looking at the field diagram).
+			 */
+			public static final Rectangle2d NEUTRAL_ZONE_TOP = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(0, -FIELD_LAYOUT.getFieldWidth() / 3.0, Rotation2d.kZero)), NEUTRAL_RECTANGLE.getXWidth(), NEUTRAL_RECTANGLE.getYWidth() / 3.0);
+			/**
+			 * A rectangle encompassing the shooting zone for the bottom half (towards positive Y) of the neutral rectangle (when looking at the field diagram).
+			 */
+			public static final Rectangle2d NEUTRAL_ZONE_BOTTOM = RectangleUtil.flipRectangleY(NEUTRAL_ZONE_TOP);
+			/**
+			 * The pose to shoot at for the {@link #NEUTRAL_ZONE_TOP top of the neutral rectangle} (when looking at the field diagram).
+			 */
+			public static final BiAlliancePose3d SHUTTLE_TOP_POSE = BiAlliancePose3d.fromBluePose(new Pose3d(Meters.of(3.0), Meters.of(2.0), Meters.zero(), Rotation3d.kZero), BiAlliancePose3d.InvertY.KEEP_Y);
+			/**
+			 * The pose to shoot at for the {@link #NEUTRAL_ZONE_BOTTOM bottom of the neutral rectangle} (when looking at the field diagram).
+			 */
+			public static final BiAlliancePose3d SHUTTLE_BOTTOM_POSE = BiAlliancePose3d.fromBluePose(PoseUtil.flipPoseY(SHUTTLE_TOP_POSE.getBluePose()), BiAlliancePose3d.InvertY.KEEP_Y);
+
+			/**
+			 * A rectangle encompassing the shooting zone for the hub on the red alliance.
+			 */
+			public static final Rectangle2d HUB_ZONE_RED = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(Inches.of(234.555).plus(Meters.of(0.1)), Meters.zero(), Rotation2d.kZero)), Inches.of(182.11), Meters.of(5.0));
+			/**
+			 * A rectangle encompassing the shooting zone for the hub on the blue alliance.
+			 */
+			public static final Rectangle2d HUB_ZONE_BLUE = RectangleUtil.flipRectangleX(HUB_ZONE_RED);
+			/**
+			 * The pose to shoot at for the {@link #HUB_ZONE_RED} and {@link #HUB_ZONE_BLUE}.
+			 */
+			public static final BiAlliancePose3d HUB_POSE = BiAlliancePose3d.fromRedPose(new Pose3d(FIELD_CENTER).transformBy(new Transform3d(Inches.of(143.50), Meters.zero(), Inches.of(72.0), Rotation3d.kZero)), BiAlliancePose3d.InvertY.KEEP_Y);
+		}
 	}
 
 	public static class DrivetrainConstants {
@@ -102,5 +170,73 @@ public final class Constants {
 		public static final double MAX_SPEED_DEADBAND = 0.35 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
 		// will set spinny mode turn speed
 		public static final double MAX_ANGULAR_RATE_DEADBAND = 0.5 * RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+	}
+
+	/**
+	 * Constants that configure the superstructure.
+	 */
+	public static class SuperstructureConstants {
+		/**
+		 * The table name for the shooter superstructure.
+		 */
+		public static final String SHOOTER_SUPERSTRUCTURE_TABLE_NAME = "Shooter Superstructure";
+		/**
+		 * The table name for the intake superstructure.
+		 */
+		public static final String INTAKE_SUPERSTRUCTURE_TABLE_NAME = "Intake Superstructure";
+	}
+
+	/**
+	 * Constants that control the shooting behavior.
+	 */
+	public static class ShootingConstants {
+		/**
+		 * An interpolation table used for flywheel speed by gamepiece velocity.
+		 */
+		public static final InterpolatingMeasureTreeMap<LinearVelocity, LinearVelocityUnit, AngularVelocity, AngularVelocityUnit> FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY = new InterpolatingMeasureTreeMap<>();
+
+		static {
+			// Add values to the interpolation table
+			FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.put(MetersPerSecond.of(0.0), RPM.of(10.0));
+			FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.put(MetersPerSecond.of(10.0), RPM.of(50.0));
+		}
+
+		/**
+		 * An interpolation table used for hood angle by gamepiece velocity.
+		 */
+		public static final InterpolatingMeasureTreeMap<Angle, AngleUnit, Angle, AngleUnit> HOOD_ANGLE_BY_GAMEPIECE_THETA = new InterpolatingMeasureTreeMap<>();
+
+		static {
+			// Add values to the interpolation table
+			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(0.0), Degrees.of(0.0));
+			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(90.0), Degrees.of(90.0));
+		}
+
+		/**
+		 * The angle to shoot the gamepiece at.
+		 */
+		public static final Angle GAMEPIECE_THETA = Degrees.of(80.0);
+
+		/**
+		 * The acceleration due to gravity imposed on the gamepiece.
+		 */
+		public static final LinearAcceleration GAMEPIECE_G = MetersPerSecondPerSecond.of(-9.81);
+	}
+
+	/**
+	 * Constants used to configure the turret.
+	 */
+	public static class TurretConstants {
+		/**
+		 * The turret's offset from the center of the robot (drivetrain pose).
+		 */
+		public static final Transform3d TURRET_OFFSET = new Transform3d(Inches.of(5.0), Inches.of(5.062), Meters.of(0.0), Rotation3d.kZero);
+	}
+
+	/**
+	 * Constants used to configure the hopper.
+	 */
+	public static class HopperConstants {
+		public static final int BEAM_BREAK_DIO_PIN = 0;
 	}
 }

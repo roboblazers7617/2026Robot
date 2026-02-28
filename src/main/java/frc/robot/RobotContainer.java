@@ -9,8 +9,15 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.DrivetrainControls;
+import frc.robot.subsystems.StubbedHood;
+import frc.robot.subsystems.StubbedHopperUptake;
+import frc.robot.subsystems.StubbedFlywheel;
+import frc.robot.subsystems.StubbedTurret;
+import frc.robot.superstructure.ShooterSuperstructure;
+import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
 
@@ -19,11 +26,15 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -51,11 +62,25 @@ public class RobotContainer {
 			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1) // Add a 10% deadband
 			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // se open-loop control for drive motors
 
-	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
+	/**
+	 * The beam break on the uptake.
+	 * <p>
+	 * Reads true if there is a ball going through uptake, false otherwise.
+	 */
+	public final DigitalInput uptakeBeamBreak = new DigitalInput(HopperConstants.BEAM_BREAK_DIO_PIN);
+	public final DIOSim uptakeBeamBreakSim = new DIOSim(uptakeBeamBreak);
 
+	// Define subsystems
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
+	public final StubbedFlywheel shooter = new StubbedFlywheel();
+	public final StubbedHood hood = new StubbedHood();
+	public final StubbedTurret turret = new StubbedTurret();
+	public final StubbedHopperUptake hopperUptake = new StubbedHopperUptake(uptakeBeamBreakSim);
+
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
+	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
+
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */
@@ -66,6 +91,15 @@ public class RobotContainer {
 	 */
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
+
+	/**
+	 * Superstructure that handles controlling the shooter and related subsystems.
+	 */
+	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure(drivetrain, shooter, hood, turret, hopperUptake, uptakeBeamBreak);
+	/**
+	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
+	 */
+	private ShooterSuperstructureDebug shooterSuperstructureDebug;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -89,6 +123,9 @@ public class RobotContainer {
 
 		// Warmup PathPlanner to avoid Java pauses
 		FollowPathCommand.warmupCommand().schedule();
+		if (LoggingConstants.DEBUG_MODE) {
+			shooterSuperstructureDebug = new ShooterSuperstructureDebug(shooterSuperstructure);
+		}
 	}
 
 	/**
@@ -112,9 +149,21 @@ public class RobotContainer {
 	}
 
 	/**
+	 * This method handles the periodic functionality for the superstructure.
+	 * This is done seperate from the subsystem periodic so it can be updated more frequently.
+	 */
+	public void superstructurePeriodic() {
+		shooterSuperstructure.update();
+	}
+
+	/**
 	 * Sets up the {@link NamedCommands} used by the autonomous routine.
 	 */
-	private void configureNamedCommands() {}
+	private void configureNamedCommands() {
+		NamedCommands.registerCommand("home", shooterSuperstructure.homeCommand());
+		NamedCommands.registerCommand("shoot", Commands.waitUntil(shooterSuperstructure.readyToShootTrigger())
+				.andThen(shooterSuperstructure.startShootingCommand()));
+	}
 
 	/**
 	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller buttons.
@@ -208,5 +257,15 @@ public class RobotContainer {
 	 */
 	public boolean getIsBallInUptake() {
 		return true;
+	}
+
+	/**
+	 * Gets the current value of the uptake beam break.
+	 *
+	 * @return
+	 *         True if there is a ball in uptake, false otherwise.
+	 */
+	public boolean getIsBallInUptake() {
+		return uptakeBeamBreak.get();
 	}
 }
