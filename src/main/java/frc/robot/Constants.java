@@ -7,6 +7,7 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -22,6 +23,11 @@ import frc.robot.generated.TunerConstants;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+	public static class AutoConstants {
+		public static final PIDConstants TRANSLATION_PID_CONSTANTS = new PIDConstants(5.0, 0.0, 0.0);
+		public static final PIDConstants ROTATION_PID_CONSTANTS = new PIDConstants(5.0, 0.0, 0.0);
+	}
+
 	/**
 	 * Constants used to configure the operator controllers.
 	 */
