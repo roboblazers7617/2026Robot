@@ -46,7 +46,7 @@ public class DrivetrainControls {
 	}
 
 	/**
-	 * Sets the controller speed multiplier back to {@link DrivetrainConstants#TRANSLATION_SCALE_NORMAL}.
+	 * Sets the controller speed multiplier back to normal
 	 */
 	public void resetSpeedMultiplier() {
 		setSpeedMultiplier(DrivetrainConstants.NORMAL_SPEED_MULTIPLIER);
