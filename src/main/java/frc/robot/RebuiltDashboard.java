@@ -69,7 +69,7 @@ public class RebuiltDashboard {
 		NetworkTableInstance.getDefault().getTable("SmartDashboard/Alliance").getEntry("active").setString("None");
 		SmartDashboard.putData("Alliance", alliancePicker);
 		SmartDashboard.putData("Pose", pose);
-		SmartDashboard.putData("Reset pose to selected position", resetPose());
+		SmartDashboard.putData("Reset pose to selected position", resetPoseCommand());
 	}
 
 	/**
@@ -89,11 +89,11 @@ public class RebuiltDashboard {
 	}
 
 	/**
-	 * I don't know what this does
+	 * A command to reset the pose of the robot.
 	 * 
 	 * @return
 	 */
-	private Command resetPose() {
+	private Command resetPoseCommand() {
 		return new InstantCommand(() -> {
 			commandSwerveDrivetrain.resetPose(pose.getSelected());
 		}).ignoringDisable(true);
