@@ -68,7 +68,7 @@ public class Auto {
 	/**
 	 * Configures AutoBuilder if it hasn't already been configured. This should be run on enable so things like pathfinding commands don't cause the code to crash.
 	 *
-	 * @param drivetrain
+	 * @param commandSwerveDrivetrain
 	 *            The Drivetrain for PathPlanner to control.
 	 */
 	public static void setupPathPlannerFailsafe(CommandSwerveDrivetrain commandSwerveDrivetrain) {
