@@ -23,6 +23,7 @@ import frc.robot.subsystems.StubbedHood;
 import frc.robot.subsystems.StubbedHopperUptake;
 import frc.robot.subsystems.StubbedFlywheel;
 import frc.robot.subsystems.StubbedTurret;
+import frc.robot.util.AlertUtil;
 
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Degrees;
@@ -175,7 +176,7 @@ public class ShooterSuperstructure {
 		stateMachine = new StateMachine<>(ShooterState.HOME, stateMachineConfig);
 
 		stateMachine.onUnhandledTrigger((ShooterState state, ShooterTrigger trigger) -> {
-			DriverStation.reportError("Unhandled trigger: " + trigger + " from state: " + state, true);
+			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Unhandled trigger", "Unhandled trigger: " + trigger + " from state: " + state, Seconds.of(3.0));
 		});
 
 		// Put commands on SmartDashboard
