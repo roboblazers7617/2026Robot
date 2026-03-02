@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.wpilibj2.command.Command;
@@ -9,8 +10,19 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.Constants.DrivetrainConstants;
 
 public class DrivetrainControls {
+	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
+			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * DrivetrainConstants.DRIVE_DEADBAND)
+			.withHeadingPID(DrivetrainConstants.HEADING_kP, DrivetrainConstants.HEADING_ki, DrivetrainConstants.HEADING_kd)
+			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * DrivetrainConstants.ROTATIONAL_DEADBAND)
+			.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
+	// swerve request for regular spinny (the defualt this year)
+	public final SwerveRequest.FieldCentric spin = new SwerveRequest.FieldCentric()
+			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * DrivetrainConstants.DRIVE_DEADBAND)
+			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * DrivetrainConstants.ROTATIONAL_DEADBAND)
+			.withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+
 	public final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-	public final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
 	/**
 	 * The Drivetrain to control.
@@ -42,7 +54,6 @@ public class DrivetrainControls {
 	 */
 	private void setSpeedMultiplier(double speedMultiplier) {
 		this.speedMultiplier = speedMultiplier;
-		System.out.println(speedMultiplier);
 	}
 
 	/**

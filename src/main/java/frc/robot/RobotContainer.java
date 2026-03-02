@@ -37,21 +37,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 @Logged
 public class RobotContainer {
-	// swerve request for face heading on right stick
-	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
-			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
-			.withHeadingPID(5, 0, 0.1)
-			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1)
-			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Add a 10% deadband
-	private SendableChooser<Command> autoChooser;
-
-	// swerve request for regular spinny (the defualt this year)
-	public final SwerveRequest.FieldCentric spin = new SwerveRequest.FieldCentric()
-			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
-			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1) // Add a 10% deadband
-			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // se open-loop control for drive motors
-
 	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
+	private SendableChooser<Command> autoChooser;
 
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
@@ -125,7 +112,7 @@ public class RobotContainer {
 		drivetrain.setDefaultCommand(
 				// Drivetrain will execute this command periodically
 				drivetrain.applyRequest(() -> {
-					return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
+					return drivetrainControls.spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
 							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
 							.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
 				}));
@@ -140,12 +127,12 @@ public class RobotContainer {
 		// letter buttons
 		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
 		// bumpers
-		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
+		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drivetrainControls.drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
 			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
-				drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
+				drivetrainControls.drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
 			}
 
-			return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
+			return drivetrainControls.drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
 					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
 		})));
 		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
