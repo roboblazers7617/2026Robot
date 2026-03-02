@@ -23,7 +23,6 @@ import yams.units.EasyCRTConfig;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -32,11 +31,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.Constants.TurretConstants;
-import frc.robot.util.Elastic;
+import frc.robot.util.AlertUtil;
 
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Seconds;
 
 /**
  * The turret that the shooter is attached to.
@@ -316,12 +316,7 @@ public class Turret extends SubsystemBase {
 		if (turretPosition.isPresent()) {
 			motor.setPosition(turretPosition.get());
 		} else {
-			Elastic.Notification notification = new Elastic.Notification()
-					.withLevel(Elastic.Notification.NotificationLevel.ERROR)
-					.withTitle("Failed to solve turret encoder position!")
-					.withDescription("Failed to solve the turret encoder's position. This shouldn't happen! Try moving the turret a bit and restarting the robot code to see if it will solve correctly.");
-			Elastic.sendNotification(notification);
-			DriverStation.reportError("Failed to solve turret encoder position!", false);
+			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Failed to solve turret position!", "Failed to solve the turret's position. This shouldn't happen! Try moving the turret a bit and restarting the robot code to see if it will solve correctly.", Seconds.zero());
 		}
 
 		return turretPosition.isPresent();
