@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.DrivetrainControls;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.LoggingConstants;
@@ -41,7 +40,6 @@ public class RobotContainer {
 	private SendableChooser<Command> autoChooser;
 
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
@@ -112,8 +110,8 @@ public class RobotContainer {
 		drivetrain.setDefaultCommand(
 				// Drivetrain will execute this command periodically
 				drivetrain.applyRequest(() -> {
-					return drivetrainControls.spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
+					return drivetrain.spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrain.speedMultiplier) // Drive forward with negative Y (forward)
+							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrain.speedMultiplier)
 							.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
 				}));
 
@@ -125,19 +123,19 @@ public class RobotContainer {
 		// start and stop
 		driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 		// letter buttons
-		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
+		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrain.brake));
 		// bumpers
-		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drivetrainControls.drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
+		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drivetrain.drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
 			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
-				drivetrainControls.drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
+				drivetrain.drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
 			}
 
-			return drivetrainControls.drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
+			return drivetrain.drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrain.speedMultiplier) // Drive forward with negative Y (forward)
+					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrain.speedMultiplier);// Drive left with negative X (left)
 		})));
-		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
+		driverController.rightBumper().whileTrue(drivetrain.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
 		// triggers
-		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
+		driverController.rightTrigger().whileTrue(drivetrain.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
 
 		drivetrain.registerTelemetry(logger::telemeterize);
 	}
