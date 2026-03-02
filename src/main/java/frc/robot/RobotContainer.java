@@ -256,16 +256,6 @@ public class RobotContainer {
 	 *         True if there is a ball in uptake, false otherwise.
 	 */
 	public boolean getIsBallInUptake() {
-		return true;
-	}
-
-	/**
-	 * Gets the current value of the uptake beam break.
-	 *
-	 * @return
-	 *         True if there is a ball in uptake, false otherwise.
-	 */
-	public boolean getIsBallInUptake() {
 		return uptakeBeamBreak.get();
 	}
 }
