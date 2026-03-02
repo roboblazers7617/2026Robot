@@ -194,7 +194,7 @@ public class ShooterSuperstructure {
 	 * updating the tracking for the shooter.
 	 */
 	public void update() {
-		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(drivetrain.getState().Pose);
+		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(drivetrain.getPose2d());
 
 		// Check the current state and handle sequence transitions.
 		switch (stateMachine.getState()) {
@@ -386,7 +386,7 @@ public class ShooterSuperstructure {
 	 *         The pose of the shooting target for the current drivetrain position.
 	 */
 	public Pose3d getTargetForPosition() {
-		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(drivetrain.getState().Pose);
+		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(drivetrain.getPose2d());
 
 		if (targetPose.isPresent()) {
 			return targetPose.get();
@@ -404,7 +404,7 @@ public class ShooterSuperstructure {
 	 *            Is the shooter currently tracking a target?
 	 */
 	private void prepareShootAtTarget(Pose3d targetPose, boolean tracking) {
-		Pose2d robotPose = drivetrain.getState().Pose;
+		Pose2d robotPose = drivetrain.getPose2d();
 
 		setValues(ShootingCalculator.solve(new Pose3d(robotPose), targetPose), tracking);
 	}
