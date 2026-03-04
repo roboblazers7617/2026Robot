@@ -24,6 +24,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Time;
 import frc.robot.util.BiAlliancePose3d;
 import frc.robot.util.InterpolatingMeasureTreeMap;
 import frc.robot.util.PoseUtil;
@@ -37,6 +38,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -220,6 +222,11 @@ public final class Constants {
 		 * The acceleration due to gravity imposed on the gamepiece.
 		 */
 		public static final LinearAcceleration GAMEPIECE_G = MetersPerSecondPerSecond.of(-9.81);
+
+		/**
+		 * How long to wait after no balls are detected to stop shooting.
+		 */
+		public static final Time SHOOTING_TIMEOUT = Seconds.of(2.0);
 	}
 
 	/**

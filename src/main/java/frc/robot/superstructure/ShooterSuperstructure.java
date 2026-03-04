@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.StubbedHood;
@@ -79,7 +80,7 @@ public class ShooterSuperstructure {
 		/**
 		 * Currently tracking and shooting at a target. Spindexer is spindexing.
 		 * <p>
-		 * Once the hopper is out of balls (defined as when the hopper beam break hasn't detected a ball for 2 seconds), this will automatically transition back to {@link #HOME} state.
+		 * Once the hopper is out of balls (defined as when the hopper beam break hasn't detected a ball for {@link ShootingConstants#SHOOTING_TIMEOUT}), this will automatically transition back to {@link #HOME} state.
 		 */
 		SHOOTER_ACTIVE,
 	}
@@ -262,7 +263,7 @@ public class ShooterSuperstructure {
 					System.out.println("Reset the shooting timeout");
 				} else {
 					// After a little while of the beam break being off, stop the shooter
-					if (shooterTimeout.hasElapsed(Seconds.of(2.0))) {
+					if (shooterTimeout.hasElapsed(ShootingConstants.SHOOTING_TIMEOUT)) {
 						stateMachine.fire(ShooterTrigger.HOME);
 
 						shooterTimeout.stop();
