@@ -54,6 +54,8 @@ public class ShooterSuperstructure {
 	enum ShooterState {
 		/**
 		 * Homed and waiting for a target.
+		 * <p>
+		 * If a target is found for our current position, this will automatically transition to {@link #SHOOTING}.
 		 */
 		HOME,
 		/**
@@ -61,17 +63,25 @@ public class ShooterSuperstructure {
 		 */
 		MANUAL_CONTROL,
 		/**
-		 * Has target, waiting for things to ready.
+		 * The shooter has a target and is in some stage of shooting. We never transition directly to this state, only substates of it.
 		 */
-		INITIALIZING,
+		SHOOTING,
 		/**
-		 * Initialized and ready to shoot.
+		 * Has target, waiting for things to ready. Substate of {@link #SHOOTING}.
+		 * <p>
+		 * Once the subsystems are all ready, this will automatically transition to {@link #READY_TO_SHOOT}.
+		 */
+		INITIALIZING_SHOOTER,
+		/**
+		 * Initialized and ready to shoot. Waiting for {@link ShooterTrigger#START_SHOOTING}.
 		 */
 		READY_TO_SHOOT,
 		/**
-		 * Currently tracking and shooting at a target.
+		 * Currently tracking and shooting at a target. Spindexer is spindexing.
+		 * <p>
+		 * Once the hopper is out of balls (defined as when the hopper beam break hasn't detected a ball for 2 seconds), this will automatically transition back to {@link #HOME} state.
 		 */
-		SHOOTING,
+		SHOOTER_ACTIVE,
 	}
 
 	/**
@@ -139,39 +149,37 @@ public class ShooterSuperstructure {
 		this.uptakeBeamBreak = uptakeBeamBreak;
 
 		// Set up the state machine
+		// ---- Home state ----
 		stateMachineConfig.configure(ShooterState.HOME)
 				.onEntry(this::home)
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL)
-				.permit(ShooterTrigger.INITIALIZE, ShooterState.INITIALIZING);
+				.permit(ShooterTrigger.INITIALIZE, ShooterState.INITIALIZING_SHOOTER);
 
+		// ---- Manual control ----
 		stateMachineConfig.configure(ShooterState.MANUAL_CONTROL)
 				.permit(ShooterTrigger.HOME, ShooterState.HOME);
 
-		stateMachineConfig.configure(ShooterState.INITIALIZING)
-				// Spin up uptake while initializing
+		// ---- Shooting state -----
+		stateMachineConfig.configure(ShooterState.SHOOTING)
+				// Spin up uptake while shooting
 				.onEntry(hopperUptake::startUptakeForward)
 				.onExit(hopperUptake::stopUptake)
 				.permit(ShooterTrigger.HOME, ShooterState.HOME)
-				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL)
+				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL);
+
+		stateMachineConfig.configure(ShooterState.INITIALIZING_SHOOTER)
+				.substateOf(ShooterState.SHOOTING)
 				.permit(ShooterTrigger.READY_TO_SHOOT, ShooterState.READY_TO_SHOOT);
 
 		stateMachineConfig.configure(ShooterState.READY_TO_SHOOT)
-				// Spin up uptake while awaiting shoot command
-				.onEntry(hopperUptake::startUptakeForward)
-				.onExit(hopperUptake::stopUptake)
-				.permit(ShooterTrigger.HOME, ShooterState.HOME)
-				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL)
-				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING);
+				.substateOf(ShooterState.SHOOTING)
+				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTER_ACTIVE);
 
-		stateMachineConfig.configure(ShooterState.SHOOTING)
-				// Run uptake while shooting
-				.onEntry(hopperUptake::startUptakeForward)
-				.onExit(hopperUptake::stopUptake)
+		stateMachineConfig.configure(ShooterState.SHOOTER_ACTIVE)
+				.substateOf(ShooterState.SHOOTING)
 				// Run hopper while shooting
 				.onEntry(hopperUptake::startHopperForward)
-				.onExit(hopperUptake::stopHopper)
-				.permit(ShooterTrigger.HOME, ShooterState.HOME)
-				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL);
+				.onExit(hopperUptake::stopHopper);
 
 		stateMachine = new StateMachine<>(ShooterState.HOME, stateMachineConfig);
 
@@ -211,7 +219,11 @@ public class ShooterSuperstructure {
 			case MANUAL_CONTROL:
 				break;
 
-			case INITIALIZING:
+			case SHOOTING:
+				// We don't really have to worry about the shooting state itself since we are always in substates of it.
+				break;
+
+			case INITIALIZING_SHOOTER:
 				// Preparing to track a target
 
 				// Once we reach the target, start to track
@@ -241,7 +253,7 @@ public class ShooterSuperstructure {
 				}
 				break;
 
-			case SHOOTING:
+			case SHOOTER_ACTIVE:
 				// Tracking the target and shooting
 
 				// Shooter timeout
@@ -300,18 +312,18 @@ public class ShooterSuperstructure {
 	/**
 	 * Command to start shooting. This can only be called from the {@link ShooterState#READY_TO_SHOOT} state.
 	 * <p>
-	 * Exits when exiting the {@link ShooterState#SHOOTING} state.
+	 * Exits when exiting the {@link ShooterState#SHOOTER_ACTIVE} state.
 	 *
 	 * @return
 	 *         Command to run.
 	 */
 	public Command startShootingCommand() {
 		return Commands.runOnce(() -> stateMachine.fire(ShooterTrigger.START_SHOOTING))
-				.andThen(Commands.waitUntil(() -> !stateMachine.isInState(ShooterState.SHOOTING)));
+				.andThen(Commands.waitUntil(() -> !stateMachine.isInState(ShooterState.SHOOTER_ACTIVE)));
 	}
 
 	/**
-	 * Sets the shooter state to the specified state. This requires that you are in manual mode.
+	 * Sets the shooter state to the specified state. This requires that you are in {@link ShooterState#MANUAL_CONTROL}.
 	 * <p>
 	 * This assumes that we are not tracking a target, since that is done internally.
 	 *
@@ -331,7 +343,7 @@ public class ShooterSuperstructure {
 	}
 
 	/**
-	 * Command to prepare to shoot at a certain target pose from the drivetrain's current pose. This requires that you are in manual mode.
+	 * Command to prepare to shoot at a certain target pose from the drivetrain's current pose. This requires that you are in {@link ShooterState#MANUAL_CONTROL}.
 	 * <p>
 	 * This assumes that we are not tracking a target, since that is done internally.
 	 *
