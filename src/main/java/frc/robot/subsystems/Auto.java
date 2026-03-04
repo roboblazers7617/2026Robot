@@ -22,7 +22,8 @@ public class Auto {
 	/**
 	 * Setup AutoBuilder for PathPlanner.
 	 */
-	public static void setupPathPlanner(CommandSwerveDrivetrain commandSwerveDrivetrain, DriverStation.Alliance alliance) {
+	public static void setupPathPlanner(CommandSwerveDrivetrain commandSwerveDrivetrain,
+			DriverStation.Alliance alliance) {
 		// Load the RobotConfig from the GUI settings. You should probably
 		// store this in your Constants file
 		RobotConfig config;
@@ -37,16 +38,22 @@ public class Auto {
 					// Method to reset odometry (will be called if your auto has a starting pose)
 					() -> commandSwerveDrivetrain.getState().Speeds,
 					// ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-					(speeds, feedforwards) -> commandSwerveDrivetrain.setControl(m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020)).withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons()).withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
-					// Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+					(speeds, feedforwards) -> commandSwerveDrivetrain
+							.setControl(m_pathApplyRobotSpeeds.withSpeeds(ChassisSpeeds.discretize(speeds, 0.020))
+									.withWheelForceFeedforwardsX(feedforwards.robotRelativeForcesXNewtons())
+									.withWheelForceFeedforwardsY(feedforwards.robotRelativeForcesYNewtons())),
+					// Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also
+					// optionally outputs individual module feedforwards
 					new PPHolonomicDriveController(
-							// PPHolonomicController is the built in path following controller for holonomic drive trains
+							// PPHolonomicController is the built in path following controller for holonomic
+							// drive trains
 							AutoConstants.TRANSLATION_PID_CONSTANTS, // Translation PID constants
 							AutoConstants.ROTATION_PID_CONSTANTS // Rotation PID constants
 					), config,
 					// The robot configuration
 					() -> {
-						// Boolean supplier that controls when the path will be mirrored for the red alliance
+						// Boolean supplier that controls when the path will be mirrored for the red
+						// alliance
 						// This will flip the path being followed to the red side of the field.
 						// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
@@ -66,14 +73,17 @@ public class Auto {
 	}
 
 	/**
-	 * Configures AutoBuilder if it hasn't already been configured. This should be run on enable so things like pathfinding commands don't cause the code to crash.
+	 * Configures AutoBuilder if it hasn't already been configured. This should be
+	 * run on enable so things like pathfinding commands don't cause the code to
+	 * crash.
 	 *
-	 * @param drivetrain
-	 *            The Drivetrain for PathPlanner to control.
+	 * @param commandSwerveDrivetrain
+	 *                                The Drivetrain for PathPlanner to control.
 	 */
 	public static void setupPathPlannerFailsafe(CommandSwerveDrivetrain commandSwerveDrivetrain) {
 		if (!AutoBuilder.isConfigured()) {
-			System.err.println("AutoBuilder not configured before enabling! Configuring AutoBuilder with data from the FMS.");
+			System.err.println(
+					"AutoBuilder not configured before enabling! Configuring AutoBuilder with data from the FMS.");
 			Auto.setupPathPlanner(commandSwerveDrivetrain, DriverStation.getAlliance()
 					.orElse(DriverStation.Alliance.Blue));
 		}
@@ -83,13 +93,15 @@ public class Auto {
 	 * Get the path follower with events.
 	 *
 	 * @param pathName
-	 *            PathPlanner path name.
+	 *                 PathPlanner path name.
 	 * @return
 	 *         {@link AutoBuilder#followPath(PathPlannerPath)} path command.
 	 */
 	public static Command getAutonomousCommand(String pathName) {
-		// Create a path following command using AutoBuilder. This will also trigger event markers.
-		// TODO: #119 (Max) I think would be better to add the ResetLastAngularScalar here
+		// Create a path following command using AutoBuilder. This will also trigger
+		// event markers.
+		// TODO: #119 (Max) I think would be better to add the ResetLastAngularScalar
+		// here
 		return new PathPlannerAuto(pathName);
 	}
 }
