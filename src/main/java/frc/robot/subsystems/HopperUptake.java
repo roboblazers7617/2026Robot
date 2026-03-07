@@ -33,6 +33,7 @@ public class HopperUptake extends SubsystemBase {
 
 	VelocityVoltage velocity = new VelocityVoltage(0);
 
+	// TODO: I don't think that beambreak lives in your subsystem. You don't need to worry about it
 	private final DigitalInput isTrippedBeamBreak;
 
 	private AngularVelocity setpoint = RadiansPerSecond.zero();
@@ -46,6 +47,7 @@ public class HopperUptake extends SubsystemBase {
 		// The configuration for uptake
 		TalonFXConfiguration uptakeConfig = new TalonFXConfiguration();
 		uptakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+		// TODO: Add in which way the motor spins counterclockwise positive or clockwise positive
 		uptakeConfig.CurrentLimits.StatorCurrentLimit = HopperConstants.UPTAKE_SUPPLY_CURRENT_LIMIT;
 		uptakeConfig.CurrentLimits.SupplyCurrentLimit = HopperConstants.UPTAKE_SUPPLY_CURRENT_LIMIT;
 		uptakeConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperConstants.UPTAKE_LOWER_CURRENT_LIMIT;
@@ -60,6 +62,7 @@ public class HopperUptake extends SubsystemBase {
 		// The configuration for hopper
 		TalonFXConfiguration hopperConfig = new TalonFXConfiguration();
 		hopperConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+		// TODO: Add in which way the motor spins counterclockwise positive or clockwise positive
 		hopperConfig.CurrentLimits.StatorCurrentLimit = HopperConstants.HOPPER_SUPPLY_CURRENT_LIMIT;
 		hopperConfig.CurrentLimits.SupplyCurrentLimit = HopperConstants.HOPPER_SUPPLY_CURRENT_LIMIT;
 		hopperConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperConstants.HOPPER_LOWER_CURRENT_LIMIT;
@@ -72,6 +75,7 @@ public class HopperUptake extends SubsystemBase {
 		hopperConfig.Slot0.kV = HopperConstants.HOPPER_KV;
 		hopperConfig.Slot0.kS = HopperConstants.HOPPER_KS;
 		// Try to apply config multiple time. Break after successfully applying
+		// TODO: These should probably be two separate for loops as once we have set one motor, we don't need to keep trying
 		for (int i = 0; i < 2; ++i) {
 			var status = bigSpinny.getConfigurator().apply(uptakeConfig);
 			var status2 = littleSpinny.getConfigurator().apply(hopperConfig);
@@ -97,6 +101,7 @@ public class HopperUptake extends SubsystemBase {
 
 	private void startUptakeMotorRPM(AngularVelocity RPS) {
 		bigSpinny.setControl(velocity.withVelocity(RPS));
+		// TODO: Don't you need to udpate the setpoint that you are tracking?
 	}
 
 	public void startHopperForward() {
@@ -117,9 +122,12 @@ public class HopperUptake extends SubsystemBase {
 
 	public void stopHopper() {
 		littleSpinny.stopMotor();
+		// TODO: Are we trakcing the hopper setpoint? Or just the uptake?
 		setpoint = RadiansPerSecond.zero();
 	}
 
+	// TODO: I'm wondering if we need separate stopUptake and stopHopper functions as we would always
+	// need to stop both. Right? At least we can't stop uptake if hopper is not also stopped.
 	public void stopUptake() {
 		bigSpinny.stopMotor();
 		setpoint = RadiansPerSecond.zero();
@@ -140,6 +148,7 @@ public class HopperUptake extends SubsystemBase {
 		bigSpinny.stopMotor();
 	}
 
+	// TODO: Should this be strtUptakeForwardCommand so it is clear what it is starting?
 	public Command start() {
 		return runOnce(() -> startUptakeForward());
 	}
