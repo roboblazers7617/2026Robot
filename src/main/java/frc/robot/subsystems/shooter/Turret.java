@@ -126,7 +126,9 @@ public class Turret extends SubsystemBase {
 
 		// Current limit configuration
 		CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-		limitConfigs.SupplyCurrentLimit = TurretConstants.MOTOR_CURRENT_LIMIT;
+		limitConfigs.SupplyCurrentLimit = TurretConstants.MOTOR_CURRENT_HIGHER_LIMIT;
+		limitConfigs.SupplyCurrentLowerLimit = TurretConstants.MOTOR_CURRENT_LOWER_LIMIT;
+		limitConfigs.withSupplyCurrentLowerTime(TurretConstants.MOTOR_CURRENT_LOWER_TIME);
 		limitConfigs.SupplyCurrentLimitEnable = true;
 		talonFXConfigurator.apply(limitConfigs);
 

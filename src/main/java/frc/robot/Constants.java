@@ -16,10 +16,12 @@ import frc.robot.generated.TunerConstants;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Time;
 import yams.math.SmartMath;
 
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Milliseconds;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -166,9 +168,18 @@ public final class Constants {
 		public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(ENCODER_GEAR_RATIO, ENCODER_GEAR_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
 
 		/**
-		 * The current limit for the motor.
+		 * The higher current limit for the motor. Helps get the motor started before switching to the {@link #MOTOR_CURRENT_LOWER_LIMIT}.
 		 */
-		public static final double MOTOR_CURRENT_LIMIT = 40.0;
+		public static final double MOTOR_CURRENT_HIGHER_LIMIT = 60.0;
+		/**
+		 * The lower current limit for the motor.
+		 */
+		public static final double MOTOR_CURRENT_LOWER_LIMIT = 40.0;
+		/**
+		 * The time to supply the {@link #MOTOR_CURRENT_HIGHER_LIMIT} for before switching to the {@link #MOTOR_CURRENT_LOWER_LIMIT}.
+		 */
+		public static final Time MOTOR_CURRENT_LOWER_TIME = Milliseconds.of(100);
+
 		/**
 		 * The PID kP for the turret closed loop controller.
 		 */
