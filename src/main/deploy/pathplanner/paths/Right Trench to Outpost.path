@@ -12,7 +12,7 @@
         "y": 0.710701357466063
       },
       "isLocked": false,
-      "linkedName": "Right Edge Trench"
+      "linkedName": null
     },
     {
       "anchor": {
@@ -48,7 +48,7 @@
   "folder": "Riley and Lukas",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

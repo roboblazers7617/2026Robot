@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.239219457013574,
-        "y": 1.1005882352941172
+        "x": 7.09305952380475,
+        "y": 0.6445476190423618
       },
       "isLocked": false,
       "linkedName": "Right Intook Neutral"
@@ -20,15 +20,20 @@
         "y": 0.5875791855203625
       },
       "prevControl": {
-        "x": 5.704954751131222,
-        "y": 0.3823755656108596
+        "x": 6.887904761900739,
+        "y": 0.6877380952430565
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Right Edge Trench"
+      "linkedName": "Right Shooting"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.7967093235831842,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
   "folder": "Riley and Lukas",

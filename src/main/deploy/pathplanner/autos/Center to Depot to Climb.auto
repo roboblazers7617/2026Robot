@@ -9,28 +9,15 @@
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Left Trench to Neutral"
+                  "name": "Deploy Intake"
                 }
               },
               {
-                "type": "sequential",
+                "type": "path",
                 "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Deploy Intake"
-                      }
-                    }
-                  ]
+                  "pathName": "Center to Depot"
                 }
               }
             ]
@@ -39,13 +26,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Intake Left Neutral"
+            "pathName": "Intake Depot"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Intook Left to Trench"
+            "pathName": "Intook Depot"
           }
         },
         {
@@ -69,14 +56,14 @@
                 "data": {
                   "name": "Raise Climb"
                 }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Left Trench to Climb"
-                }
               }
             ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Depot to Climb"
           }
         },
         {

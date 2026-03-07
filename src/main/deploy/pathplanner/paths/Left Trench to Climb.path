@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.509276018104262,
-        "y": 7.441380090493568
+        "x": 3.249107142857142,
+        "y": 7.414654761904761
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.3579589152799563,
-        "y": 6.72082173521227
+        "x": 1.0977900400328364,
+        "y": 6.694096406623463
       },
       "isLocked": false,
-      "linkedName": "Left Edge Trench"
+      "linkedName": "Left Shooting"
     },
     {
       "anchor": {
-        "x": 0.9339705882352944,
-        "y": 4.794253393665158
+        "x": 0.8844285714285725,
+        "y": 4.628869047619048
       },
       "prevControl": {
-        "x": 2.0720020296407053,
-        "y": 5.8691462641638
+        "x": 2.0224600128339834,
+        "y": 5.70376191811769
       },
       "nextControl": null,
       "isLocked": false,
@@ -48,7 +48,7 @@
   "folder": "Riley and Lukas",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

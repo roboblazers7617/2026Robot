@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.540056561085973,
-        "y": 0.5875791855203625
+        "x": 3.573035714285715,
+        "y": 0.4609880952380956
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.540056561085973,
-        "y": 0.5875791855203625
+        "x": 4.573035714285715,
+        "y": 0.4609880952380956
       },
       "isLocked": false,
       "linkedName": "Right Edge Trench"
@@ -48,7 +48,7 @@
   "folder": "Riley and Lukas",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

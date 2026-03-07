@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left Trench to Neutral"
+                  "pathName": "Right Trench to Neutral"
                 }
               },
               {
@@ -39,13 +39,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Intake Left Neutral"
+            "pathName": "Intake Right Neutral"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Intook Left to Trench"
+            "pathName": "Intook Right to Trench"
           }
         },
         {
@@ -73,7 +73,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Left Trench to Climb"
+                  "pathName": "Right Trench to Climb"
                 }
               }
             ]
@@ -82,7 +82,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Climb Left"
+            "pathName": "Climb Right"
           }
         },
         {
