@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.416,
-        "y": 4.063
+        "x": 1.378,
+        "y": 5.95
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5517121292372886,
-        "y": 3.804195246292373
+        "x": 2.014491634418577,
+        "y": 5.366046028913995
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Depot"
     },
     {
       "anchor": {
-        "x": 3.416,
-        "y": 0.829
+        "x": 3.447714932126697,
+        "y": 4.055520361990951
       },
       "prevControl": {
-        "x": 2.416,
-        "y": 0.8290000000000001
+        "x": 3.1608133608230116,
+        "y": 4.28138985683799
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Center Alliance"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Other paths",
+  "folder": "Riley and Lukas",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
