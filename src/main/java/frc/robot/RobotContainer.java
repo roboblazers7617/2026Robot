@@ -40,6 +40,7 @@ public class RobotContainer {
 	// swerve request for face heading on right stick
 	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
 			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
+			// TODO: (Caleb) Please put in constants file
 			.withHeadingPID(5, 0, 0.1)
 			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1)
 			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Add a 10% deadband
@@ -140,11 +141,12 @@ public class RobotContainer {
 		// letter buttons
 		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
 		// bumpers
+		// TODO: (Caleb) Please put in some comments to describe this logic
 		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
 			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
 				drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
 			}
-
+			// TODO: (Caleb) Can you pleas comment what this return is doing?
 			return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
 					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
 		})));
