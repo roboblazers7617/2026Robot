@@ -40,6 +40,9 @@ import static edu.wpi.first.units.Units.Seconds;
 
 /**
  * The turret that the shooter is attached to.
+ *
+ * @apiNote
+ *          All set position methods in this class are robot-relative, since we don't want to interact with Drivetrain if we don't have to.
  */
 @Logged
 public class Turret extends SubsystemBase {
