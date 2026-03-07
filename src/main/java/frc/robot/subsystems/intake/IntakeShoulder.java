@@ -28,6 +28,7 @@ public class IntakeShoulder extends SubsystemBase {
 	public IntakeShoulder() {
 		motor = new TalonFX(IntakeConstants.SHOULDER_CAN_ID);
 
+		// TODO: See the comments on IntakeGrabber on how to better code this
 		TalonFXConfigurator motorConfigurator = motor.getConfigurator();
 
 		// Current limit configuration
@@ -42,6 +43,7 @@ public class IntakeShoulder extends SubsystemBase {
 
 		MotorOutputConfigs motorOutputConfigs = new MotorOutputConfigs();
 		// Puts the motor in Coast mode to make it easier to move by hand
+		// TODO: This needs to be in brake mode so it stays in place
 		motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
 		// Configure the motor to make sure positive voltage is counter clockwise
 		motorOutputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -76,6 +78,7 @@ public class IntakeShoulder extends SubsystemBase {
 		motor.setPosition(IntakeConstants.SHOULDER_STOWED_ANGLE);
 	}
 
+	// TODO: Move to top of class before constructor
 	private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0);
 
 	/**
@@ -115,6 +118,7 @@ public class IntakeShoulder extends SubsystemBase {
 	 * 
 	 * @return run(() -> agitate()).finallyDo(() -> raiseIntake());
 	 */
+	// TODO: I don't think we need this anymore now that we are a linear slide
 	public Command agitateCommand() {
 		return run(() -> agitate()).finallyDo(() -> raiseIntake());
 	}
@@ -131,6 +135,7 @@ public class IntakeShoulder extends SubsystemBase {
 	/**
 	 * Method which sets motor position to specified stowed angle.
 	 */
+	// TODO: Should be private
 	public void raiseIntake() {
 		setPositionPlease(IntakeConstants.SHOULDER_STOWED_ANGLE);
 		// setPosition(0.25);
@@ -139,6 +144,7 @@ public class IntakeShoulder extends SubsystemBase {
 	/**
 	 * Method which sets motor position to specified lowered angle.
 	 */
+	// TODO: Should be private
 	public void lowerIntake() {
 		setPositionPlease(IntakeConstants.SHOULDER_LOWERED_ANGLE);
 		// setPosition(0);
@@ -147,6 +153,7 @@ public class IntakeShoulder extends SubsystemBase {
 	/**
 	 * Method which sets motor position to specified depot angle.
 	 */
+	// TODO: Should be private
 	public void lowerToDepot() {
 		setPositionPlease(IntakeConstants.SHOULDER_DEPOT_ANGLE);
 	}
@@ -154,6 +161,7 @@ public class IntakeShoulder extends SubsystemBase {
 	/**
 	 * Method which sets motor position to specified low angle. To be used in agitate command
 	 */
+	// TODO: Should be private
 	public void lowerAgitate() {
 		setPositionPlease(IntakeConstants.AGITATE_LOWERED_ANGLE);
 	}
@@ -161,6 +169,7 @@ public class IntakeShoulder extends SubsystemBase {
 	/**
 	 * Method which sets motor position to specified high angle. To be used in agitate command
 	 */
+	// TODO: Should be private
 	public void raiseAgitate() {
 		setPositionPlease(IntakeConstants.AGITATE_RAISED_ANGLE);
 	}
@@ -202,6 +211,7 @@ public class IntakeShoulder extends SubsystemBase {
 	/**
 	 * Method which moves arm to a raised position when in lowered position and vice versa. This is intended to be called through a continuous RunCommand triggered by a held button. Does not have an end state by default, this must be implemented in said Command.
 	 */
+	// TODO: This should be private unless it is a command
 	public void agitate() {
 		// this if system is downright dubious
 		if (getIsRaised()) {

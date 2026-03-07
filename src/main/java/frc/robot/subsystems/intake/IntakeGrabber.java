@@ -25,6 +25,11 @@ public class IntakeGrabber extends SubsystemBase {
 		TalonFXConfigurator MotorConfigurator = Motor.getConfigurator();
 
 		// Current limit configuration
+		// TODO: You don't need to create new objects for CurrentLimitConfigs, MotorOutputConfigs, etc.
+		// You can just do the following...
+		// var talonFXConfigs = new TalonFXConfiguration();
+		// var limitConfigs = talonFXConfigs.limitConfigs;
+		// etc.
 		CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
 		limitConfigs.SupplyCurrentLowerLimit = IntakeConstants.GRABBER_SUPPLY_CURRENT_LOWER_LIMIT;
 		limitConfigs.SupplyCurrentLimit = IntakeConstants.GRABBER_SUPPLY_CURRENT_LIMIT;
@@ -32,14 +37,18 @@ public class IntakeGrabber extends SubsystemBase {
 		limitConfigs.SupplyCurrentLimitEnable = true;
 		limitConfigs.StatorCurrentLimit = IntakeConstants.GRABBER_STATOR_CURRENT_LIMIT;
 		limitConfigs.StatorCurrentLimitEnable = true;
+		// TODO: Don't need to apply these configs if you use the code above. Just need to apply once
 		MotorConfigurator.apply(limitConfigs);
 
 		MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
 		outputConfigs.NeutralMode = NeutralModeValue.Coast;
 		outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
+		// TODO: Don't need to apply these configs individually if you use the code above.
 		MotorConfigurator.apply(outputConfigs);
+		// TODO: (Benjamin) The apply for the configs should be wrapped in a for loop to ensure it works. See the sample code in the document I created about configuring the talons
 	}
 
+	// TODO: This should be at the top of the class before the constructor
 	private final TorqueCurrentFOC torqueCurrent = new TorqueCurrentFOC(0);
 	// Motor.setControl(torqueCurrent.withOutput(40.0));
 
@@ -73,6 +82,7 @@ public class IntakeGrabber extends SubsystemBase {
 	/**
 	 * Method which starts the intake with a TorqueCurrentFOC method.
 	 */
+	// TODO: This can be private as others should use your commands
 	public void startIntake() {
 		// setSpeed(IntakeConstants.INTAKE_START_SPEED);
 		setTorque(IntakeConstants.INTAKE_START_TORQUE);
@@ -81,6 +91,7 @@ public class IntakeGrabber extends SubsystemBase {
 	/**
 	 * Method which stops the intake with a TorqueCurrentFOC method.
 	 */
+	// TODO: This can be private as others should use your commands
 	public void stopIntake() {
 		// setSpeed(IntakeConstants.INTAKE_STOP_SPEED);
 		setTorque(IntakeConstants.INTAKE_STOP_TORQUE);
@@ -89,6 +100,7 @@ public class IntakeGrabber extends SubsystemBase {
 	/**
 	 * Method which starts the intake in reverse with a TorqueCurrentFOC method.
 	 */
+	// TODO: This can be private as others should use your commands
 	public void outtake() {
 		// setSpeed(IntakeConstants.OUTTAKE_SPEED);
 		setTorque(IntakeConstants.OUTTAKE_TORQUE);
@@ -103,7 +115,7 @@ public class IntakeGrabber extends SubsystemBase {
 	// private void setSpeed(double speed) {
 	// Motor.set(speed);
 	// }
-
+	// TODO: This isn't a torque. It is a current
 	private void setTorque(double torque) {
 		Motor.setControl(torqueCurrent.withOutput(torque));
 	}
