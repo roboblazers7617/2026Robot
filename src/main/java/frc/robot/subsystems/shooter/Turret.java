@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.FeedbackConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -122,41 +123,41 @@ public class Turret extends SubsystemBase {
 			}
 		}
 
-		TalonFXConfigurator talonFXConfigurator = motor.getConfigurator();
+		TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
 
 		// Current limit configuration
-		CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-		limitConfigs.SupplyCurrentLimit = TurretConstants.MOTOR_CURRENT_HIGHER_LIMIT;
-		limitConfigs.SupplyCurrentLowerLimit = TurretConstants.MOTOR_CURRENT_LOWER_LIMIT;
-		limitConfigs.withSupplyCurrentLowerTime(TurretConstants.MOTOR_CURRENT_LOWER_TIME);
-		limitConfigs.SupplyCurrentLimitEnable = true;
-		talonFXConfigurator.apply(limitConfigs);
+		talonFXConfiguration.CurrentLimits
+				.withSupplyCurrentLimit(TurretConstants.MOTOR_CURRENT_HIGHER_LIMIT)
+				.withSupplyCurrentLowerLimit(TurretConstants.MOTOR_CURRENT_LOWER_LIMIT)
+				.withSupplyCurrentLowerTime(TurretConstants.MOTOR_CURRENT_LOWER_TIME)
+				.withSupplyCurrentLimitEnable(true);
 
 		// Sensor feedback configuration
 		// TODO: Get this set up so the rotor to mechanism ratio works properly
-		FeedbackConfigs feedbackConfigs = new FeedbackConfigs();
-		feedbackConfigs.FeedbackRemoteSensorID = encoderCandi.getDeviceID();
-		feedbackConfigs.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANdiPWM1;
-		feedbackConfigs.SensorToMechanismRatio = TurretConstants.PRIMARY_ENCODER_RATIO;
-		feedbackConfigs.RotorToSensorRatio = TurretConstants.MOTOR_TO_PRIMARY_ENCODER_RATIO;
-		talonFXConfigurator.apply(feedbackConfigs);
+		talonFXConfiguration.Feedback
+				.withFeedbackRemoteSensorID(encoderCandi.getDeviceID())
+				.withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANdiPWM1)
+				.withSensorToMechanismRatio(TurretConstants.PRIMARY_ENCODER_RATIO)
+				.withRotorToSensorRatio(TurretConstants.MOTOR_TO_PRIMARY_ENCODER_RATIO);
 
 		// PID configuration
-		Slot0Configs slot0Configs = new Slot0Configs();
-		slot0Configs.kS = TurretConstants.TURRET_KS;
-		slot0Configs.kV = TurretConstants.TURRET_KV;
-		slot0Configs.kA = TurretConstants.TURRET_KA;
-		slot0Configs.kP = TurretConstants.TURRET_KP;
-		slot0Configs.kI = TurretConstants.TURRET_KI;
-		slot0Configs.kD = TurretConstants.TURRET_KD;
-		talonFXConfigurator.apply(slot0Configs);
+		talonFXConfiguration.Slot0
+				.withKS(TurretConstants.TURRET_KS)
+				.withKV(TurretConstants.TURRET_KV)
+				.withKA(TurretConstants.TURRET_KA)
+				.withKP(TurretConstants.TURRET_KP)
+				.withKI(TurretConstants.TURRET_KI)
+				.withKD(TurretConstants.TURRET_KD);
 
 		// MotionMagic configuration
-		MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
-		motionMagicConfigs.MotionMagicCruiseVelocity = TurretConstants.CRUISE_VELOCITY;
-		motionMagicConfigs.MotionMagicAcceleration = TurretConstants.ACCELERATION;
-		motionMagicConfigs.MotionMagicJerk = TurretConstants.JERK;
-		talonFXConfigurator.apply(motionMagicConfigs);
+		talonFXConfiguration.MotionMagic
+				.withMotionMagicCruiseVelocity(TurretConstants.CRUISE_VELOCITY)
+				.withMotionMagicAcceleration(TurretConstants.ACCELERATION)
+				.withMotionMagicJerk(TurretConstants.JERK);
+
+		// Apply the configuration to the motor
+		TalonFXConfigurator talonFXConfigurator = motor.getConfigurator();
+		talonFXConfigurator.apply(talonFXConfiguration);
 
 		// Set up stuff for simulation
 		if (Utils.isSimulation()) {
