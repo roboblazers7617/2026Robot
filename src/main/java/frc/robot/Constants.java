@@ -14,14 +14,22 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
 import frc.robot.generated.TunerConstants;
 import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularAccelerationUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Velocity;
 import yams.math.SmartMath;
 
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -170,11 +178,11 @@ public final class Constants {
 		/**
 		 * The higher current limit for the motor. Helps get the motor started before switching to the {@link #MOTOR_CURRENT_LOWER_LIMIT}.
 		 */
-		public static final double MOTOR_CURRENT_HIGHER_LIMIT = 60.0;
+		public static final Current MOTOR_CURRENT_HIGHER_LIMIT = Amps.of(60.0);
 		/**
 		 * The lower current limit for the motor.
 		 */
-		public static final double MOTOR_CURRENT_LOWER_LIMIT = 40.0;
+		public static final Current MOTOR_CURRENT_LOWER_LIMIT = Amps.of(40.0);
 		/**
 		 * The time to supply the {@link #MOTOR_CURRENT_HIGHER_LIMIT} for before switching to the {@link #MOTOR_CURRENT_LOWER_LIMIT}.
 		 */
@@ -207,15 +215,15 @@ public final class Constants {
 		/**
 		 * The peak/cruising velocity of the motion.
 		 */
-		public static final double CRUISE_VELOCITY = 80;
+		public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(80.0);
 		/**
 		 * The acceleration and deceleration rates during the beginning and end of motion.
 		 */
-		public static final double ACCELERATION = 160;
+		public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(160.0);
 		/**
 		 * Jerk (derivative of acceleration).
 		 */
-		public static final double JERK = 1600;
+		public static final Velocity<AngularAccelerationUnit> JERK = RotationsPerSecondPerSecond.of(1600).per(Second);
 
 		/**
 		 * The lowest angle the turret can rotate to.
