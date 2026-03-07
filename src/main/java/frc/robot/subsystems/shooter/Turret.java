@@ -153,7 +153,10 @@ public class Turret extends SubsystemBase {
 
 		// Apply the configuration to the motor
 		TalonFXConfigurator talonFXConfigurator = motor.getConfigurator();
-		talonFXConfigurator.apply(talonFXConfiguration);
+		if (talonFXConfigurator.apply(talonFXConfiguration).isError()) {
+			// If we run into an error, log it and notify on the dashboard
+			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Failed to apply configuration to Turret motor", String.format("Failed to apply configuration to Turret motor (ID %d)! Make sure the CAN bus is operating properly.", TurretConstants.MOTOR_ID), Seconds.zero());
+		}
 
 		// Set up stuff for simulation
 		if (Utils.isSimulation()) {
