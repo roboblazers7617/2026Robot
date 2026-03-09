@@ -17,7 +17,8 @@ public class IntakeGrabber extends SubsystemBase {
 	private final TalonFX Motor;
 
 	/**
-	 * Constructor for motor for actual intaking part of intake. Uses TorqueCurrentFOC.
+	 * Constructor for motor for actual intaking part of intake. Uses
+	 * TorqueCurrentFOC.
 	 */
 	public IntakeGrabber() {
 		Motor = new TalonFX(IntakeConstants.GRABBER_CAN_ID);
@@ -25,7 +26,8 @@ public class IntakeGrabber extends SubsystemBase {
 		TalonFXConfigurator MotorConfigurator = Motor.getConfigurator();
 
 		// Current limit configuration
-		// TODO: You don't need to create new objects for CurrentLimitConfigs, MotorOutputConfigs, etc.
+		// TODO: You don't need to create new objects for CurrentLimitConfigs,
+		// MotorOutputConfigs, etc.
 		// You can just do the following...
 		// var talonFXConfigs = new TalonFXConfiguration();
 		// var limitConfigs = talonFXConfigs.limitConfigs;
@@ -37,15 +39,19 @@ public class IntakeGrabber extends SubsystemBase {
 		limitConfigs.SupplyCurrentLimitEnable = true;
 		limitConfigs.StatorCurrentLimit = IntakeConstants.GRABBER_STATOR_CURRENT_LIMIT;
 		limitConfigs.StatorCurrentLimitEnable = true;
-		// TODO: Don't need to apply these configs if you use the code above. Just need to apply once
+		// TODO: Don't need to apply these configs if you use the code above. Just need
+		// to apply once
 		MotorConfigurator.apply(limitConfigs);
 
 		MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
 		outputConfigs.NeutralMode = NeutralModeValue.Coast;
 		outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
-		// TODO: Don't need to apply these configs individually if you use the code above.
+		// TODO: Don't need to apply these configs individually if you use the code
+		// above.
 		MotorConfigurator.apply(outputConfigs);
-		// TODO: (Benjamin) The apply for the configs should be wrapped in a for loop to ensure it works. See the sample code in the document I created about configuring the talons
+		// TODO: (Benjamin) The apply for the configs should be wrapped in a for loop to
+		// ensure it works. See the sample code in the document I created about
+		// configuring the talons
 	}
 
 	// TODO: This should be at the top of the class before the constructor
@@ -71,7 +77,8 @@ public class IntakeGrabber extends SubsystemBase {
 	}
 
 	/**
-	 * Command which initiates outtake, to be triggered with held button. Stops intake when released.
+	 * Command which initiates outtake, to be triggered with held button. Stops
+	 * intake when released.
 	 * 
 	 * @return run(() -> outtake()).finallyDo(() -> stopIntake());
 	 */
@@ -82,41 +89,40 @@ public class IntakeGrabber extends SubsystemBase {
 	/**
 	 * Method which starts the intake with a TorqueCurrentFOC method.
 	 */
-	// TODO: This can be private as others should use your commands
-	public void startIntake() {
+	private void startIntake() {
 		// setSpeed(IntakeConstants.INTAKE_START_SPEED);
-		setTorque(IntakeConstants.INTAKE_START_TORQUE);
+		setTorque(IntakeConstants.INTAKE_START_CURRENT);
 	}
 
 	/**
 	 * Method which stops the intake with a TorqueCurrentFOC method.
 	 */
-	// TODO: This can be private as others should use your commands
-	public void stopIntake() {
+	private void stopIntake() {
 		// setSpeed(IntakeConstants.INTAKE_STOP_SPEED);
-		setTorque(IntakeConstants.INTAKE_STOP_TORQUE);
+		setTorque(IntakeConstants.INTAKE_STOP_CURRENT);
 	}
 
 	/**
 	 * Method which starts the intake in reverse with a TorqueCurrentFOC method.
 	 */
-	// TODO: This can be private as others should use your commands
-	public void outtake() {
+	private void outtake() {
 		// setSpeed(IntakeConstants.OUTTAKE_SPEED);
-		setTorque(IntakeConstants.OUTTAKE_TORQUE);
+		setTorque(IntakeConstants.OUTTAKE_CURRENT);
 	}
 
 	/**
-	 * Method which makes intake motors spin at a certain speed utilizing TorqueCurrentFOC.
+	 * Method which makes intake motors spin at a certain speed utilizing
+	 * TorqueCurrentFOC.
 	 * 
-	 * @param torque
-	 *            [-1,1].
+	 * @param current
+	 *                [-1,1].
 	 */
 	// private void setSpeed(double speed) {
 	// Motor.set(speed);
 	// }
 	// TODO: This isn't a torque. It is a current
-	private void setTorque(double torque) {
-		Motor.setControl(torqueCurrent.withOutput(torque));
+	// okay
+	private void setTorque(double current) {
+		Motor.setControl(torqueCurrent.withOutput(current));
 	}
 }
