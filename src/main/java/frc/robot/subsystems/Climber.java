@@ -19,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
 
 public class Climber extends SubsystemBase {
+
+	// TODO: (Riley) For whole class... please make all variables start with a lower-case letter
 	private final TalonFX CIBMotor;
 
 	private final MotionMagicVoltage CIBPositionOut = new MotionMagicVoltage(0);
@@ -39,6 +41,8 @@ public class Climber extends SubsystemBase {
 		CIBConfig.MotionMagic.MotionMagicCruiseVelocity = ClimbConstants.MAX_VELOCITY;
 		CIBConfig.MotionMagic.MotionMagicAcceleration = ClimbConstants.MAX_ACCELERATION;
 
+		// TODO: (Riley) Need to also set Neutral Mode, Inverted, StaticFeedfowardSign, and all the current limits. There is a doc for how to do all this in the programming subeteam folder on Google drive.
+
 		StatusCode status;
 		for (int i = 0; i < 2; ++i) {
 			status = CIBMotor.getConfigurator().apply(CIBConfig);
@@ -52,6 +56,7 @@ public class Climber extends SubsystemBase {
 	 * moves the CIB's position to the specified position in meters
 	 */
 	private void moveTo(double position) {
+		// TODO: (Riley) Not sure I understand the MIN_POSITION? Since we are using only the relative encoder of the motor, it will be reset to zero each time at boot
 		CIBMotor.setControl(CIBPositionOut.withPosition(metersToRotations(position + ClimbConstants.CIB_MIN_POSITION)));
 	}
 
@@ -60,6 +65,7 @@ public class Climber extends SubsystemBase {
 	 * may not be perfectly accurate at positions between the min and max due to the rope spooling on top of itself
 	 */
 	private double rotationsToMeters(double rotations) {
+		// TODO: (Riley) CTRE gives the following formula for calculating the rotations... rotations = (meters / 2*pi*wheelRadius) * gearRatio where in this case I think wheelRadius is the radius of the spool
 		return ((rotations * ClimbConstants.CIB_GEARBOX_RATIO) / (ClimbConstants.CIB_MAX_ROTATIONS - ClimbConstants.CIB_MIN_ROTATIONS)) * (ClimbConstants.CIB_MAX_POSITION - ClimbConstants.CIB_MIN_POSITION);
 	}
 
@@ -68,6 +74,7 @@ public class Climber extends SubsystemBase {
 	 * may not be perfectly accurate at positions between the min and max due to the rope spooling on top of itself
 	 */
 	private double metersToRotations(double meters) {
+		// TODO: (Riley) CTRE gives the following formula for calculating the rotations... rotations = (meters / 2*pi*wheelRadius) * gearRatio Can solve this for meters/position
 		return ((meters / (ClimbConstants.CIB_MAX_POSITION - ClimbConstants.CIB_MIN_POSITION)) * (ClimbConstants.CIB_MAX_ROTATIONS - ClimbConstants.CIB_MIN_ROTATIONS)) / ClimbConstants.CIB_GEARBOX_RATIO;
 	}
 
@@ -82,6 +89,7 @@ public class Climber extends SubsystemBase {
 	 * returns the climbers position in rotations
 	 */
 	private double getPositionRotations() {
+		// TODO: (Riley) Don't think you need to subtract here...
 		return CIBMotor.getPosition().getValueAsDouble() - ClimbConstants.CIB_MIN_ROTATIONS;
 	}
 
@@ -99,10 +107,12 @@ public class Climber extends SubsystemBase {
 		moveTo(ClimbConstants.CIB_MIN_POSITION);
 	}
 
+	// TODO: (Riley) Please remove the "get" from the command name. We use "get" when it is returning a value of a variable like "getDistrancTraveled"
 	public Command getRaiseClimbCommand() {
 		return run(() -> raiseClimb());
 	}
 
+	// TODO: (Riely) Please remove "get" from the command name. See above
 	public Command getLowerClimbCommand() {
 		return run(() -> lowerClimb());
 	}
