@@ -78,38 +78,23 @@ public final class Constants {
 	}
 
 	public static class ClimbConstants {
-		public final static int ELEVATOR_LEADER_MOTOR_CAN_ID;
-		public final static int ELEVATOR_FOLLOWER_MOTOR_CAN_ID;
-		public final static int TOP_HOOK_MOTOR_CAN_ID;
-		public final static int BOTTOM_HOOK_MOTOR_CAN_ID;
+		public final static int CIB_MOTOR_CAN_ID;
 
-		public final static int TOP_HOOK_ENCODER_CAN_ID;
-		public final static int BOTTOM_HOOK_ENCODER_CAN_ID;
+		public final static double CIB_KS;
+		public final static double CIB_KV;
+		public final static double CIB_KG;
+		public final static double CIB_KA;
 
-		public final static double ELEVATOR_KS;
-		public final static double ELEVATOR_KV;
-		public final static double ELEVATOR_KG;
-		public final static double ELEVATOR_KA;
-
-		public final static double ELEVATOR_KP;
-		public final static double ELEVATOR_KI;
-		public final static double ELEVATOR_KD;
-
-		public final static double HOOK_KS;
-		public final static double HOOK_KV;
-		public final static double HOOK_KG;
-		public final static double HOOK_KA;
-
-		public final static double HOOK_KP;
-		public final static double HOOK_KI;
-		public final static double HOOK_KD;
+		public final static double CIB_KP;
+		public final static double CIB_KI;
+		public final static double CIB_KD;
 
 		/**
-		 * Elevator kMinOutput as a percentage.
+		 * kMinOutput as a percentage.
 		 */
 		public static final double KMIN_OUTPUT = -1.0;
 		/**
-		 * Elevator kMaxOutput as a percentage.
+		 * kMaxOutput as a percentage.
 		 */
 		public static final double KMAX_OUTPUT = 1.0;
 		/**
@@ -122,26 +107,16 @@ public final class Constants {
 		public static final double MAX_ACCELERATION;
 
 		/**
-		 * Maximum velocity in m/s.
+		 * Min and Max position in meters.
 		 */
-		public static final double MAX_HOOK_VELOCITY;
-		/**
-		 * Maximum acceleration in m/s^2.
-		 */
-		public static final double MAX_HOOK_ACCELERATION;
+		public static final double CIB_MAX_POSITION;
+		public static final double CIB_MIN_POSITION = 0.0;
 
-		/**
-		 * Maximum position in meters.
+		/*
+		 * Max and min rotations of the climb motor
 		 */
-		public static final double ELEVATOR_MAX_POSITION;
-		public static final double TOP_HOOK_MAX_POSITION;
-		public static final double BOTTOM_HOOK_MAX_POSITION;
-		/**
-		 * Minimum position in meters.
-		 */
-		public static final double ELEVATOR_MIN_POSITION = 0.0;
-		public static final double TOP_HOOK_MIN_POSITION;
-		public static final double BOTTOM_HOOK_MIN_POSITION;
+		public static final double CIB_MAX_ROTATIONS;
+		public static final double CIB_MIN_ROTATIONS = 0.0;
 		/**
 		 * Zero offset, meters.
 		 */
@@ -154,18 +129,9 @@ public final class Constants {
 		 * Tolerance for the target to be considered reached in meters.
 		 */
 		public static final double TOLERANCE = .02;
-
 		/*
-		 * the IN/link of the chain driving the elevator
+		 * the gearbox ratio of the climber
 		 */
-		public static final double ELEVATOR_CHAIN_IN_PER_TOOTH = .25;
-		/*
-		 * the amount of teeth on the sprocket driving the elevator
-		 */
-		public static final double ELEVATOR_CHAIN_SPROCKET_TEETH;
-		/*
-		 * the gearbox ratio of the elevator
-		 */
-		public static final double ELEVATOR_GEARBOX_RATIO;
+		public static final double CIB_GEARBOX_RATIO;
 	}
 }
