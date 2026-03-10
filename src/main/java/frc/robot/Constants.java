@@ -233,16 +233,16 @@ public final class Constants {
 		/**
 		 * the angle when the robot is shooting to a far target
 		 */
-		public static final Angle FAR_SHOT_HOOD_ANGLE = Degrees.of(20.0);
+		public static final Angle FAR_SHOT_HOOD_ANGLE = Degrees.of(60.0);
 		/**
 		 * the cutoff when the robot considers a target "far"
 		 */
-		public static final Distance FAR_SHOT_HOOD_CUTOFF = Meters.of(3.0);
+		public static final Distance FAR_SHOT_HOOD_CUTOFF = Meters.of(5.0);
 
 		/**
 		 * the angle when the robot is shooting to a medium distance target
 		 */
-		public static final Angle MEDIUM_SHOT_HOOD_ANGLE = Degrees.of(30.0);
+		public static final Angle MEDIUM_SHOT_HOOD_ANGLE = Degrees.of(75.0);
 		/**
 		 * the cutoff when the robot considers a target "medium distance"
 		 */
@@ -251,7 +251,7 @@ public final class Constants {
 		/**
 		 * the angle when the robot is shooting to a close target
 		 */
-		public static final Angle CLOSE_SHOT_HOOD_ANGLE = Degrees.of(40.0);
+		public static final Angle CLOSE_SHOT_HOOD_ANGLE = Degrees.of(85.0);
 		/**
 		 * the cutoff when the robot considers a target "close"
 		 */
@@ -261,7 +261,7 @@ public final class Constants {
 		/**
 		 * The angle when the robot is further than the {@link #FAR_SHOT_HOOD_CUTOFF}.
 		 */
-		public static final Angle MAX_HOOD_ANGLE = Degrees.of(10.0);
+		public static final Angle MAX_HOOD_ANGLE = Degrees.of(50.0);
 	}
 
 	/**
