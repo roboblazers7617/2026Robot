@@ -219,7 +219,16 @@ public class ShooterSuperstructure {
 	 * updating the tracking for the shooter.
 	 */
 	public void update() {
-		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(drivetrain.getPose2d());
+		Pose2d robotPose = drivetrain.getPose2d();
+		ChassisSpeeds robotVelocity = drivetrain.getFeildRelativeSpeeds();
+
+		// Figure out target values if we have any
+		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(robotPose);
+
+		Optional<ShooterValues> targetShooterValues = Optional.empty();
+		if (targetPose.isPresent()) {
+			targetShooterValues = Optional.of(ShootingCalculator.solve(new Pose3d(robotPose), targetPose.get(), robotVelocity));
+		}
 
 		// Check the current state and handle sequence transitions.
 		switch (stateMachine.getState()) {
@@ -227,8 +236,8 @@ public class ShooterSuperstructure {
 				// Homed and waiting for a target
 				// This is just the idle state of the shooter
 
-				// If we get a target pose, start to track the target
-				if (targetPose.isPresent()) {
+				// If we get a target shooter value, start to track the target
+				if (targetShooterValues.isPresent()) {
 					stateMachine.fire(ShooterTrigger.INITIALIZE);
 				}
 				break;
@@ -250,8 +259,8 @@ public class ShooterSuperstructure {
 				}
 
 				// Get the shooter to an initial setpoint so we can start tracking
-				if (targetPose.isPresent()) {
-					prepareShootAtTarget(targetPose.get(), false);
+				if (targetShooterValues.isPresent()) {
+					setValues(targetShooterValues.get(), false);
 				} else {
 					// If we don't have a target anymore, home the shooter
 					stateMachine.fire(ShooterTrigger.HOME);
@@ -261,9 +270,9 @@ public class ShooterSuperstructure {
 			case SHOOTING_STAGE_2_READY_TO_SHOOT:
 				// Ready to shoot at a target, waiting for a command from drivers or auto to start shooting
 
-				if (targetPose.isPresent()) {
+				if (targetShooterValues.isPresent()) {
 					// Keep tracking the target if we still have a target
-					prepareShootAtTarget(targetPose.get(), true);
+					setValues(targetShooterValues.get(), true);
 				} else {
 					// If we don't have a target anymore, home the shooter
 					stateMachine.fire(ShooterTrigger.HOME);
@@ -295,9 +304,9 @@ public class ShooterSuperstructure {
 					break;
 				}
 
-				if (targetPose.isPresent()) {
+				if (targetShooterValues.isPresent()) {
 					// Keep tracking the target if we still have a target
-					prepareShootAtTarget(targetPose.get(), true);
+					setValues(targetShooterValues.get(), true);
 				} else {
 					// If we don't have a target anymore, home the shooter
 					stateMachine.fire(ShooterTrigger.HOME);
@@ -313,9 +322,9 @@ public class ShooterSuperstructure {
 					break;
 				}
 
-				if (targetPose.isPresent()) {
+				if (targetShooterValues.isPresent()) {
 					// Keep tracking the target if we still have a target
-					prepareShootAtTarget(targetPose.get(), true);
+					setValues(targetShooterValues.get(), true);
 				} else {
 					// If we don't have a target anymore, home the shooter
 					stateMachine.fire(ShooterTrigger.HOME);
@@ -384,26 +393,6 @@ public class ShooterSuperstructure {
 	}
 
 	/**
-	 * Command to prepare to shoot at a certain target pose from the drivetrain's current pose. This requires that you are in {@link ShooterState#MANUAL_CONTROL}.
-	 * <p>
-	 * This assumes that we are not tracking a target, since that is done internally.
-	 *
-	 * @param targetPose
-	 *            Supplier for the pose to shoot at.
-	 * @return
-	 *         Command to run.
-	 */
-	public Command prepareShootAtTargetCommand(Supplier<Pose3d> targetPose) {
-		return Commands.run(() -> {
-			if (stateMachine.isInState(ShooterState.MANUAL_CONTROL)) {
-				prepareShootAtTarget(targetPose.get(), false);
-			} else {
-				DriverStation.reportWarning("Attempted to execute prepareShootAtTargetCommand without being in manual mode.", true);
-			}
-		}, flywheel, hood, turret);
-	}
-
-	/**
 	 * Trigger that returns true when ready to shoot. Should be useful for triggering controller haptics.
 	 *
 	 * @return
@@ -446,21 +435,6 @@ public class ShooterSuperstructure {
 		} else {
 			return Pose3d.kZero;
 		}
-	}
-
-	/**
-	 * Prepares to shoot at a certain target pose from the drivetrain's current pose.
-	 *
-	 * @param targetPose
-	 *            The pose to shoot at.
-	 * @param tracking
-	 *            Is the shooter currently tracking a target?
-	 */
-	private void prepareShootAtTarget(Pose3d targetPose, boolean tracking) {
-		Pose2d robotPose = drivetrain.getPose2d();
-		ChassisSpeeds robotVelocity = drivetrain.getFeildRelativeSpeeds();
-
-		setValues(ShootingCalculator.solve(new Pose3d(robotPose), targetPose, robotVelocity), tracking);
 	}
 
 	/**
