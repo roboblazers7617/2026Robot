@@ -84,6 +84,12 @@ public class ShooterSuperstructure {
 		 * Once the hopper is out of balls (defined as when the hopper beam break hasn't detected a ball for {@link ShootingConstants#SHOOTING_TIMEOUT}), this will automatically transition back to {@link #HOME} state.
 		 */
 		SHOOTING_STAGE_3_SHOOTING,
+		/**
+		 * We were {@link #SHOOTING_STAGE_3_SHOOTING shooting}, but for whatever reason we had to stop to wait on a mechanism to ready (maybe the turret reached a limit and had to wrap around).
+		 * <p>
+		 * Once we're ready again, we'll immediately transition back to {@link #SHOOTING_STAGE_3_SHOOTING}.
+		 */
+		SHOOTING_PAUSED,
 	}
 
 	/**
@@ -110,6 +116,10 @@ public class ShooterSuperstructure {
 		 * Signals to the shooter to start shooting.
 		 */
 		START_SHOOTING,
+		/**
+		 * Signals to the shooter to pause until mechanisms are ready.
+		 */
+		PAUSE_SHOOTING,
 	}
 
 	/**
@@ -179,9 +189,14 @@ public class ShooterSuperstructure {
 
 		stateMachineConfig.configure(ShooterState.SHOOTING_STAGE_3_SHOOTING)
 				.substateOf(ShooterState.SHOOTING)
+				.permit(ShooterTrigger.PAUSE_SHOOTING, ShooterState.SHOOTING_PAUSED)
 				// Run hopper while shooting
 				.onEntry(hopperUptake::startHopperForward)
 				.onExit(hopperUptake::stopHopper);
+
+		stateMachineConfig.configure(ShooterState.SHOOTING_PAUSED)
+				.substateOf(ShooterState.SHOOTING)
+				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING_STAGE_3_SHOOTING);
 
 		stateMachine = new StateMachine<>(ShooterState.HOME, stateMachineConfig);
 
@@ -272,6 +287,30 @@ public class ShooterSuperstructure {
 
 						break;
 					}
+				}
+
+				if (!subsystemsAtTargets()) {
+					// If subsystems stray away from their targets (like if the turret has to wrap), pause shooting
+					stateMachine.fire(ShooterTrigger.PAUSE_SHOOTING);
+					break;
+				}
+
+				if (targetPose.isPresent()) {
+					// Keep tracking the target if we still have a target
+					prepareShootAtTarget(targetPose.get(), true);
+				} else {
+					// If we don't have a target anymore, home the shooter
+					stateMachine.fire(ShooterTrigger.HOME);
+				}
+				break;
+
+			case SHOOTING_PAUSED:
+				// Was shooting, but needed to pause for subsystems to catch up
+
+				if (subsystemsAtTargets()) {
+					// Ready to start shooting again, so let's do that
+					stateMachine.fire(ShooterTrigger.START_SHOOTING);
+					break;
 				}
 
 				if (targetPose.isPresent()) {
