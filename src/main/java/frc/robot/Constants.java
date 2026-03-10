@@ -110,13 +110,11 @@ public final class Constants {
 		 * Min and Max position in meters.
 		 */
 		public static final double CIB_MAX_POSITION;
-		public static final double CIB_MIN_POSITION = 0.0;
 
 		/*
 		 * Max and min rotations of the climb motor
 		 */
 		public static final double CIB_MAX_ROTATIONS;
-		public static final double CIB_MIN_ROTATIONS = 0.0;
 		/**
 		 * Zero offset, meters.
 		 */
@@ -130,8 +128,18 @@ public final class Constants {
 		 */
 		public static final double TOLERANCE = .02;
 		/*
-		 * the gearbox ratio of the climber
+		 * the gearbox ratio of the climber, if 2:1 should be .5, as every rotation of the motor equates to .5 rotations of the shaft
 		 */
 		public static final double CIB_GEARBOX_RATIO;
+
+		/*
+		 * current limits
+		 */
+		public static final double CIB_SUPPLY_CURRENT_LIMIT;
+		public static final double CIB_STATOR_CURRENT_LIMIT;
+
+		public static final double CIB_SUPPLY_CURRENT_LOWER_LIMIT;
+
+		public static final double CIB_SUPPLY_CURRENT_LIMIT_LOWER_TIME;
 	}
 }
