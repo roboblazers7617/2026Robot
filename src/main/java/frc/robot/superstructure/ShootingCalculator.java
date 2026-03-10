@@ -62,7 +62,7 @@ public class ShootingCalculator {
 		ChassisSpeeds velocity = new ChassisSpeeds();
 
 		Transform3d velocityAsTransform = new Transform3d(velocity.vxMetersPerSecond, velocity.vyMetersPerSecond, 0.0, new Rotation3d());
-		Pose3d modifiedTurretedPose = turretPose.transformBy(velocityAsTransform);
+		Pose3d modifiedTurretedPose = turretPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
 		// solve again, hood angle stays the same
 		gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose, targetAngle);
 		gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
