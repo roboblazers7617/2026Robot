@@ -45,30 +45,34 @@ public class ShootingCalculator {
 	public static ShooterValues solve(Pose3d robotPose, Pose3d targetPose, ChassisSpeeds robotVelocity) {
 		ShooterValues values = new ShooterValues();
 
+		// Figure out where the turret is since it isn't centered on the robot
 		Pose3d turretPose = robotPose.transformBy(TurretConstants.TURRET_OFFSET);
 
-		// Solve the angle to the target
-		Angle targetAngle = solveTargetAngle(turretPose.toPose2d(), targetPose.toPose2d());
+		// ----- FIRST CALCULATION (NO VELOCITY) -----
+		// This stage is mainly just to calculate how long the ball will be in the air for
 
-		/**
-		 * The transform from the turret to the target as a 2d plane where X is horizontal distance and Y is vertical distance.
-		 */
+		// Solve the angle and translation to the target
+		Angle targetAngle = solveTargetAngle(turretPose.toPose2d(), targetPose.toPose2d());
 		Translation2d gamepieceTranslation = solveGamepieceTranslation(turretPose, targetPose, targetAngle);
 
-		// Solve shooter values
+		// Solve initial shooter values
 		Angle gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
 		LinearVelocity gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 
-		// Solve with shoot while move
+		// ----- SECOND CALCUlATION (WITH VELOCITY) -----
+		// Figure out how long the gamepiece will be in the air for
 		Time time = calculateTimeTillScore(gamepieceTranslation, gamepieceTheta, gamepieceSpeed);
 
-		// add the velocity vector of the robot
+		// Add the velocity vector of the robot
+		// We're effectively trying to figure out where the turret will be at the end of the ball's travel
 		Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
 		Pose3d modifiedTurretedPose = turretPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
-		// solve again, hood angle stays the same
+
+		// Solve again, hood angle stays the same
 		gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose, targetAngle);
 		gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 
+		// Set the ShooterValues accordingly
 		values.setTurretAngle(targetAngle);
 		values.setGamepieceTheta(gamepieceTheta);
 		values.setFlywheelSpeed(gamepieceSpeed);
@@ -76,6 +80,16 @@ public class ShootingCalculator {
 		return values;
 	}
 
+	/**
+	 * Calculates the desired gamepiece theta for the given target translation.
+	 *
+	 * @param targetTranslation
+	 *            The translation to shoot at.
+	 * @return
+	 *         The theta to shoot the gamepiece at.
+	 * @implNote
+	 *           Currently, this just chooses from a set of preset values based off of our distance from the target. We will probably make this a lot smarter in the future, but for now this should work.
+	 */
 	public static Angle calculateHoodAngle(Translation2d targetTranslation) {
 		Distance distance = Meters.of(Math.sqrt(Math.pow(targetTranslation.getX(), 2) + Math.pow(targetTranslation.getY(), 2)));
 
@@ -91,6 +105,18 @@ public class ShootingCalculator {
 		}
 	}
 
+	/**
+	 * Gets the 2d translation from the turret to the target.
+	 *
+	 * @param turretPose
+	 *            The pose of the turret.
+	 * @param targetPose
+	 *            The pose of the target to point at.
+	 * @param targetAngle
+	 *            The angle from the turret to the target. This is used to grab a 2d plane from the 3d translation.
+	 * @return
+	 *         The translation from the turret to the target as a 2d plane where X is horizontal distance and Y is vertical distance.
+	 */
 	public static Translation2d solveGamepieceTranslation(Pose3d turretPose, Pose3d targetPose, Angle targetAngle) {
 		return targetPose.minus(turretPose)
 				.getTranslation()
@@ -153,6 +179,8 @@ public class ShootingCalculator {
 	 *            The theta the gamePiece will be fired at
 	 * @param gamepieceSpeed
 	 *            The speed the gamePiece will be fired at
+	 * @return
+	 *         The time it will take for the gamepiece to hit the target.
 	 */
 	public static Time calculateTimeTillScore(Translation2d gamepieceTranslation, Angle gamepieceTheta, LinearVelocity gamepieceSpeed) {
 		double yVelocity = gamepieceSpeed.in(MetersPerSecond) * Math.sin(gamepieceTheta.in(Radians));
