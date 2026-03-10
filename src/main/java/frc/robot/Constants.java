@@ -192,6 +192,7 @@ public final class Constants {
 	 * Constants that control the shooting behavior.
 	 */
 	public static class ShootingConstants {
+		// TODO: Update all of these constants
 		/**
 		 * An interpolation table used for flywheel speed by gamepiece velocity.
 		 */
@@ -232,32 +233,35 @@ public final class Constants {
 		/**
 		 * the angle when the robot is shooting to a far target
 		 */
-		public static final Angle FAR_SHOT_HOOD_ANGLE;
+		public static final Angle FAR_SHOT_HOOD_ANGLE = Degrees.of(20.0);
 		/**
 		 * the cutoff when the robot considers a target "far"
 		 */
-		public static final Distance FAR_SHOT_HOOD_CUTOFF;
+		public static final Distance FAR_SHOT_HOOD_CUTOFF = Meters.of(3.0);
 
 		/**
 		 * the angle when the robot is shooting to a medium distance target
 		 */
-		public static final Angle MEDIUM_SHOT_HOOD_ANGLE;
+		public static final Angle MEDIUM_SHOT_HOOD_ANGLE = Degrees.of(30.0);
 		/**
 		 * the cutoff when the robot considers a target "medium distance"
 		 */
-		public static final Distance MEDIUM_SHOT_HOOD_CUTOFF;
+		public static final Distance MEDIUM_SHOT_HOOD_CUTOFF = Meters.of(2.0);
 
 		/**
 		 * the angle when the robot is shooting to a close target
 		 */
-		public static final Angle CLOSE_SHOT_HOOD_ANGLE;
+		public static final Angle CLOSE_SHOT_HOOD_ANGLE = Degrees.of(40.0);
 		/**
 		 * the cutoff when the robot considers a target "close"
 		 */
-		public static final Distance CLOSE_SHOT_HOOD_CUTOFF;
+		public static final Distance CLOSE_SHOT_HOOD_CUTOFF = Meters.of(1.0);
 
 		// TODO when we get shooter constants, replace all instances in shootingcalculator.java with that and remove this variable
-		public static final Angle MAX_HOOD_ANGLE;
+		/**
+		 * The angle when the robot is further than the {@link #FAR_SHOT_HOOD_CUTOFF}.
+		 */
+		public static final Angle MAX_HOOD_ANGLE = Degrees.of(10.0);
 	}
 
 	/**
