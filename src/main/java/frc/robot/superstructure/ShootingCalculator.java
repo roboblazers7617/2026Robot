@@ -42,15 +42,15 @@ public class ShootingCalculator {
 		Pose3d turretPose = robotPose.transformBy(TurretConstants.TURRET_OFFSET);
 		SignalLogger.writeStruct(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Turret Pose", Pose3d.struct, turretPose);
 
-		// Solve the turret rotation. This is done now because it's needed in a few different spots
-		Angle turretRotation = solveTurretAngle(turretPose.toPose2d(), targetPose.toPose2d());
+		// Solve the angle to the target
+		Angle targetAngle = solveTargetAngle(turretPose.toPose2d(), targetPose.toPose2d());
 
 		/**
 		 * The transform from the turret to the target as a 2d plane where X is horizontal distance and Y is vertical distance.
 		 */
 		Translation2d gamepieceTranslation = targetPose.minus(turretPose)
 				.getTranslation()
-				.rotateBy(new Rotation3d(Radians.zero(), Radians.zero(), turretRotation.unaryMinus()))
+				.rotateBy(new Rotation3d(Radians.zero(), Radians.zero(), targetAngle.unaryMinus()))
 				.rotateBy(new Rotation3d(Rotations.of(0.75), Radians.zero(), Radians.zero()))
 				.toTranslation2d();
 
@@ -60,7 +60,7 @@ public class ShootingCalculator {
 		Angle gamepieceTheta = Degrees.of(80.0);
 		LinearVelocity gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 
-		values.setTurretAngle(turretRotation);
+		values.setTurretAngle(targetAngle);
 		values.setGamepieceTheta(gamepieceTheta);
 		values.setFlywheelSpeed(gamepieceSpeed);
 
@@ -68,16 +68,16 @@ public class ShootingCalculator {
 	}
 
 	/**
-	 * Solves the angle that the turret needs to face to point it at the targetPose.
+	 * Solves the angle between the turret and the target. This will be used to figure out the angle to point the turret at, as well as to transform the translation.
 	 *
 	 * @param turretPose
 	 *            The pose of the turret.
 	 * @param targetPose
 	 *            The pose of the target to point at.
 	 * @return
-	 *         The resulting Angle to point the turret at.
+	 *         The resulting Angle between the turret and the target.
 	 */
-	private static Angle solveTurretAngle(Pose2d turretPose, Pose2d targetPose) {
+	private static Angle solveTargetAngle(Pose2d turretPose, Pose2d targetPose) {
 		return turretPose.getTranslation()
 				.minus(targetPose.getTranslation())
 				.getAngle()
