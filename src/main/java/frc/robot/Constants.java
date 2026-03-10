@@ -22,6 +22,7 @@ import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.units.LinearVelocityUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
@@ -227,6 +228,36 @@ public final class Constants {
 		 * How long to wait after no balls are detected to stop shooting.
 		 */
 		public static final Time SHOOTING_TIMEOUT = Seconds.of(2.0);
+
+		/**
+		 * the angle when the robot is shooting to a far target
+		 */
+		public static final Angle FAR_SHOT_HOOD_ANGLE;
+		/**
+		 * the cutoff when the robot considers a target "far"
+		 */
+		public static final Distance FAR_SHOT_HOOD_CUTOFF;
+
+		/**
+		 * the angle when the robot is shooting to a medium distance target
+		 */
+		public static final Angle MEDIUM_SHOT_HOOD_ANGLE;
+		/**
+		 * the cutoff when the robot considers a target "medium distance"
+		 */
+		public static final Distance MEDIUM_SHOT_HOOD_CUTOFF;
+
+		/**
+		 * the angle when the robot is shooting to a close target
+		 */
+		public static final Angle CLOSE_SHOT_HOOD_ANGLE;
+		/**
+		 * the cutoff when the robot considers a target "close"
+		 */
+		public static final Distance CLOSE_SHOT_HOOD_CUTOFF;
+
+		// TODO when we get shooter constants, replace all instances in shootingcalculator.java with that and remove this variable
+		public static final Angle MAX_HOOD_ANGLE;
 	}
 
 	/**
