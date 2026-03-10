@@ -6,6 +6,8 @@ package frc.robot;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.ctre.phoenix6.signals.InvertedValue;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
@@ -83,10 +85,9 @@ public final class Constants {
 	public static class HopperConstants {
 		// Can ID and DIO pins
 		// UPTAKE MOTOR
-		public static final int BIG_SPINNY_CAN_ID = 2;
+		public static final int BIG_SPINNY_CAN_ID = 33;
 		// HOPPER MOTOR
-		public static final int LITTLE_SPINNY_CAN_ID = 0;
-		public static final int BEAM_BREAK_DIO_PIN = 0;
+		public static final int LITTLE_SPINNY_CAN_ID = 32;
 		// UPTAKE PID values
 		public static final double UPTAKE_KP = 0.15;
 		public static final double UPTAKE_KI = 0;
@@ -99,6 +100,7 @@ public final class Constants {
 		public static final int UPTAKE_LOWER_CURRENT_LIMIT = 40;
 		public static final boolean UPTAKE_ENABLE_STATOR_LIMIT = true;
 		public static final boolean UPTAKE_ENABLE_SUPPLY_LIMIT = false;
+		public static final InvertedValue UPTAKE_IS_INVERTED = InvertedValue.Clockwise_Positive;
 		// HOPPER PID values
 		public static final double HOPPER_KP = 0.15;
 		public static final double HOPPER_KI = 0;
@@ -106,11 +108,12 @@ public final class Constants {
 		public static final double HOPPER_KV = 0.115;
 		public static final double HOPPER_KS = 0;
 		// HOPPER Config setup
-		public static final int HOPPER_STATOR_CURRENT_LIMIT = 80;
-		public static final double HOPPER_SUPPLY_CURRENT_LIMIT = 50;
-		public static final int HOPPER_LOWER_CURRENT_LIMIT = 30;
+		public static final int HOPPER_STATOR_CURRENT_LIMIT = 120;
+		public static final double HOPPER_SUPPLY_CURRENT_LIMIT = 70;
+		public static final int HOPPER_LOWER_CURRENT_LIMIT = 40;
 		public static final boolean HOPPER_ENABLE_STATOR_LIMIT = true;
 		public static final boolean HOPPER_ENABLE_SUPPLY_LIMIT = false;
+		public static final InvertedValue HOPPER_IS_INVERTED = InvertedValue.Clockwise_Positive;
 		// Speed Values in RPM
 
 		public static final AngularVelocity TOLERANCE = RotationsPerSecond.of(5);

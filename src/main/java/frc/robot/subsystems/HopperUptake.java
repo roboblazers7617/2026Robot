@@ -12,7 +12,6 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,15 +32,9 @@ public class HopperUptake extends SubsystemBase {
 
 	VelocityVoltage velocity = new VelocityVoltage(0);
 
-	// TODO: I don't think that beambreak lives in your subsystem. You don't need to worry about it
-	private final DigitalInput isTrippedBeamBreak;
-
 	private AngularVelocity setpoint = RadiansPerSecond.zero();
 
-	public Boolean bingus;
-
 	public HopperUptake() {
-		isTrippedBeamBreak = new DigitalInput(HopperConstants.BEAM_BREAK_DIO_PIN);
 		bigSpinny = new TalonFX(HopperConstants.BIG_SPINNY_CAN_ID);
 		littleSpinny = new TalonFX(HopperConstants.LITTLE_SPINNY_CAN_ID);
 		// The configuration for uptake
@@ -53,6 +46,7 @@ public class HopperUptake extends SubsystemBase {
 		uptakeConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperConstants.UPTAKE_LOWER_CURRENT_LIMIT;
 		uptakeConfig.CurrentLimits.StatorCurrentLimitEnable = HopperConstants.UPTAKE_ENABLE_STATOR_LIMIT;
 		uptakeConfig.CurrentLimits.SupplyCurrentLimitEnable = HopperConstants.UPTAKE_ENABLE_SUPPLY_LIMIT;
+		uptakeConfig.MotorOutput.Inverted = HopperConstants.UPTAKE_IS_INVERTED;
 		// Uptake PID
 		uptakeConfig.Slot0.kP = HopperConstants.UPTAKE_KP;
 		uptakeConfig.Slot0.kI = HopperConstants.UPTAKE_KI;
@@ -68,6 +62,7 @@ public class HopperUptake extends SubsystemBase {
 		hopperConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperConstants.HOPPER_LOWER_CURRENT_LIMIT;
 		hopperConfig.CurrentLimits.StatorCurrentLimitEnable = HopperConstants.HOPPER_ENABLE_STATOR_LIMIT;
 		hopperConfig.CurrentLimits.SupplyCurrentLimitEnable = HopperConstants.HOPPER_ENABLE_SUPPLY_LIMIT;
+		hopperConfig.MotorOutput.Inverted = HopperConstants.HOPPER_IS_INVERTED;
 		// Hopper PID
 		hopperConfig.Slot0.kP = HopperConstants.HOPPER_KP;
 		hopperConfig.Slot0.kI = HopperConstants.HOPPER_KI;
@@ -82,10 +77,6 @@ public class HopperUptake extends SubsystemBase {
 			if (status.isOK() && status2.isOK())
 				break;
 		}
-	}
-
-	public boolean isTripped() {
-		return !isTrippedBeamBreak.get();
 	}
 
 	public boolean isUptakeAtTarget() {
@@ -149,12 +140,12 @@ public class HopperUptake extends SubsystemBase {
 	}
 
 	// TODO: Should this be strtUptakeForwardCommand so it is clear what it is starting?
-	public Command start() {
+	public Command startUptakeForwarCommand() {
 		return runOnce(() -> startUptakeForward());
 	}
 
 	public Command startBothCommand() {
-		return start().andThen(Commands.waitUntil(() -> isUptakeAtTarget()).finallyDo(this::startHopperForward));
+		return startUptakeForwarCommand().andThen(Commands.waitUntil(() -> isUptakeAtTarget()).finallyDo(this::startHopperForward));
 	}
 
 	public Command startUnJamCommand() {
