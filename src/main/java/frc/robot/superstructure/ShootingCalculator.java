@@ -2,11 +2,6 @@ package frc.robot.superstructure;
 
 import java.util.Optional;
 
-import org.opencv.core.Mat;
-
-import com.ctre.phoenix6.SignalLogger;
-
-import edu.wpi.first.math.estimator.PoseEstimator3d;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -14,7 +9,6 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -22,10 +16,8 @@ import edu.wpi.first.units.measure.Time;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.TurretConstants;
-import frc.robot.Constants.SuperstructureConstants;
 
 import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
@@ -66,16 +58,14 @@ public class ShootingCalculator {
 		// Solve with shoot while move
 		Time time = calculateTimeTillScore(gamepieceTranslation, gamepieceTheta, gamepieceSpeed);
 
-
-		//add the velocity vector of the robot
+		// add the velocity vector of the robot
 		ChassisSpeeds velocity = new ChassisSpeeds();
-	
-		Transform3d velocityAsTransform = new Transform3d(velocity.vxMetersPerSecond,velocity.vyMetersPerSecond,0.0,new Rotation3d())
+
+		Transform3d velocityAsTransform = new Transform3d(velocity.vxMetersPerSecond, velocity.vyMetersPerSecond, 0.0, new Rotation3d());
 		Pose3d modifiedTurretedPose = turretPose.transformBy(velocityAsTransform);
-		//solve again, hood angle stays the same
+		// solve again, hood angle stays the same
 		gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose, targetAngle);
 		gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
-
 
 		values.setTurretAngle(targetAngle);
 		values.setGamepieceTheta(gamepieceTheta);
@@ -154,7 +144,7 @@ public class ShootingCalculator {
 
 	/**
 	 * Calculates the time until the gamepiece hits the target
-	 * 
+	 *
 	 * @param gamepieceTranslation
 	 *            The translation to the target
 	 * @param gamepieceTheta
