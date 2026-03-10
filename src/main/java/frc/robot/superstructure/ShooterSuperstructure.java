@@ -71,19 +71,19 @@ public class ShooterSuperstructure {
 		/**
 		 * Has target, waiting for things to ready. Substate of {@link #SHOOTING}.
 		 * <p>
-		 * Once the subsystems are all ready, this will automatically transition to {@link #READY_TO_SHOOT}.
+		 * Once the subsystems are all ready, this will automatically transition to {@link #SHOOTING_STAGE_2_READY_TO_SHOOT}.
 		 */
-		INITIALIZING_SHOOTER,
+		SHOOTING_STAGE_1_INITIALIZING,
 		/**
 		 * Initialized and ready to shoot. Waiting for {@link ShooterTrigger#START_SHOOTING}.
 		 */
-		READY_TO_SHOOT,
+		SHOOTING_STAGE_2_READY_TO_SHOOT,
 		/**
 		 * Currently tracking and shooting at a target. Spindexer is spindexing.
 		 * <p>
 		 * Once the hopper is out of balls (defined as when the hopper beam break hasn't detected a ball for {@link ShootingConstants#SHOOTING_TIMEOUT}), this will automatically transition back to {@link #HOME} state.
 		 */
-		SHOOTER_ACTIVE,
+		SHOOTING_STAGE_3_SHOOTING,
 	}
 
 	/**
@@ -155,7 +155,7 @@ public class ShooterSuperstructure {
 		stateMachineConfig.configure(ShooterState.HOME)
 				.onEntry(this::home)
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL)
-				.permit(ShooterTrigger.INITIALIZE, ShooterState.INITIALIZING_SHOOTER);
+				.permit(ShooterTrigger.INITIALIZE, ShooterState.SHOOTING_STAGE_1_INITIALIZING);
 
 		// ---- Manual control ----
 		stateMachineConfig.configure(ShooterState.MANUAL_CONTROL)
@@ -169,15 +169,15 @@ public class ShooterSuperstructure {
 				.permit(ShooterTrigger.HOME, ShooterState.HOME)
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL);
 
-		stateMachineConfig.configure(ShooterState.INITIALIZING_SHOOTER)
+		stateMachineConfig.configure(ShooterState.SHOOTING_STAGE_1_INITIALIZING)
 				.substateOf(ShooterState.SHOOTING)
-				.permit(ShooterTrigger.READY_TO_SHOOT, ShooterState.READY_TO_SHOOT);
+				.permit(ShooterTrigger.READY_TO_SHOOT, ShooterState.SHOOTING_STAGE_2_READY_TO_SHOOT);
 
-		stateMachineConfig.configure(ShooterState.READY_TO_SHOOT)
+		stateMachineConfig.configure(ShooterState.SHOOTING_STAGE_2_READY_TO_SHOOT)
 				.substateOf(ShooterState.SHOOTING)
-				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTER_ACTIVE);
+				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING_STAGE_3_SHOOTING);
 
-		stateMachineConfig.configure(ShooterState.SHOOTER_ACTIVE)
+		stateMachineConfig.configure(ShooterState.SHOOTING_STAGE_3_SHOOTING)
 				.substateOf(ShooterState.SHOOTING)
 				// Run hopper while shooting
 				.onEntry(hopperUptake::startHopperForward)
@@ -225,7 +225,7 @@ public class ShooterSuperstructure {
 				// We don't really have to worry about the shooting state itself since we are always in substates of it.
 				break;
 
-			case INITIALIZING_SHOOTER:
+			case SHOOTING_STAGE_1_INITIALIZING:
 				// Preparing to track a target
 
 				// Once we reach the target, start to track
@@ -243,7 +243,7 @@ public class ShooterSuperstructure {
 				}
 				break;
 
-			case READY_TO_SHOOT:
+			case SHOOTING_STAGE_2_READY_TO_SHOOT:
 				// Ready to shoot at a target, waiting for a command from drivers or auto to start shooting
 
 				if (targetPose.isPresent()) {
@@ -255,7 +255,7 @@ public class ShooterSuperstructure {
 				}
 				break;
 
-			case SHOOTER_ACTIVE:
+			case SHOOTING_STAGE_3_SHOOTING:
 				// Tracking the target and shooting
 
 				// Shooter timeout
@@ -312,16 +312,16 @@ public class ShooterSuperstructure {
 	}
 
 	/**
-	 * Command to start shooting. This can only be called from the {@link ShooterState#READY_TO_SHOOT} state.
+	 * Command to start shooting. This can only be called from the {@link ShooterState#SHOOTING_STAGE_2_READY_TO_SHOOT} state.
 	 * <p>
-	 * Exits when exiting the {@link ShooterState#SHOOTER_ACTIVE} state.
+	 * Exits when exiting the {@link ShooterState#SHOOTING_STAGE_3_SHOOTING} state.
 	 *
 	 * @return
 	 *         Command to run.
 	 */
 	public Command startShootingCommand() {
 		return Commands.runOnce(() -> stateMachine.fire(ShooterTrigger.START_SHOOTING))
-				.andThen(Commands.waitUntil(() -> !stateMachine.isInState(ShooterState.SHOOTER_ACTIVE)));
+				.andThen(Commands.waitUntil(() -> !stateMachine.isInState(ShooterState.SHOOTING_STAGE_3_SHOOTING)));
 	}
 
 	/**
@@ -368,10 +368,10 @@ public class ShooterSuperstructure {
 	 * Trigger that returns true when ready to shoot. Should be useful for triggering controller haptics.
 	 *
 	 * @return
-	 *         Trigger, true when in {@link ShooterState#READY_TO_SHOOT}, false otherwise.
+	 *         Trigger, true when in {@link ShooterState#SHOOTING_STAGE_2_READY_TO_SHOOT}, false otherwise.
 	 */
 	public Trigger readyToShootTrigger() {
-		return new Trigger(() -> stateMachine.isInState(ShooterState.READY_TO_SHOOT));
+		return new Trigger(() -> stateMachine.isInState(ShooterState.SHOOTING_STAGE_2_READY_TO_SHOOT));
 	}
 
 	/**
