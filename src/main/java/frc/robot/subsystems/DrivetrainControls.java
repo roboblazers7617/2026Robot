@@ -78,23 +78,45 @@ public class DrivetrainControls {
 				.finallyDo(this::resetSpeedMultiplier);
 	}
 
+	/**
+	 * Controls Swerve Request for drivetrian with the facing angle type
+	 * Left stick drives the robot with field centric control
+	 * Right stick points robot in direction relitive to feild
+	 * 
+	 * @param driverController
+	 * @return Swerve Request
+	 */
 	public SwerveRequest feildCentricFacingAngleRequest(CommandXboxController driverController) {
 		{
+			// this logic applies a deadband to the right stick turn by only running after checking controller values
 			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
 				drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
 			}
-
+			// Standard drive code and return the request to be applied
 			return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * speedMultiplier) // Drive forward with negative Y (forward)
 					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * speedMultiplier);// Drive left with negative X (left)
 		}
 	}
 
+	/**
+	 * Controls the swerve drive with the field centric type
+	 * Left stick drives the robot with field centric control
+	 * Right stick turn the robot according to the x value spinning clockwise or counterclockwise around the center
+	 * 
+	 * @param driverController
+	 * @return Swerve Request
+	 */
 	public SwerveRequest fieldCentricRequest(CommandXboxController driverController) {
-		return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * speedMultiplier)
-				.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * speedMultiplier)
+		return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * speedMultiplier) // Drive forward left stick values negative Y (forward)
+				.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * speedMultiplier)// Drive left with left stick values negative X (left)
 				.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);
 	}
 
+	/*
+	 * Updates the Pose 2D
+	 * This is being used when changing from Field Centric request to Field Centric Facing Angle request
+	 * Becuase when changing facing angle will defualt to whatever was it's last value
+	 */
 	public SwerveRequest.FieldCentricFacingAngle setPoseValue() {
 		return drive.withTargetDirection(drivetrain.getState().Pose.getRotation());
 	}
