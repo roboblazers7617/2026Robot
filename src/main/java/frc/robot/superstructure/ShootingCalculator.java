@@ -30,6 +30,8 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 public class ShootingCalculator {
 	/**
 	 * Solves shooter values for a given robot pose and target.
+	 * <p>
+	 * The math behind this is documented in <a href="https://www.desmos.com/calculator/9frtqessfs">this Desmos calculator</a>.
 	 *
 	 * @param robotPose
 	 *            The pose of the robot.
