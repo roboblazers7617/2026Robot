@@ -10,6 +10,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -418,8 +419,9 @@ public class ShooterSuperstructure {
 	 */
 	private void prepareShootAtTarget(Pose3d targetPose, boolean tracking) {
 		Pose2d robotPose = drivetrain.getPose2d();
+		ChassisSpeeds robotVelocity = drivetrain.getFeildRelativeSpeeds();
 
-		setValues(ShootingCalculator.solve(new Pose3d(robotPose), targetPose), tracking);
+		setValues(ShootingCalculator.solve(new Pose3d(robotPose), targetPose, robotVelocity), tracking);
 	}
 
 	/**

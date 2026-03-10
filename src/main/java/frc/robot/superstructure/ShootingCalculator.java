@@ -35,10 +35,12 @@ public class ShootingCalculator {
 	 *            The pose of the robot.
 	 * @param targetPose
 	 *            The pose of the target to point at.
+	 * @param robotVelocity
+	 *            The field-relative velocity of the robot.
 	 * @return
 	 *         The resulting values to apply.
 	 */
-	public static ShooterValues solve(Pose3d robotPose, Pose3d targetPose) {
+	public static ShooterValues solve(Pose3d robotPose, Pose3d targetPose, ChassisSpeeds robotVelocity) {
 		ShooterValues values = new ShooterValues();
 
 		Pose3d turretPose = robotPose.transformBy(TurretConstants.TURRET_OFFSET);
@@ -59,9 +61,7 @@ public class ShootingCalculator {
 		Time time = calculateTimeTillScore(gamepieceTranslation, gamepieceTheta, gamepieceSpeed);
 
 		// add the velocity vector of the robot
-		ChassisSpeeds velocity = new ChassisSpeeds();
-
-		Transform3d velocityAsTransform = new Transform3d(velocity.vxMetersPerSecond, velocity.vyMetersPerSecond, 0.0, new Rotation3d());
+		Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
 		Pose3d modifiedTurretedPose = turretPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
 		// solve again, hood angle stays the same
 		gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose, targetAngle);
