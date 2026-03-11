@@ -81,31 +81,37 @@ public final class Constants {
 	}
 
 	public static class ShooterConstants {
-		public static final int LEADER_CAN_ID = 30;
-		public static final int FOLLOWER_CAN_ID = 31;
-		public static final double KP = 0.15;
-		public static final double KI = 0;
-		public static final double KD = 0;
-		public static final double KV = 0.115;
-		public static final double KS = 0;
-		public static final AngularVelocity RPS = Units.RotationsPerSecond.of(20);
+		public static final int LEADER_CAN_ID = 21;
+		public static final int FOLLOWER_CAN_ID = 22;
+		public static final double KP_0 = 0.07;
+		public static final double KI_0 = 0;
+		public static final double KD_0 = 0;
+		public static final double KV_0 = 0.126;
+		public static final double KS_0 = 0.45;
+		public static final double KP_1 = 0.07;
+		public static final double KI_1 = 0;
+		public static final double KD_1 = 0;
+		public static final double KV_1 = 0.126;
+		public static final double KS_1 = 0.45;
+		public static final AngularVelocity RPS = Units.RotationsPerSecond.of(50);
 		public static final AngularVelocity CRUISE_VELOCITY = RPS;
-		public static final double ACCELERATION = 20;
+		public static final double MAXIMUM_VELOCITY = 80.0;
+		public static final double ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
 		public static final boolean ENABLE_STATOR_LIMIT = true;
 		public static final double STATOR_CURRENT_LIMIT = 40;
 		public static final boolean ENABLE_SUPPLY_LIMIT = false;
 		public static final double SUPPLY_CURRENT_LIMIT = 60.0;
 		public static final AngularVelocity FAST_SPEED = CRUISE_VELOCITY;
-		public static final AngularVelocity SLOW_SPEED = CRUISE_VELOCITY.div(4.0);
+		public static final AngularVelocity SLOW_SPEED = CRUISE_VELOCITY.div(3.0);
 		public static final AngularVelocity COAST_SPEED = CRUISE_VELOCITY.div(2.0);
-		public static final AngularVelocity TOLERANCE = Units.RotationsPerSecond.of(80);
+		public static final AngularVelocity TOLERANCE = Units.RotationsPerSecond.of(3);
 		public static final double SUPPLY_CURRENT_LOWER_LIMIT = 40.0;
 		public static final double SUPPLY_CURRENT_LOWER_TIME = 0.1;
 		public static final boolean SUPPLY_CURRENT_LIMIT_ENABLE = true;
 	}
 
 	public static class HoodConstants {
-		public static final int HOOD_MOTOR_CAN_ID = 40;
+		public static final int HOOD_MOTOR_CAN_ID = 23;
 		public static final double KP = 10;
 		public static final double KS = 0;
 		public static final double KD = 0;

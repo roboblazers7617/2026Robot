@@ -15,6 +15,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
+
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTable;
@@ -28,7 +30,8 @@ public class Shooter extends SubsystemBase {
 	private final TalonFX leaderMotor;
 	private final TalonFX followermotor;
 	// Velocity output control for the flywheel
-	private final VelocityVoltage velocityOut = new VelocityVoltage(0);
+	private final VelocityVoltage velocityVoltage = new VelocityVoltage(0).withSlot(0);
+	private final MotionMagicVelocityVoltage mmvelocityVoltage = new MotionMagicVelocityVoltage(0).withSlot(1);
 	private NetworkTable shooterTable;
 	private DoubleEntry shooterSpeedEntry;
 	private AngularVelocity requestedSpeed;
@@ -46,14 +49,21 @@ public class Shooter extends SubsystemBase {
 		// Put's the motor in Coast mode to make it easier to move by hand
 		shooterConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 		// Configure the motor to make sure positive voltage is counter clockwise
-		shooterConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
-		shooterConfig.Slot0.kS = ShooterConstants.KS; // Static gain
-		shooterConfig.Slot0.kV = ShooterConstants.KV; // Velocity gain
-		shooterConfig.Slot0.kP = ShooterConstants.KP; // Proportional gain
+		shooterConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+		shooterConfig.Slot0.kS = ShooterConstants.KS_0; // Static gain
+		shooterConfig.Slot0.kV = ShooterConstants.KV_0; // Velocity gain
+		shooterConfig.Slot0.kP = ShooterConstants.KP_0; // Proportional gain
+		shooterConfig.Slot0.kD = ShooterConstants.KD_0;
+		shooterConfig.Slot1.kS = ShooterConstants.KS_1; // Static gain
+		shooterConfig.Slot1.kV = ShooterConstants.KV_1; // Velocity gain
+		shooterConfig.Slot1.kP = ShooterConstants.KP_1; // Proportional gain
+		shooterConfig.Slot1.kD = ShooterConstants.KD_1;
 		shooterConfig.CurrentLimits.SupplyCurrentLowerLimit = ShooterConstants.SUPPLY_CURRENT_LOWER_LIMIT; // Limit to 40A
 		shooterConfig.CurrentLimits.SupplyCurrentLimit = ShooterConstants.SUPPLY_CURRENT_LIMIT;
 		shooterConfig.CurrentLimits.SupplyCurrentLowerTime = ShooterConstants.SUPPLY_CURRENT_LOWER_TIME; // For longer than 0.1 seconds
 		shooterConfig.CurrentLimits.SupplyCurrentLimitEnable = ShooterConstants.SUPPLY_CURRENT_LIMIT_ENABLE; // Enable the limit
+		shooterConfig.MotionMagic.MotionMagicAcceleration = ShooterConstants.ACCELERATION;
+		shooterConfig.MotionMagic.MotionMagicCruiseVelocity = ShooterConstants.MAXIMUM_VELOCITY;
 		// Try to apply config multiple time. Break after successfully applying
 		for (int i = 0; i < 2; ++i) {
 			var status = leaderMotor.getConfigurator().apply(shooterConfig);
@@ -74,7 +84,7 @@ public class Shooter extends SubsystemBase {
 	}
 
 	public void startFlywheel(AngularVelocity speed) {
-		leaderMotor.setControl(velocityOut.withVelocity(speed));
+		leaderMotor.setControl(mmvelocityVoltage.withVelocity(speed));
 
 		System.out.println("Speed is" + speed);
 	}
