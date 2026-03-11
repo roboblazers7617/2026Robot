@@ -121,6 +121,11 @@ public class Turret extends SubsystemBase {
 
 		TalonFXConfiguration talonFXConfiguration = new TalonFXConfiguration();
 
+		// Motor output configuration
+		talonFXConfiguration.MotorOutput
+				.withNeutralMode(TurretConstants.MOTOR_NEUTRAL_MODE)
+				.withInverted(TurretConstants.MOTOR_INVERTED);
+
 		// Current limit configuration
 		talonFXConfiguration.CurrentLimits
 				.withSupplyCurrentLimit(TurretConstants.MOTOR_CURRENT_HIGHER_LIMIT)

@@ -7,6 +7,9 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -174,6 +177,15 @@ public final class Constants {
 		 * The number of encoder rotations per mechanism rotation for the secondary encoder.
 		 */
 		public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(ENCODER_GEAR_RATIO, ENCODER_GEAR_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
+
+		/**
+		 * The neutral mode for the motor.
+		 */
+		public static final NeutralModeValue MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake;
+		/**
+		 * The direction of the motor.
+		 */
+		public static final InvertedValue MOTOR_INVERTED = InvertedValue.Clockwise_Positive;
 
 		/**
 		 * The higher current limit for the motor. Helps get the motor started before switching to the {@link #MOTOR_CURRENT_LOWER_LIMIT}.
