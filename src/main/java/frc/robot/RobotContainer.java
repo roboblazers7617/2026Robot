@@ -120,8 +120,9 @@ public class RobotContainer {
 		// final var idle = new SwerveRequest.Idle();
 		// RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-		driverController.a().whileTrue(hopperUptake.startBothCommand());
-		driverController.b().whileTrue(hopperUptake.startUnJamCommand());
+		// driverController.a().whileTrue(hopperUptake.startBothCommand());
+		driverController.a().whileTrue(Commands.run(hopperUptake::startHopperForward));
+		// driverController.b().whileTrue(hopperUptake.startUnJamCommand());
 		driverController.x().whileTrue(hopperUptake.stopBothMotorsCommand());
 
 		// Run SysId routines when holding back/start and X/Y.

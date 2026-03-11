@@ -7,7 +7,7 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.VelocityVoltage;
+import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -30,7 +30,7 @@ public class HopperUptake extends SubsystemBase {
 	 */
 	private final TalonFX bigSpinny;
 
-	VelocityVoltage velocity = new VelocityVoltage(0);
+	MotionMagicVelocityVoltage velocity = new MotionMagicVelocityVoltage(0);
 
 	private AngularVelocity setpoint = RadiansPerSecond.zero();
 
@@ -41,11 +41,13 @@ public class HopperUptake extends SubsystemBase {
 		TalonFXConfiguration uptakeConfig = new TalonFXConfiguration();
 		uptakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 		// TODO: Add in which way the motor spins counterclockwise positive or clockwise positive
-		uptakeConfig.CurrentLimits.StatorCurrentLimit = HopperConstants.UPTAKE_SUPPLY_CURRENT_LIMIT;
+		uptakeConfig.CurrentLimits.StatorCurrentLimit = HopperConstants.UPTAKE_STATOR_CURRENT_LIMIT;
 		uptakeConfig.CurrentLimits.SupplyCurrentLimit = HopperConstants.UPTAKE_SUPPLY_CURRENT_LIMIT;
 		uptakeConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperConstants.UPTAKE_LOWER_CURRENT_LIMIT;
 		uptakeConfig.CurrentLimits.StatorCurrentLimitEnable = HopperConstants.UPTAKE_ENABLE_STATOR_LIMIT;
 		uptakeConfig.CurrentLimits.SupplyCurrentLimitEnable = HopperConstants.UPTAKE_ENABLE_SUPPLY_LIMIT;
+		uptakeConfig.MotionMagic.MotionMagicAcceleration = HopperConstants.UPTAKE_ACCELERATION;
+		uptakeConfig.MotionMagic.MotionMagicCruiseVelocity = HopperConstants.UPTAKE_MAXIMUM_VELOCITY;
 		uptakeConfig.MotorOutput.Inverted = HopperConstants.UPTAKE_IS_INVERTED;
 		// Uptake PID
 		uptakeConfig.Slot0.kP = HopperConstants.UPTAKE_KP;
@@ -57,11 +59,13 @@ public class HopperUptake extends SubsystemBase {
 		TalonFXConfiguration hopperConfig = new TalonFXConfiguration();
 		hopperConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 		// TODO: Add in which way the motor spins counterclockwise positive or clockwise positive
-		hopperConfig.CurrentLimits.StatorCurrentLimit = HopperConstants.HOPPER_SUPPLY_CURRENT_LIMIT;
+		hopperConfig.CurrentLimits.StatorCurrentLimit = HopperConstants.HOPPER_STATOR_CURRENT_LIMIT;
 		hopperConfig.CurrentLimits.SupplyCurrentLimit = HopperConstants.HOPPER_SUPPLY_CURRENT_LIMIT;
 		hopperConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperConstants.HOPPER_LOWER_CURRENT_LIMIT;
 		hopperConfig.CurrentLimits.StatorCurrentLimitEnable = HopperConstants.HOPPER_ENABLE_STATOR_LIMIT;
 		hopperConfig.CurrentLimits.SupplyCurrentLimitEnable = HopperConstants.HOPPER_ENABLE_SUPPLY_LIMIT;
+		hopperConfig.MotionMagic.MotionMagicAcceleration = HopperConstants.HOPPER_ACCELERATION;
+		hopperConfig.MotionMagic.MotionMagicCruiseVelocity = HopperConstants.HOPPER_MAXIMUM_VELOCITY;
 		hopperConfig.MotorOutput.Inverted = HopperConstants.HOPPER_IS_INVERTED;
 		// Hopper PID
 		hopperConfig.Slot0.kP = HopperConstants.HOPPER_KP;
@@ -73,8 +77,12 @@ public class HopperUptake extends SubsystemBase {
 		// TODO: These should probably be two separate for loops as once we have set one motor, we don't need to keep trying
 		for (int i = 0; i < 2; ++i) {
 			var status = bigSpinny.getConfigurator().apply(uptakeConfig);
-			var status2 = littleSpinny.getConfigurator().apply(hopperConfig);
-			if (status.isOK() && status2.isOK())
+			if (status.isOK())
+				break;
+		}
+		for (int i = 0; i < 2; ++i) {
+			var status = littleSpinny.getConfigurator().apply(hopperConfig);
+			if (status.isOK())
 				break;
 		}
 	}
@@ -92,6 +100,7 @@ public class HopperUptake extends SubsystemBase {
 
 	private void startUptakeMotorRPM(AngularVelocity RPS) {
 		bigSpinny.setControl(velocity.withVelocity(RPS));
+		setpoint = RPS;
 		// TODO: Don't you need to udpate the setpoint that you are tracking?
 	}
 
@@ -114,7 +123,6 @@ public class HopperUptake extends SubsystemBase {
 	public void stopHopper() {
 		littleSpinny.stopMotor();
 		// TODO: Are we trakcing the hopper setpoint? Or just the uptake?
-		setpoint = RadiansPerSecond.zero();
 	}
 
 	// TODO: I'm wondering if we need separate stopUptake and stopHopper functions as we would always
@@ -139,7 +147,6 @@ public class HopperUptake extends SubsystemBase {
 		bigSpinny.stopMotor();
 	}
 
-	// TODO: Should this be strtUptakeForwardCommand so it is clear what it is starting?
 	public Command startUptakeForwarCommand() {
 		return runOnce(() -> startUptakeForward());
 	}
