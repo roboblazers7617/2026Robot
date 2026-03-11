@@ -164,6 +164,7 @@ public class ShooterSuperstructure {
 		// ---- Home state ----
 		stateMachineConfig.configure(ShooterState.HOME)
 				.onEntry(this::home)
+				.permitReentry(ShooterTrigger.HOME)
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL)
 				.permit(ShooterTrigger.INITIALIZE, ShooterState.SHOOTING_STAGE_1_INITIALIZING);
 
