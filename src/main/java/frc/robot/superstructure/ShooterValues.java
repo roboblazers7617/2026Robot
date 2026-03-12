@@ -6,7 +6,9 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants.ShootingConstants;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Degrees;
 
 /**
  * An object that represents a state that the shooter can be in. This includes the flywheel speed, turret position, and hood position.
@@ -134,5 +136,10 @@ public class ShooterValues {
 	 */
 	public Angle getHoodAngle() {
 		return hoodAngle;
+	}
+
+	@Override
+	public String toString() {
+		return String.format("Flywheel Speed: %f RPS, Hood Angle: %f Degrees, Turret Angle: %f Degrees", getFlywheelSpeed().in(RotationsPerSecond), getHoodAngle().in(Degrees), getTurretAngle().in(Degrees));
 	}
 }
