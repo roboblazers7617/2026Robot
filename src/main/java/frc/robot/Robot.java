@@ -24,8 +24,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 
-import static edu.wpi.first.units.Units.Seconds;
-
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
  * the TimedRobot documentation. If you change the name of this class or the package after creating
