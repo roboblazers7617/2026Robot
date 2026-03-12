@@ -11,6 +11,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -24,7 +25,6 @@ import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.Constants.TurretConstants;
 
 import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
@@ -85,7 +85,7 @@ public class ShootingCalculator {
 
 		// Solve the angle and translation to the target
 		Angle targetAngle = solveTargetAngle(turretPose.toPose2d(), targetPose.toPose2d());
-		Translation2d gamepieceTranslation = solveGamepieceTranslation(turretPose, targetPose, targetAngle);
+		Translation2d gamepieceTranslation = solveGamepieceTranslation(turretPose, targetPose);
 
 		// Solve initial shooter values
 		Angle gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
@@ -106,7 +106,7 @@ public class ShootingCalculator {
 
 		// Solve again, hood angle stays the same
 		targetAngle = solveTargetAngle(modifiedTurretedPose.toPose2d(), targetPose.toPose2d());
-		gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose, targetAngle);
+		gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose);
 		gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
 		gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 
@@ -147,17 +147,20 @@ public class ShootingCalculator {
 	 *            The pose of the turret.
 	 * @param targetPose
 	 *            The pose of the target to point at.
-	 * @param targetAngle
-	 *            The angle from the turret to the target. This is used to grab a 2d plane from the 3d translation.
 	 * @return
 	 *         The translation from the turret to the target as a 2d plane where X is horizontal distance and Y is vertical distance.
 	 */
-	public static Translation2d solveGamepieceTranslation(Pose3d turretPose, Pose3d targetPose, Angle targetAngle) {
-		return targetPose.minus(turretPose)
-				.getTranslation()
-				.rotateBy(new Rotation3d(Radians.zero(), Radians.zero(), targetAngle.unaryMinus()))
-				.rotateBy(new Rotation3d(Rotations.of(0.75), Radians.zero(), Radians.zero()))
-				.toTranslation2d();
+	public static Translation2d solveGamepieceTranslation(Pose3d turretPose, Pose3d targetPose) {
+		Translation3d translation3d = targetPose.minus(turretPose)
+				.getTranslation();
+
+		double dx = Math.abs(translation3d.getX());
+		double dy = Math.abs(translation3d.getY());
+		double dz = translation3d.getZ();
+
+		double distance = Math.sqrt(Math.pow(dx, 2.0) + Math.pow(dy, 2.0));
+
+		return new Translation2d(distance, dz + 0.5);
 	}
 
 	/**
