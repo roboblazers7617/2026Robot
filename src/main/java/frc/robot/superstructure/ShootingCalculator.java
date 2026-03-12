@@ -2,15 +2,14 @@ package frc.robot.superstructure;
 
 import java.util.Optional;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.Constants.FieldConstants;
@@ -18,7 +17,6 @@ import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.TurretConstants;
 
 import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -31,7 +29,7 @@ public class ShootingCalculator {
 	/**
 	 * Solves shooter values for a given robot pose and target.
 	 * <p>
-	 * The math behind this is documented in <a href="https://www.desmos.com/calculator/9frtqessfs">this Desmos calculator</a>.
+	 * The math behind this is documented in <a href="https://www.desmos.com/calculator/zixuz1clhy">this Desmos calculator</a>.
 	 *
 	 * @param robotPose
 	 *            The pose of the robot.
@@ -61,16 +59,16 @@ public class ShootingCalculator {
 
 		// ----- SECOND CALCUlATION (WITH VELOCITY) -----
 		// Figure out how long the gamepiece will be in the air for
-		Time time = calculateTimeTillScore(gamepieceTranslation, gamepieceTheta, gamepieceSpeed);
+		// Time time = calculateTimeTillScore(gamepieceTranslation, gamepieceTheta, gamepieceSpeed);
 
 		// Add the velocity vector of the robot
 		// We're effectively trying to figure out where the turret will be at the end of the ball's travel
-		Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
-		Pose3d modifiedTurretedPose = turretPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
+		// Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
+		// Pose3d modifiedTurretedPose = turretPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
 
 		// Solve again, hood angle stays the same
-		gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose, targetAngle);
-		gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
+		// gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose, targetAngle);
+		// gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 
 		// Set the ShooterValues accordingly
 		values.setTurretAngle(targetAngle);
@@ -87,22 +85,11 @@ public class ShootingCalculator {
 	 *            The translation to shoot at.
 	 * @return
 	 *         The theta to shoot the gamepiece at.
-	 * @implNote
-	 *           Currently, this just chooses from a set of preset values based off of our distance from the target. We will probably make this a lot smarter in the future, but for now this should work.
 	 */
 	public static Angle calculateHoodAngle(Translation2d targetTranslation) {
-		Distance distance = Meters.of(Math.sqrt(Math.pow(targetTranslation.getX(), 2) + Math.pow(targetTranslation.getY(), 2)));
+		double a = 0.5 * Math.atan(-targetTranslation.getX() / targetTranslation.getY()) + (Math.PI / 2);
 
-		if (distance.compareTo(ShootingConstants.CLOSE_SHOT_HOOD_CUTOFF) < 0) {
-			return ShootingConstants.CLOSE_SHOT_HOOD_ANGLE;
-		} else if (distance.compareTo(ShootingConstants.MEDIUM_SHOT_HOOD_CUTOFF) < 0) {
-			return ShootingConstants.MEDIUM_SHOT_HOOD_ANGLE;
-		} else if (distance.compareTo(ShootingConstants.FAR_SHOT_HOOD_CUTOFF) < 0) {
-			return ShootingConstants.FAR_SHOT_HOOD_ANGLE;
-		} else {
-			// if more than far shot cutoff, go to max angle
-			return ShootingConstants.MAX_HOOD_ANGLE;
-		}
+		return Radians.of(MathUtil.clamp(a, ShootingConstants.MIN_SHOOT_ANGLE.in(Radians), ShootingConstants.MAX_SHOOT_ANGLE.in(Radians)));
 	}
 
 	/**
