@@ -8,15 +8,13 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
@@ -25,6 +23,9 @@ import frc.robot.subsystems.StubbedHood;
 import frc.robot.subsystems.StubbedHopperUptake;
 import frc.robot.subsystems.StubbedFlywheel;
 import frc.robot.subsystems.StubbedTurret;
+import frc.robot.superstructure.sources.ShootFromAnywhereSource;
+import frc.robot.superstructure.sources.ShootingSource;
+import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.util.AlertUtil;
 
 import static edu.wpi.first.units.Units.RPM;
@@ -57,7 +58,7 @@ public class ShooterSuperstructure {
 		/**
 		 * Homed and waiting for a target.
 		 * <p>
-		 * If a target is found for our current position, this will automatically transition to {@link #SHOOTING}.
+		 * If a target is given by the current source, this will automatically transition to {@link #SHOOTING}.
 		 */
 		HOME,
 		/**
@@ -137,6 +138,11 @@ public class ShooterSuperstructure {
 	private final Timer shooterTimeout = new Timer();
 
 	/**
+	 * The current source to poll for shooting values.
+	 */
+	private ShootingSource shootingSource = new ShootingSourceIdle();
+
+	/**
 	 * Creates a new ShooterController.
 	 *
 	 * @param drivetrain
@@ -205,6 +211,10 @@ public class ShooterSuperstructure {
 			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Unhandled trigger", "Unhandled trigger: " + trigger + " from state: " + state, Seconds.of(3.0));
 		});
 
+		// Set up a trigger so, when we enable in teleop we go into shoot while move
+		RobotModeTriggers.teleop()
+				.onTrue(setSourceCommand(new ShootFromAnywhereSource(drivetrain)));
+
 		// Put commands on SmartDashboard
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Home", homeCommand());
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Start Manual Control", startManualControlCommand());
@@ -220,16 +230,7 @@ public class ShooterSuperstructure {
 	 * updating the tracking for the shooter.
 	 */
 	public void update() {
-		Pose2d robotPose = drivetrain.getPose2d();
-		ChassisSpeeds robotVelocity = drivetrain.getFeildRelativeSpeeds();
-
-		// Figure out target values if we have any
-		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(robotPose);
-
-		Optional<ShooterValues> targetShooterValues = Optional.empty();
-		if (targetPose.isPresent()) {
-			targetShooterValues = Optional.of(ShootingCalculator.solve(new Pose3d(robotPose), targetPose.get(), robotVelocity));
-		}
+		Optional<ShooterValues> targetShooterValues = shootingSource.get();
 
 		// Check the current state and handle sequence transitions.
 		switch (stateMachine.getState()) {
@@ -394,6 +395,21 @@ public class ShooterSuperstructure {
 	}
 
 	/**
+	 * Sets the shooting source to the given source. This can be called from any state.
+	 * <p>
+	 * Can be run while disabled.
+	 *
+	 * @param source
+	 *            The source to set.
+	 * @return
+	 *         Command to run.
+	 */
+	public Command setSourceCommand(ShootingSource source) {
+		return Commands.runOnce(() -> setSource(source))
+				.ignoringDisable(true);
+	}
+
+	/**
 	 * Trigger that returns true when ready to shoot. Should be useful for triggering controller haptics.
 	 *
 	 * @return
@@ -421,21 +437,22 @@ public class ShooterSuperstructure {
 	}
 
 	/**
-	 * Gets the target pose for the current drivetrain position.
+	 * Sets the shooting source to use.
 	 * <p>
-	 * This mostly just exists for logging.
+	 * This can be called at any time, and will immediately take over the current setting.
 	 *
-	 * @return
-	 *         The pose of the shooting target for the current drivetrain position.
+	 * @param source
+	 *            Source to set.
 	 */
-	public Pose3d getTargetForPosition() {
-		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(drivetrain.getPose2d());
+	public void setSource(ShootingSource source) {
+		shootingSource = source;
+	}
 
-		if (targetPose.isPresent()) {
-			return targetPose.get();
-		} else {
-			return Pose3d.kZero;
-		}
+	/**
+	 * Gets the name of the current shooting source.
+	 */
+	public String getSourceName() {
+		return shootingSource.getName();
 	}
 
 	/**
