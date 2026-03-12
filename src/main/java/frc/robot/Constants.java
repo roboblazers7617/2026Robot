@@ -121,7 +121,6 @@ public final class Constants {
 		public static final double HOPPER_MAXIMUM_VELOCITY = (100 / HOPPER_GEAR_RATIO) * 0.8;
 		public static final double HOPPER_ACCELERATION = HOPPER_MAXIMUM_VELOCITY * 2.0;
 		// Speed Values in RPM
-
 		public static final AngularVelocity TOLERANCE = RotationsPerSecond.of(5);
 		public static final AngularVelocity FORWARD_HOPPER_RPS = RotationsPerSecond.of(10.0);
 		public static final AngularVelocity FORWARD_UPTAKE_RPS = RotationsPerSecond.of(50.0);
