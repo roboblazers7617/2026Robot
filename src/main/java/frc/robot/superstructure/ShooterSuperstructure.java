@@ -14,16 +14,13 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.StubbedHood;
 import frc.robot.subsystems.StubbedHopperUptake;
 import frc.robot.subsystems.StubbedFlywheel;
 import frc.robot.subsystems.StubbedTurret;
-import frc.robot.superstructure.sources.ShootFromAnywhereSource;
 import frc.robot.superstructure.sources.ShootingSource;
 import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.util.AlertUtil;
@@ -38,8 +35,6 @@ import static edu.wpi.first.units.Units.Seconds;
 @Logged
 public class ShooterSuperstructure {
 	// TODO: Implement things here for the various subsystems once those are added
-	@NotLogged
-	private final CommandSwerveDrivetrain drivetrain;
 	@NotLogged
 	private final StubbedTurret turret;
 	@NotLogged
@@ -145,8 +140,6 @@ public class ShooterSuperstructure {
 	/**
 	 * Creates a new ShooterController.
 	 *
-	 * @param drivetrain
-	 *            The drivetrain to poll the pose from.
 	 * @param shooter
 	 *            The shooter to control.
 	 * @param hood
@@ -158,8 +151,7 @@ public class ShooterSuperstructure {
 	 * @param uptakeBeamBreak
 	 *            The beam break for the uptake.
 	 */
-	public ShooterSuperstructure(CommandSwerveDrivetrain drivetrain, StubbedFlywheel shooter, StubbedHood hood, StubbedTurret turret, StubbedHopperUptake hopperUptake, DigitalInput uptakeBeamBreak) {
-		this.drivetrain = drivetrain;
+	public ShooterSuperstructure(StubbedFlywheel shooter, StubbedHood hood, StubbedTurret turret, StubbedHopperUptake hopperUptake, DigitalInput uptakeBeamBreak) {
 		this.flywheel = shooter;
 		this.hood = hood;
 		this.turret = turret;
@@ -210,10 +202,6 @@ public class ShooterSuperstructure {
 		stateMachine.onUnhandledTrigger((ShooterState state, ShooterTrigger trigger) -> {
 			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Unhandled trigger", "Unhandled trigger: " + trigger + " from state: " + state, Seconds.of(3.0));
 		});
-
-		// Set up a trigger so, when we enable in teleop we go into shoot while move
-		RobotModeTriggers.teleop()
-				.onTrue(setSourceCommand(new ShootFromAnywhereSource(drivetrain)));
 
 		// Put commands on SmartDashboard
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Home", homeCommand());

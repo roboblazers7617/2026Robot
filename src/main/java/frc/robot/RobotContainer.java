@@ -15,6 +15,7 @@ import frc.robot.subsystems.StubbedFlywheel;
 import frc.robot.subsystems.StubbedTurret;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
+import frc.robot.superstructure.sources.ShootFromAnywhereSource;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.HopperConstants;
@@ -93,7 +94,7 @@ public class RobotContainer {
 	/**
 	 * Superstructure that handles controlling the shooter and related subsystems.
 	 */
-	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure(drivetrain, shooter, hood, turret, hopperUptake, uptakeBeamBreak);
+	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure(shooter, hood, turret, hopperUptake, uptakeBeamBreak);
 	/**
 	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
 	 */
@@ -124,6 +125,10 @@ public class RobotContainer {
 		if (LoggingConstants.DEBUG_MODE) {
 			shooterSuperstructureDebug = new ShooterSuperstructureDebug(shooterSuperstructure);
 		}
+
+		// Set up a trigger so, when we enable in teleop we go into shoot while move
+		RobotModeTriggers.teleop()
+				.onTrue(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain)));
 	}
 
 	/**
