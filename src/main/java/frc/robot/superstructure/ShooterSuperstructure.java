@@ -53,7 +53,7 @@ public class ShooterSuperstructure {
 	/**
 	 * The list of states the shooter can be in.
 	 */
-	enum ShooterState {
+	public enum ShooterState {
 		/**
 		 * Homed and waiting for a target.
 		 * <p>
