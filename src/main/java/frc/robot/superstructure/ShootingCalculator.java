@@ -2,18 +2,25 @@ package frc.robot.superstructure;
 
 import java.util.Optional;
 
+import com.ctre.phoenix6.SignalLogger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShootingConstants;
+import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.Constants.TurretConstants;
 
 import static edu.wpi.first.units.Units.Radians;
@@ -26,6 +33,18 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
  * Some static utility methods for calculating shooter values.
  */
 public class ShootingCalculator {
+	/**
+	 * The NetworkTables table name for the shooting calculator.
+	 */
+	public static String SHOOTING_CALCULATOR_TABLE_NAME = SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Shooting Calculator";
+
+	private static DoublePublisher timeTillScorePublisher = NetworkTableInstance.getDefault()
+			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Time Till Score")
+			.publish();
+	private static StructPublisher<Pose3d> modifiedTurretPosePublisher = NetworkTableInstance.getDefault()
+			.getStructTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct)
+			.publish();
+
 	/**
 	 * Solves shooter values for a given robot pose and target.
 	 * <p>
@@ -59,16 +78,20 @@ public class ShootingCalculator {
 
 		// ----- SECOND CALCUlATION (WITH VELOCITY) -----
 		// Figure out how long the gamepiece will be in the air for
-		// Time time = calculateTimeTillScore(gamepieceTranslation, gamepieceTheta, gamepieceSpeed);
+		Time time = calculateTimeTillScore(gamepieceTranslation, gamepieceTheta, gamepieceSpeed);
+		timeTillScorePublisher.set(time.in(Seconds));
+		SignalLogger.writeValue(SHOOTING_CALCULATOR_TABLE_NAME + "/Time Till Score", time);
 
 		// Add the velocity vector of the robot
 		// We're effectively trying to figure out where the turret will be at the end of the ball's travel
-		// Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
-		// Pose3d modifiedTurretedPose = turretPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
+		Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
+		Pose3d modifiedTurretedPose = turretPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
+		modifiedTurretPosePublisher.set(modifiedTurretedPose);
+		SignalLogger.writeStruct(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct, modifiedTurretedPose);
 
 		// Solve again, hood angle stays the same
-		// gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose, targetAngle);
-		// gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
+		gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose, targetAngle);
+		gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 
 		// Set the ShooterValues accordingly
 		values.setTurretAngle(targetAngle);
