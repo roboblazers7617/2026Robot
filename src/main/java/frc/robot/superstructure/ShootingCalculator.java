@@ -174,7 +174,7 @@ public class ShootingCalculator {
 		// quadratic formula values
 		double a = ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
 		double b = yVelocity;
-		double c = -gamepieceTranslation.getY();
+		double c = gamepieceTranslation.getY();
 		// calculate quadratic formula to solve kinematics deltaY = Yinitial + Vyt + at^2
 		double t = (-b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
 		return Seconds.of(t);
