@@ -31,6 +31,10 @@ import static edu.wpi.first.units.Units.Seconds;
 
 /**
  * A superstructure that controls the functionality of the shooter. This helps coordinate the various subsystems involved with the shooter.
+ * <p>
+ * This class is built around the foundation of a state machine, and has a defined {@link ShooterState list of states} it can be in. This helps keep track of the different steps involved in shooting, which makes it a lot easier to tweak behavior and a lot harder to introduce weird bugs where things get into undefined states.
+ * <p>
+ * This class also has a concept of {@link ShootingSource shooting sources}. These provide target values for the shooter subsystems, and can be built to dynamically update, which aids in the development of things like {@link frc.robot.superstructure.sources.ShootFromAnywhereSource shoot-from-anywhere} functionality.
  */
 @Logged
 public class ShooterSuperstructure {
@@ -138,7 +142,7 @@ public class ShooterSuperstructure {
 	private ShootingSource shootingSource = new ShootingSourceIdle();
 
 	/**
-	 * Creates a new ShooterController.
+	 * Creates a new ShooterSuperstructure.
 	 *
 	 * @param shooter
 	 *            The shooter to control.
@@ -210,12 +214,9 @@ public class ShooterSuperstructure {
 	}
 
 	/**
-	 * Updates the shooter state depending on drivetrain position.
+	 * Updates the shooter state depending on the current shooting source.
 	 * <p>
-	 * This method does quite a few things. Based off of the robot pose, this will
-	 * find the desired shooting pose, and, depending on what state it's in, it
-	 * will transition to other states as needed. Also, while shooting, this handles
-	 * updating the tracking for the shooter.
+	 * The main purpose of this method is to handle transitions between different state machine states, as well as updating subsystem targets. Every time this method is run, it will check the current state of the superstructure, and, depending on the current state of the superstructure, the current value of the selected {@link ShootingSource}, and feedback from subsystem sensors, this will update the subsystem targets and transition to different states.
 	 */
 	public void update() {
 		Optional<ShooterValues> targetShooterValues = shootingSource.get();
