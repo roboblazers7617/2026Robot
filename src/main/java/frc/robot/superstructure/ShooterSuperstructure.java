@@ -9,7 +9,6 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -378,7 +377,7 @@ public class ShooterSuperstructure {
 			if (stateMachine.isInState(ShooterState.MANUAL_CONTROL)) {
 				setValues(values.get(), false);
 			} else {
-				DriverStation.reportWarning("Attempted to execute setStateCommand without being in manual mode.", true);
+				AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Not in manual mode", "Attempted to execute setStateCommand without being in manual mode.", Seconds.of(3.0));
 			}
 		}, flywheel, hood, turret);
 	}
