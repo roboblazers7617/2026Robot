@@ -22,8 +22,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.LoggingConstants;
+import frc.robot.Constants.SuperstructureConstants;
 
-import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Seconds;
 
 /**
@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
 		robotContainer = new RobotContainer();
 
 		// Set up the superstructure periodic
-		addPeriodic(robotContainer::superstructurePeriodic, Milliseconds.of(10).in(Seconds));
+		addPeriodic(robotContainer::superstructurePeriodic, SuperstructureConstants.PERIODIC_INTERVAL.in(Seconds));
 	}
 
 	/**

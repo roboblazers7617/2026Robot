@@ -38,6 +38,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Seconds;
 
 /**
@@ -185,6 +186,10 @@ public final class Constants {
 		 * The table name for the intake superstructure.
 		 */
 		public static final String INTAKE_SUPERSTRUCTURE_TABLE_NAME = "Intake Superstructure";
+		/**
+		 * The interval to run the {@link RobotContainer#superstructurePeriodic()} at.
+		 */
+		public static final Time PERIODIC_INTERVAL = Milliseconds.of(10);
 	}
 
 	/**
