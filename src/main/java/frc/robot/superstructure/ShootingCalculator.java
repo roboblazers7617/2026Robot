@@ -38,11 +38,23 @@ public class ShootingCalculator {
 	 */
 	public static String SHOOTING_CALCULATOR_TABLE_NAME = SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Shooting Calculator";
 
+	private static StructPublisher<Pose3d> targetPosePublisher = NetworkTableInstance.getDefault()
+			.getStructTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Target Pose", Pose3d.struct)
+			.publish();
 	private static DoublePublisher timeTillScorePublisher = NetworkTableInstance.getDefault()
 			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Time Till Score")
 			.publish();
 	private static StructPublisher<Pose3d> modifiedTurretPosePublisher = NetworkTableInstance.getDefault()
 			.getStructTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct)
+			.publish();
+	private static StructPublisher<Translation2d> modifiedTranslationPublisher = NetworkTableInstance.getDefault()
+			.getStructTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Translation", Translation2d.struct)
+			.publish();
+	private static DoublePublisher gamepieceThetaPublisher = NetworkTableInstance.getDefault()
+			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Gamepiece Theta")
+			.publish();
+	private static DoublePublisher gamepieceSpeedPublisher = NetworkTableInstance.getDefault()
+			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Gamepiece Speed")
 			.publish();
 
 	/**
@@ -61,6 +73,9 @@ public class ShootingCalculator {
 	 */
 	public static ShooterValues solve(Pose3d robotPose, Pose3d targetPose, ChassisSpeeds robotVelocity) {
 		ShooterValues values = new ShooterValues();
+
+		targetPosePublisher.set(targetPose);
+		SignalLogger.writeStruct(SHOOTING_CALCULATOR_TABLE_NAME + "/Target Pose", Pose3d.struct, targetPose);
 
 		// Figure out where the turret is since it isn't centered on the robot
 		Pose3d turretPose = robotPose.transformBy(TurretConstants.TURRET_OFFSET);
@@ -94,6 +109,10 @@ public class ShootingCalculator {
 		gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose, targetAngle);
 		gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
 		gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
+
+		modifiedTranslationPublisher.set(gamepieceTranslation);
+		gamepieceThetaPublisher.set(gamepieceTheta.in(Radians));
+		gamepieceSpeedPublisher.set(gamepieceSpeed.in(MetersPerSecond));
 
 		// Set the ShooterValues accordingly
 		values.setTurretAngle(targetAngle);
