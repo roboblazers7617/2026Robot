@@ -78,7 +78,7 @@ public class Robot extends TimedRobot {
 		robotContainer = new RobotContainer();
 
 		// Set up the superstructure periodic
-		addPeriodic(robotContainer::superstructurePeriodic, SuperstructureConstants.PERIODIC_INTERVAL.in(Seconds));
+		addPeriodic(robotContainer::superstructurePeriodic, SuperstructureConstants.PERIODIC_INTERVAL);
 	}
 
 	/**
