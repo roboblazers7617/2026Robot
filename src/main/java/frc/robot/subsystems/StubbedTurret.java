@@ -16,6 +16,10 @@ public class StubbedTurret extends SubsystemBase {
 		this.angle = angle;
 	}
 
+	public Angle getPosition() {
+		return angle;
+	}
+
 	public boolean isAtTarget() {
 		return true;
 	}

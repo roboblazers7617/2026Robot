@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class StubbedHopperUptake extends SubsystemBase {
 	private final Timer timer = new Timer();
 	private final DIOSim uptakeBeamBreakSim;
+	private boolean hopperRunning;
 
 	public StubbedHopperUptake(DIOSim uptakeBeamBreakSim) {
 		this.uptakeBeamBreakSim = uptakeBeamBreakSim;
@@ -22,6 +23,7 @@ public class StubbedHopperUptake extends SubsystemBase {
 	public void startHopperForward() {
 		System.out.println("Started hopper");
 		timer.restart();
+		hopperRunning = true;
 	}
 
 	public void startHopperUnjam() {
@@ -31,6 +33,11 @@ public class StubbedHopperUptake extends SubsystemBase {
 	public void stopHopper() {
 		System.out.println("Stopped hopper");
 		timer.stop();
+		hopperRunning = false;
+	}
+
+	public boolean isHopperRunning() {
+		return hopperRunning;
 	}
 
 	public void startUptakeForward() {

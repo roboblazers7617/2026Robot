@@ -20,6 +20,10 @@ public class StubbedFlywheel extends SubsystemBase {
 		System.out.println("Stopped flywheel");
 	}
 
+	public AngularVelocity getSpeed() {
+		return speed;
+	}
+
 	public boolean isAtCruiseVelocity() {
 		return true;
 	}

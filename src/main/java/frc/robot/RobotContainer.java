@@ -13,6 +13,7 @@ import frc.robot.subsystems.StubbedHood;
 import frc.robot.subsystems.StubbedHopperUptake;
 import frc.robot.subsystems.StubbedFlywheel;
 import frc.robot.subsystems.StubbedTurret;
+import frc.robot.superstructure.ShooterSim;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.superstructure.sources.ShootFromAnywhereSource;
@@ -99,14 +100,14 @@ public class RobotContainer {
 	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
 	 */
 	private ShooterSuperstructureDebug shooterSuperstructureDebug;
+	/**
+	 * Simulation functionality for the shooter. Only initialized when in simulation.
+	 */
+	private ShooterSim shooterSim;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
-
-	/* Path follower */
-	// private final SendableChooser<Command> autoChooser;
-
 	public RobotContainer() {
 		// Publish version metadata
 		VersionConstants.publishNetworkTables(NetworkTableInstance.getDefault().getTable("/Metadata"));
@@ -149,6 +150,20 @@ public class RobotContainer {
 		if (!LoggingConstants.DEBUG_MODE) {
 			Elastic.selectTab(DashboardConstants.TELEOP_TAB_NAME);
 		}
+	}
+
+	/**
+	 * This function is called once when the robot is first started up whilst in simulation.
+	 */
+	public void simulationInit() {
+		shooterSim = new ShooterSim(drivetrain, shooter, hood, turret, hopperUptake);
+	}
+
+	/**
+	 * This function is called periodically whilst in simulation.
+	 */
+	public void simulationPeriodic() {
+		shooterSim.simulationPeriodic();
 	}
 
 	/**

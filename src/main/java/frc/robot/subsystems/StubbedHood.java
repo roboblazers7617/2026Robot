@@ -16,6 +16,10 @@ public class StubbedHood extends SubsystemBase {
 		this.angle = angle;
 	}
 
+	public Angle getPosition() {
+		return angle;
+	}
+
 	public boolean isAtPosition() {
 		return true;
 	}

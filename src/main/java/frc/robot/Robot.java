@@ -10,6 +10,8 @@ import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import org.ironmaple.simulation.SimulatedArena;
+
 import com.ctre.phoenix6.HootEpilogueBackend;
 import com.ctre.phoenix6.SignalLogger;
 
@@ -160,11 +162,17 @@ public class Robot extends TimedRobot {
 	 * This function is called once when the robot is first started up.
 	 */
 	@Override
-	public void simulationInit() {}
+	public void simulationInit() {
+		robotContainer.simulationInit();
+	}
 
 	/**
 	 * This function is called periodically whilst in simulation.
 	 */
 	@Override
-	public void simulationPeriodic() {}
+	public void simulationPeriodic() {
+		robotContainer.simulationPeriodic();
+
+		SimulatedArena.getInstance().simulationPeriodic();
+	}
 }
