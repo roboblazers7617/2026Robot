@@ -90,7 +90,9 @@ public class ShootingCalculator {
 		SignalLogger.writeStruct(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct, modifiedTurretedPose);
 
 		// Solve again, hood angle stays the same
+		targetAngle = solveTargetAngle(modifiedTurretedPose.toPose2d(), targetPose.toPose2d());
 		gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose, targetAngle);
+		gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
 		gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 
 		// Set the ShooterValues accordingly
