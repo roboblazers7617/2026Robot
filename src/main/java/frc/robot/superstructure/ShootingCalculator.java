@@ -191,7 +191,7 @@ public class ShootingCalculator {
 	private static LinearVelocity solveGamepieceSpeed(Translation2d gamepieceTranslation, Angle gamepieceTheta) {
 		double deltaX = gamepieceTranslation.getX();
 		double deltaY = gamepieceTranslation.getY();
-		double g = .5 * ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
+		double g = ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
 		double theta = gamepieceTheta.in(Radians);
 
 		// @formatter:off
