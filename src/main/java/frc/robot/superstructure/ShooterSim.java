@@ -50,7 +50,7 @@ public class ShooterSim {
 	private static Angle gamepieceTheta = Radians.zero();
 
 	private final StructArrayPublisher<Pose3d> fuelPoses = NetworkTableInstance.getDefault()
-			.getStructArrayTopic("MyPoseArray", Pose3d.struct)
+			.getStructArrayTopic("MapleSim/Fuel Poses", Pose3d.struct)
 			.publish();
 
 	public ShooterSim(CommandSwerveDrivetrain drivetrain, StubbedFlywheel flywheel, StubbedHood hood, StubbedTurret turret, StubbedHopperUptake hopperUptake) {
