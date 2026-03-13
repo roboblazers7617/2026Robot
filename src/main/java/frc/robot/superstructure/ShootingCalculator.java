@@ -2,8 +2,6 @@ package frc.robot.superstructure;
 
 import java.util.Optional;
 
-import org.opencv.core.Mat;
-
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.math.MathUtil;
