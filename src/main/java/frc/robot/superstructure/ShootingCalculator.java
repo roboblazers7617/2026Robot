@@ -2,6 +2,8 @@ package frc.robot.superstructure;
 
 import java.util.Optional;
 
+import org.opencv.core.Mat;
+
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.math.MathUtil;
@@ -54,6 +56,9 @@ public class ShootingCalculator {
 			.publish();
 	private static StructPublisher<Translation2d> modifiedTranslationPublisher = NetworkTableInstance.getDefault()
 			.getStructTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Translation", Translation2d.struct)
+			.publish();
+	private static StructPublisher<Pose3d> modifiedTargetPosePublisher = NetworkTableInstance.getDefault()
+			.getStructTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Target Pose", Pose3d.struct)
 			.publish();
 	private static DoublePublisher gamepieceThetaPublisher = NetworkTableInstance.getDefault()
 			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Gamepiece Theta")
@@ -118,7 +123,7 @@ public class ShootingCalculator {
 			gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
 			gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 		}
-
+		modifiedTargetPosePublisher.set(turretPose.plus(new Transform3d(gamepieceTranslation.getX() * Math.cos(targetAngle.in(Radians)), gamepieceTranslation.getX() * Math.sin(targetAngle.in(Radians)), gamepieceTranslation.getY(), new Rotation3d())));
 		modifiedTranslationPublisher.set(gamepieceTranslation);
 		gamepieceThetaPublisher.set(gamepieceTheta.in(Radians));
 		gamepieceSpeedPublisher.set(gamepieceSpeed.in(MetersPerSecond));
@@ -167,13 +172,13 @@ public class ShootingCalculator {
 		Translation3d translation3d = targetPose.minus(turretPose)
 				.getTranslation();
 
-		double dx = Math.abs(translation3d.getX());
-		double dy = Math.abs(translation3d.getY());
+		double dx = translation3d.getX();
+		double dy = translation3d.getY();
 		double dz = translation3d.getZ();
 
 		double distance = Math.sqrt(Math.pow(dx, 2.0) + Math.pow(dy, 2.0));
 
-		return new Translation2d(distance, dz + 0.5);
+		return new Translation2d(distance - .4, dz + .25);
 	}
 
 	/**
