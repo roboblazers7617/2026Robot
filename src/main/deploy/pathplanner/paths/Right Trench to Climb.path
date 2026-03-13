@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.540056561085973,
-        "y": 0.5875791855203625
+        "x": 3.447570422535212,
+        "y": 0.521971830985916
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.6166402714932127,
-        "y": 1.449434389140272
+        "x": 2.5241541329424515,
+        "y": 1.3838270346058255
       },
       "isLocked": false,
       "linkedName": "Right Shooting"
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 0.0
   },
   "reversed": false,
   "folder": "Riley and Lukas",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

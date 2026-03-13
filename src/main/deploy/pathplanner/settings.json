@@ -1,12 +1,15 @@
 {
-  "robotWidth": 0.9,
-  "robotLength": 0.9,
+  "robotWidth": 0.79375,
+  "robotLength": 0.79375,
   "holonomicMode": true,
   "pathFolders": [
     "Riley and Lukas",
     "Other paths"
   ],
-  "autoFolders": [],
+  "autoFolders": [
+    "Climbing",
+    "Pure Scoring - No Climb"
+  ],
   "defaultMaxVel": 3.0,
   "defaultMaxAccel": 3.0,
   "defaultMaxAngVel": 540.0,

@@ -216,6 +216,5 @@ public class RobotContainer {
 	 */
 	public boolean getIsBallInUptake() {
 		return true;
-
 	}
 }

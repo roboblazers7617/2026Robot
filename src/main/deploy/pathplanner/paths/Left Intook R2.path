@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.378,
-        "y": 5.95
+        "x": 7.716,
+        "y": 4.75
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.7500226244343895,
-        "y": 4.0042194570135745
+        "x": 7.743045774647888,
+        "y": 7.851426056338028
       },
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Left Intook R2 Neutral"
     },
     {
       "anchor": {
-        "x": 0.7032,
-        "y": 0.65
+        "x": 3.51904761904762,
+        "y": 7.619809523809524
       },
       "prevControl": {
-        "x": 2.1286426104136122,
-        "y": 1.0966855203619912
+        "x": 6.746928691019042,
+        "y": 7.619809523809524
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Outpost"
+      "linkedName": "Left Edge Trench"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": "Riley and Lukas",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

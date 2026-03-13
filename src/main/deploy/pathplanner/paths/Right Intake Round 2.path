@@ -4,28 +4,28 @@
     {
       "anchor": {
         "x": 7.716,
-        "y": 5.214920814479638
+        "y": 1.2134502262443436
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.6761309523809516,
-        "y": 7.781773809523809
+        "x": 7.716,
+        "y": 0.21345022624434318
       },
       "isLocked": false,
-      "linkedName": "Left Intook Neutral"
+      "linkedName": "Right Edge Neutral"
     },
     {
       "anchor": {
-        "x": 3.51904761904762,
-        "y": 7.619809523809524
+        "x": 7.716,
+        "y": 3.25
       },
       "prevControl": {
-        "x": 8.000059523809524,
-        "y": 7.5982142857142865
+        "x": 7.716,
+        "y": 2.1988657553763318
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Left Edge Trench"
+      "linkedName": "Right Intook R2"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0.0,
-    "rotation": -90.0
+    "velocity": 0,
+    "rotation": 90.0
   },
   "reversed": false,
   "folder": "Riley and Lukas",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }
