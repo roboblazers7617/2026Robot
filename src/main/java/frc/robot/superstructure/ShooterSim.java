@@ -52,6 +52,12 @@ public class ShooterSim {
 	private final StructArrayPublisher<Pose3d> fuelPoses = NetworkTableInstance.getDefault()
 			.getStructArrayTopic("MapleSim/Fuel Poses", Pose3d.struct)
 			.publish();
+	private final StructArrayPublisher<Pose3d> fuelTrajectoryHit = NetworkTableInstance.getDefault()
+			.getStructArrayTopic("MapleSim/Fuel Trajectory (Hit)", Pose3d.struct)
+			.publish();
+	private final StructArrayPublisher<Pose3d> fuelTrajectoryMiss = NetworkTableInstance.getDefault()
+			.getStructArrayTopic("MapleSim/Fuel Trajectory (Miss)", Pose3d.struct)
+			.publish();
 
 	public ShooterSim(CommandSwerveDrivetrain drivetrain, StubbedFlywheel flywheel, StubbedHood hood, StubbedTurret turret, StubbedHopperUptake hopperUptake) {
 		this.drivetrain = drivetrain;
@@ -93,6 +99,13 @@ public class ShooterSim {
 						gamepieceSpeed,
 						// The launch angle
 						gamepieceTheta);
+
+				// Configure callbacks to visualize the flight trajectory of the projectile
+				fuelOnFly.withProjectileTrajectoryDisplayCallBack(
+						// Callback for when the fuel will eventually hit the target (if configured)
+						(pose3ds) -> fuelTrajectoryHit.accept(pose3ds.toArray(Pose3d[]::new)),
+						// Callback for when the fuel will eventually miss the target, or if no target is configured
+						(pose3ds) -> fuelTrajectoryMiss.accept(pose3ds.toArray(Pose3d[]::new)));
 
 				SimulatedArena.getInstance().addGamePieceProjectile(fuelOnFly);
 
