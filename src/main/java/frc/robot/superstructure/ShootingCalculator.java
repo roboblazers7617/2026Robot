@@ -91,24 +91,26 @@ public class ShootingCalculator {
 		Angle gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
 		LinearVelocity gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 
-		// ----- SECOND CALCUlATION (WITH VELOCITY) -----
-		// Figure out how long the gamepiece will be in the air for
-		Time time = calculateTimeTillScore(gamepieceTranslation, gamepieceTheta, gamepieceSpeed);
-		timeTillScorePublisher.set(time.in(Seconds));
-		SignalLogger.writeValue(SHOOTING_CALCULATOR_TABLE_NAME + "/Time Till Score", time);
+		// ----- RE-CALCUlATION (WITH VELOCITY) -----
+		for (int i = 0; i < SuperstructureConstants.SHOOTING_CALCULATOR_ITERATIONS; i++) {
+			// Figure out how long the gamepiece will be in the air for
+			Time time = calculateTimeTillScore(gamepieceTranslation, gamepieceTheta, gamepieceSpeed);
+			timeTillScorePublisher.set(time.in(Seconds));
+			SignalLogger.writeValue(SHOOTING_CALCULATOR_TABLE_NAME + "/Time Till Score", time);
 
-		// Add the velocity vector of the robot
-		// We're effectively trying to figure out where the turret will be at the end of the ball's travel
-		Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
-		Pose3d modifiedTurretedPose = turretPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
-		modifiedTurretPosePublisher.set(modifiedTurretedPose);
-		SignalLogger.writeStruct(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct, modifiedTurretedPose);
+			// Add the velocity vector of the robot
+			// We're effectively trying to figure out where the turret will be at the end of the ball's travel
+			Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
+			Pose3d modifiedTurretedPose = turretPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
+			modifiedTurretPosePublisher.set(modifiedTurretedPose);
+			SignalLogger.writeStruct(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct, modifiedTurretedPose);
 
-		// Solve again, hood angle stays the same
-		targetAngle = solveTargetAngle(modifiedTurretedPose.toPose2d(), targetPose.toPose2d());
-		gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose);
-		gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
-		gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
+			// Solve again, hood angle stays the same
+			targetAngle = solveTargetAngle(modifiedTurretedPose.toPose2d(), targetPose.toPose2d());
+			gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose);
+			gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
+			gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
+		}
 
 		modifiedTranslationPublisher.set(gamepieceTranslation);
 		gamepieceThetaPublisher.set(gamepieceTheta.in(Radians));

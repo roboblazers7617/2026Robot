@@ -190,6 +190,10 @@ public final class Constants {
 		 * The interval to run the {@link RobotContainer#superstructurePeriodic()} at.
 		 */
 		public static final Time PERIODIC_INTERVAL = Milliseconds.of(10);
+		/**
+		 * The number of times to recalculate the shooting position for shoot-while-move. More iterations should give more accurate shoot-while-move outputs.
+		 */
+		public static final int SHOOTING_CALCULATOR_ITERATIONS = 3;
 	}
 
 	/**
