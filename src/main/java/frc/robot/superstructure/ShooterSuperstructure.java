@@ -194,7 +194,14 @@ public class ShooterSuperstructure {
 				.permit(ShooterTrigger.PAUSE_SHOOTING, ShooterState.SHOOTING_PAUSED)
 				// Run hopper while shooting
 				.onEntry(hopperUptake::startHopperForward)
-				.onExit(hopperUptake::stopHopper);
+				.onExit(hopperUptake::stopHopper)
+				// Restart the shooting timer when we start shooting
+				.onEntry(shooterTimeout::restart)
+				// And stop it when we stop
+				.onExit(() -> {
+					shooterTimeout.stop();
+					shooterTimeout.reset();
+				});
 
 		stateMachineConfig.configure(ShooterState.SHOOTING_PAUSED)
 				.substateOf(ShooterState.SHOOTING)
@@ -280,9 +287,6 @@ public class ShooterSuperstructure {
 					// After a little while of the beam break being off, stop the shooter
 					if (shooterTimeout.hasElapsed(ShootingConstants.SHOOTING_TIMEOUT)) {
 						stateMachine.fire(ShooterTrigger.HOME);
-
-						shooterTimeout.stop();
-						shooterTimeout.reset();
 
 						break;
 					}
