@@ -19,12 +19,14 @@ import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.Constants.TurretConstants;
 
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.Microseconds;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
@@ -38,6 +40,9 @@ public class ShootingCalculator {
 	 */
 	public static String SHOOTING_CALCULATOR_TABLE_NAME = SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Shooting Calculator";
 
+	private static DoublePublisher computeTimePublisher = NetworkTableInstance.getDefault()
+			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Time To Compute")
+			.publish();
 	private static StructPublisher<Pose3d> targetPosePublisher = NetworkTableInstance.getDefault()
 			.getStructTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Target Pose", Pose3d.struct)
 			.publish();
@@ -72,6 +77,8 @@ public class ShootingCalculator {
 	 *         The resulting values to apply.
 	 */
 	public static ShooterValues solve(Pose3d robotPose, Pose3d targetPose, ChassisSpeeds robotVelocity) {
+		long startTime = RobotController.getFPGATime();
+
 		ShooterValues values = new ShooterValues();
 
 		targetPosePublisher.set(targetPose);
@@ -124,6 +131,10 @@ public class ShootingCalculator {
 		// Set the ShooterValues into the simulation class
 		// Theoretically this could be removed in favor of doing the gamepiece -> mechanism calculations backwards but I don't have time for that right now
 		ShooterSim.setValues(gamepieceSpeed, gamepieceTheta);
+
+		Time computeTime = Microseconds.of(RobotController.getFPGATime() - startTime);
+		computeTimePublisher.set(computeTime.in(Seconds));
+		SignalLogger.writeValue(SHOOTING_CALCULATOR_TABLE_NAME + "Time To Compute", computeTime);
 
 		return values;
 	}
