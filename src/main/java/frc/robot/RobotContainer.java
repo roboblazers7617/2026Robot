@@ -9,6 +9,9 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.DrivetrainControls;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.shooter.Hood;
+import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.LoggingConstants;
@@ -24,6 +27,9 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -68,6 +74,12 @@ public class RobotContainer {
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
+	private final Shooter shooterSubsystem;
+
+	private final Hood hoodSubsystem;
+
+	private final NetworkTable networkTableInst = (NetworkTableInstance.getDefault().getTable("/RoboBlazers"));
+
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
@@ -82,6 +94,9 @@ public class RobotContainer {
 
 		// autoChooser = AutoBuilder.buildAutoChooser("Tests");
 		// SmartDashboard.putData("Auto Mode", autoChooser);
+		shooterSubsystem = new Shooter(networkTableInst.getSubTable("Shooter"));
+
+		hoodSubsystem = new Hood(networkTableInst.getSubTable("Hood"));
 
 		// Configure the trigger bindings
 		configureNamedCommands();
@@ -90,6 +105,8 @@ public class RobotContainer {
 
 		// Warmup PathPlanner to avoid Java pauses
 		FollowPathCommand.warmupCommand().schedule();
+
+		SmartDashboard.putNumber("Shooter speed", 10);
 	}
 
 	/**
@@ -160,7 +177,19 @@ public class RobotContainer {
 	/**
 	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
 	 */
-	private void configureOperatorControls() {}
+	private void configureOperatorControls() {
+		operatorController.a()
+				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.FAST_SPEED))
+				.onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
+		operatorController.b().whileTrue(shooterSubsystem.stopFlywheelCommand());
+		operatorController.x()
+				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.SLOW_SPEED))
+				.onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
+		operatorController.y()
+				.whileTrue(hoodSubsystem.moveToPositionCommand(() -> Units.Degrees.of(5)));
+		operatorController.leftTrigger()
+				.whileTrue(hoodSubsystem.moveToPositionCommand(() -> Units.Degrees.of(30)));
+	}
 
 	/**
 	 * Use this to pass the autonomous command to the main {@link Robot} class.
