@@ -102,7 +102,7 @@ public final class Constants {
 		public static final int UPTAKE_LOWER_CURRENT_LIMIT = 40;
 		public static final boolean UPTAKE_ENABLE_STATOR_LIMIT = true;
 		public static final boolean UPTAKE_ENABLE_SUPPLY_LIMIT = false;
-		public static final InvertedValue UPTAKE_IS_INVERTED = InvertedValue.Clockwise_Positive;
+		public static final InvertedValue UPTAKE_IS_INVERTED = InvertedValue.CounterClockwise_Positive;
 		public static final double UPTAKE_MAXIMUM_VELOCITY = (100 / UPTAKE_GEAR_RATIO) * 0.8;
 		public static final double UPTAKE_ACCELERATION = UPTAKE_MAXIMUM_VELOCITY * 2.0;
 		// HOPPER PID values
