@@ -9,26 +9,26 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.HopperUptake;
+import frc.robot.subsystems.DrivetrainControls;
 import frc.robot.Constants.DashboardConstants;
+import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -38,20 +38,27 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
  */
 @Logged
 public class RobotContainer {
-	// private double MaxSpeed = 0.25 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-	// private double MaxAngularRate = 0 * RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+	// swerve request for face heading on right stick
+	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
+			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
+			// TODO: (Caleb) Please put in constants file
+			.withHeadingPID(5, 0, 0.1)
+			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1)
+			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Add a 10% deadband
+	private SendableChooser<Command> autoChooser;
 
-	// /* Setting up bindings for necessary control of the swerve drive platform */
-	// private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-	// .withDeadband(MaxSpeed * 0.1)
-	// .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-	// .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
-	// private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-	// private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+	// swerve request for regular spinny (the defualt this year)
+	public final SwerveRequest.FieldCentric spin = new SwerveRequest.FieldCentric()
+			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
+			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1) // Add a 10% deadband
+			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // se open-loop control for drive motors
 
-	// private final Telemetry logger = new Telemetry(MaxSpeed);
-	// public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-	public final HopperUptake hopperUptake = new HopperUptake();
+	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
+
+	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
+	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
+	private final HopperUptake hopperUptake = new HopperUptake();
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */
@@ -66,15 +73,25 @@ public class RobotContainer {
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
+
+	/* Path follower */
+	// private final SendableChooser<Command> autoChooser;
+
 	public RobotContainer() {
 		// Publish version metadata
-		// VersionConstants.publishNetworkTables(NetworkTableInstance.getDefault().getTable("/Metadata"));
-		// VersionConstants.logSignals();
+		VersionConstants.publishNetworkTables(NetworkTableInstance.getDefault().getTable("/Metadata"));
+		VersionConstants.logSignals();
+
+		// autoChooser = AutoBuilder.buildAutoChooser("Tests");
+		// SmartDashboard.putData("Auto Mode", autoChooser);
 
 		// Configure the trigger bindings
 		configureNamedCommands();
 		configureDriverControls();
 		configureOperatorControls();
+
+		// Warmup PathPlanner to avoid Java pauses
+		FollowPathCommand.warmupCommand().schedule();
 	}
 
 	/**
@@ -108,28 +125,38 @@ public class RobotContainer {
 	private void configureDriverControls() {
 		// Note that X is defined as forward according to WPILib convention,
 		// and Y is defined as to the left according to WPILib convention.
-		// drivetrain.setDefaultCommand(
-		// // Drivetrain will execute this command periodically
-		// drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-		// .withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-		// .withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
-		// ));
+		drivetrain.setDefaultCommand(
+				// Drivetrain will execute this command periodically
+				drivetrain.applyRequest(() -> {
+					return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
+							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
+							.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
+				}));
 
 		// Idle while the robot is disabled. This ensures the configured
 		// neutral mode is applied to the drive motors while disabled.
-		// final var idle = new SwerveRequest.Idle();
-		// RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+		final var idle = new SwerveRequest.Idle();
+		RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-		// driverController.a().whileTrue(hopperUptake.startBothCommand());
-		driverController.a().whileTrue(hopperUptake.startBothCommand());
-		driverController.b().whileTrue(hopperUptake.startUnJamCommand());
-		driverController.x().whileTrue(hopperUptake.stopBothMotorsCommand());
+		// start and stop
+		driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+		// letter buttons
+		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
+		// bumpers
+		// TODO: (Caleb) Please put in some comments to describe this logic
+		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
+			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
+				drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
+			}
+			// TODO: (Caleb) Can you pleas comment what this return is doing?
+			return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
+					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
+		})));
+		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
+		// triggers
+		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
 
-		// Run SysId routines when holding back/start and X/Y.
-		// Note that each routine should be run exactly once in a single log.
-		// driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-
-		// drivetrain.registerTelemetry(logger::telemeterize);
+		drivetrain.registerTelemetry(logger::telemeterize);
 	}
 
 	/**
@@ -143,7 +170,22 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		// Simple drive forward auton
+		// // Simple drive forward auton
+		// final var idle = new SwerveRequest.Idle();
+		// return autoChooser.getSelected();
+		// // // Reset our field centric heading to match the robot
+		// // // facing away from our alliance station wall (0 deg).
+		// // drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
+		// // // Then slowly drive forward (away from us) for 5 seconds.
+		// // drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
+		// // .withVelocityY(0)
+		// // .withRotationalRate(0))
+		// // .withTimeout(5.0),
+		// // // Finally idle for the rest of auton
+		// // drivetrain.applyRequest(() -> idle));
+		// TODO: I removed the simple auton and use the selected one instead, do we still need this.
+		return autoChooser.getSelected();
+		// // Simple drive forward auton
 		// final var idle = new SwerveRequest.Idle();
 		// return Commands.sequence(
 		// // Reset our field centric heading to match the robot
@@ -156,8 +198,19 @@ public class RobotContainer {
 		// .withTimeout(5.0),
 		// // Finally idle for the rest of auton
 		// drivetrain.applyRequest(() -> idle));
-		return new Command() {
+	}
 
-		};
+	public void setAutoChooser(SendableChooser<Command> auto) {
+		autoChooser = auto;
+	}
+
+	/**
+	 * Gets the current value of the uptake beam break.
+	 *
+	 * @return
+	 *         True if there is a ball in uptake, false otherwise.
+	 */
+	public boolean getIsBallInUptake() {
+		return true;
 	}
 }
