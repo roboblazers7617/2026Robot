@@ -61,24 +61,6 @@ public class RobotContainer {
 			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // se open-loop control for drive motors
 
 	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
-
-	// swerve request for face heading on right stick
-	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
-			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
-			// TODO: (Caleb) Please put in constants file
-			.withHeadingPID(5, 0, 0.1)
-			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1)
-			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Add a 10% deadband
-	private SendableChooser<Command> autoChooser;
-
-	// swerve request for regular spinny (the defualt this year)
-	public final SwerveRequest.FieldCentric spin = new SwerveRequest.FieldCentric()
-			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
-			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1) // Add a 10% deadband
-			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // se open-loop control for drive motors
-
-	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
-
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
@@ -170,11 +152,11 @@ public class RobotContainer {
 							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
 							.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
 				}));
-				drivetrain.applyRequest(() -> {
-					return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
-							.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
-				}));
+		drivetrain.applyRequest(() -> {
+			return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
+					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
+					.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
+		});
 
 		// Idle while the robot is disabled. This ensures the configured
 		// neutral mode is applied to the drive motors while disabled.
@@ -242,48 +224,6 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		// // Simple drive forward auton
-		// final var idle = new SwerveRequest.Idle();
-		// return autoChooser.getSelected();
-		// // // Reset our field centric heading to match the robot
-		// // // facing away from our alliance station wall (0 deg).
-		// // drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-		// // // Then slowly drive forward (away from us) for 5 seconds.
-		// // drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
-		// // .withVelocityY(0)
-		// // .withRotationalRate(0))
-		// // .withTimeout(5.0),
-		// // // Finally idle for the rest of auton
-		// // drivetrain.applyRequest(() -> idle));
-		// TODO: I removed the simple auton and use the selected one instead, do we still need this.
-		return autoChooser.getSelected();
-		// // Simple drive forward auton
-		// final var idle = new SwerveRequest.Idle();
-		// return Commands.sequence(
-		// // Reset our field centric heading to match the robot
-		// // facing away from our alliance station wall (0 deg).
-		// drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-		// // Then slowly drive forward (away from us) for 5 seconds.
-		// drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
-		// .withVelocityY(0)
-		// .withRotationalRate(0))
-		// .withTimeout(5.0),
-		// // Finally idle for the rest of auton
-		// drivetrain.applyRequest(() -> idle));
-	}
-
-	public void setAutoChooser(SendableChooser<Command> auto) {
-		autoChooser = auto;
-	}
-
-	/**
-	 * Gets the current value of the uptake beam break.
-	 *
-	 * @return
-	 *         True if there is a ball in uptake, false otherwise.
-	 */
-	public boolean getIsBallInUptake() {
-		return true;
 		// // Simple drive forward auton
 		// final var idle = new SwerveRequest.Idle();
 		// return autoChooser.getSelected();
