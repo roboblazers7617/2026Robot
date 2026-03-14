@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.config.PIDConstants;
+
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -11,6 +13,15 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
+import frc.robot.generated.TunerConstants;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import edu.wpi.first.units.measure.AngularVelocity;
 import frc.robot.generated.TunerConstants;
 
@@ -23,6 +34,11 @@ import frc.robot.generated.TunerConstants;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+	public static class AutoConstants {
+		public static final PIDConstants TRANSLATION_PID_CONSTANTS = new PIDConstants(5, 0.0, 0);
+		public static final PIDConstants ROTATION_PID_CONSTANTS = new PIDConstants(10, 0.0, 0.0);
+	}
+
 	/**
 	 * Constants used to configure the operator controllers.
 	 */
@@ -143,5 +159,59 @@ public final class Constants {
 		public static final AngularVelocity FORWARD_UPTAKE_RPS = RotationsPerSecond.of(35.0);
 		public static final AngularVelocity BACKWARD_HOPPER_RPS = RotationsPerSecond.of(-10.0);
 		public static final AngularVelocity BACKWARD_UPTAKE_RPS = RotationsPerSecond.of(-15.0);
+	}
+
+	public static class ShooterConstants {
+		public static final int LEADER_CAN_ID = 21;
+		public static final int FOLLOWER_CAN_ID = 22;
+		public static final double KP_0 = 0.07;
+		public static final double KI_0 = 0;
+		public static final double KD_0 = 0;
+		public static final double KV_0 = 0.126;
+		public static final double KS_0 = 0.45;
+		public static final double KP_1 = 0.07;
+		public static final double KI_1 = 0;
+		public static final double KD_1 = 0;
+		public static final double KV_1 = 0.126;
+		public static final double KS_1 = 0.45;
+		public static final AngularVelocity RPS = Units.RotationsPerSecond.of(50);
+		public static final AngularVelocity CRUISE_VELOCITY = RPS;
+		public static final double MAXIMUM_VELOCITY = 80.0;
+		public static final double ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
+		public static final boolean ENABLE_STATOR_LIMIT = true;
+		public static final double STATOR_CURRENT_LIMIT = 40;
+		public static final boolean ENABLE_SUPPLY_LIMIT = false;
+		public static final double SUPPLY_CURRENT_LIMIT = 60.0;
+		public static final AngularVelocity FAST_SPEED = CRUISE_VELOCITY;
+		public static final AngularVelocity SLOW_SPEED = CRUISE_VELOCITY.div(3.0);
+		public static final AngularVelocity COAST_SPEED = CRUISE_VELOCITY.div(2.0);
+		public static final AngularVelocity TOLERANCE = Units.RotationsPerSecond.of(3);
+		public static final double SUPPLY_CURRENT_LOWER_LIMIT = 40.0;
+		public static final double SUPPLY_CURRENT_LOWER_TIME = 0.1;
+		public static final boolean SUPPLY_CURRENT_LIMIT_ENABLE = true;
+	}
+
+	public static class HoodConstants {
+		public static final int HOOD_MOTOR_CAN_ID = 23;
+		public static final int HOOT_ENCODER_CAN_ID = 23;
+		public static final double KP = 0.3;
+		public static final double KS = 0.4;
+		public static final double KD = 0;
+		public static final double KV = 0.03;
+		public static final double KG = 0.6;
+		public static final Angle ANGLE = Units.Degrees.of(90);
+		public static final double RPS = 100.0; // X44 can go 125 Rotations per Second
+		public static final double CRUISE_VELOCITY = RPS;
+		public static final double ACCELERATION = 3.0 * CRUISE_VELOCITY;
+		public static final Angle TOLERANCE = Units.Degrees.of(1.0);
+		public static final double SUPPLY_CURRENT_LOWER_LIMIT = 30.0;
+		public static final double SUPPLY_CURRENT_LIMIT = 50.0;
+		public static final double SUPPLY_CURRENT_LOWER_TIME = 0.15;
+		public static final boolean SUPPLY_CURRENT_LIMIT_ENABLE = true;
+		public static final double STATOR_CURRENT_LIMIT = 60.0;
+		public static final boolean STATOR_CURRENT_LIMIT_ENABLE = true;
+		public static final Angle MINIMUM_HOOD_ANGLE = Degrees.of(1);
+		public static final Angle MAXIMUM_HOOD_ANGLE = Degrees.of(32);
+		public static final double SENSOR_TO_MECHANISM_RATIO = 13.78 / 32; // Number of shaft rotations / degrees traveled
 	}
 }
