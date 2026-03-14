@@ -81,12 +81,12 @@ public class Hood extends SubsystemBase {
 		// SmartDashboard.putBoolean("Hood at position", IsAtPosition());
 	}
 
-	public boolean IsAtPosition() {
+	public boolean isAtPosition() {
 		// System.out.println("Angle is at postition " + hoodMotor.getPosition().getValueAsDouble() + " requested " + requestedAngle.in(Degrees));
 		return MathUtil.isNear(requestedAngle.in(Degrees), hoodMotor.getPosition().getValueAsDouble(), HoodConstants.TOLERANCE.in(Degrees));
 	}
 
-	public void MoveToPosition(Angle position) {
+	public void moveToPosition(Angle position) {
 		// Apply the position output to the leader motor
 		position = Degrees.of(MathUtil.clamp(position.in(Degrees), HoodConstants.MINIMUM_HOOD_ANGLE.in(Degrees), HoodConstants.MAXIMUM_HOOD_ANGLE.in(Degrees)));
 		hoodMotor.setControl(positionMotionMagic.withPosition(position.in(Degrees)));
@@ -94,8 +94,8 @@ public class Hood extends SubsystemBase {
 		// System.out.println("Angle is at postition" + position.in(Degrees));
 	}
 
-	public Command MoveToPositionCommand(Supplier<Angle> angle) {
-		return runOnce(() -> MoveToPosition(angle.get()));
+	public Command moveToPositionCommand(Supplier<Angle> angle) {
+		return runOnce(() -> moveToPosition(angle.get()));
 	}
 
 	private void setupNetworkTable(NetworkTable table) {
