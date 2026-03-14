@@ -8,10 +8,13 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.HopperUptake;
 import frc.robot.Constants.DashboardConstants;
-import frc.robot.Constants.HoodConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
@@ -32,6 +35,20 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 @Logged
 public class RobotContainer {
+	// private double MaxSpeed = 0.25 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+	// private double MaxAngularRate = 0 * RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+
+	// /* Setting up bindings for necessary control of the swerve drive platform */
+	// private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+	// .withDeadband(MaxSpeed * 0.1)
+	// .withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
+	// .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+	// private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+	// private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+
+	// private final Telemetry logger = new Telemetry(MaxSpeed);
+	// public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+	public final HopperUptake hopperUptake = new HopperUptake();
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */
@@ -54,8 +71,8 @@ public class RobotContainer {
 	 */
 	public RobotContainer() {
 		// Publish version metadata
-		VersionConstants.publishNetworkTables(NetworkTableInstance.getDefault().getTable("/Metadata"));
-		VersionConstants.logSignals();
+		// VersionConstants.publishNetworkTables(NetworkTableInstance.getDefault().getTable("/Metadata"));
+		// VersionConstants.logSignals();
 
 		shooterSubsystem = new Shooter(networkTableInst.getSubTable("Shooter"));
 
@@ -97,23 +114,58 @@ public class RobotContainer {
 	/**
 	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller buttons.
 	 */
-	private void configureDriverControls() {}
+	private void configureDriverControls() {
+		// Note that X is defined as forward according to WPILib convention,
+		// and Y is defined as to the left according to WPILib convention.
+		// drivetrain.setDefaultCommand(
+		// // Drivetrain will execute this command periodically
+		// drivetrain.applyRequest(() -> drive.withVelocityX(-driverController.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
+		// .withVelocityY(-driverController.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+		// .withRotationalRate(-driverController.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+		// ));
+
+		// Idle while the robot is disabled. This ensures the configured
+		// neutral mode is applied to the drive motors while disabled.
+		// final var idle = new SwerveRequest.Idle();
+		// RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+
+		// driverController.a().whileTrue(hopperUptake.startBothCommand());
+		driverController.a().whileTrue(hopperUptake.startBothCommand());
+		driverController.b().whileTrue(hopperUptake.startUnJamCommand());
+		driverController.x().whileTrue(hopperUptake.stopBothMotorsCommand());
+
+		// Run SysId routines when holding back/start and X/Y.
+		// Note that each routine should be run exactly once in a single log.
+		// driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+
+		// drivetrain.registerTelemetry(logger::telemeterize);
+	}
 
 	/**
 	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
 	 */
 	private void configureOperatorControls() {
-		operatorController.a()
-				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.FAST_SPEED))
-				.onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
-		operatorController.b().whileTrue(shooterSubsystem.stopFlywheelCommand());
+		// operatorController.a()
+		// .whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.FAST_SPEED))
+		// .onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
+		// operatorController.b().whileTrue(shooterSubsystem.stopFlywheelCommand());
+		// operatorController.x()
+		// .whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.SLOW_SPEED))
+		// .onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
+		// operatorController.y()
+		// .whileTrue(hoodSubsystem.MoveToPositionCommand(() -> Units.Degrees.of(5)));
+		// operatorController.leftTrigger()
+		// .whileTrue(hoodSubsystem.MoveToPositionCommand(() -> Units.Degrees.of(30)));
+
 		operatorController.x()
-				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.SLOW_SPEED))
-				.onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
-		operatorController.y()
-				.whileTrue(hoodSubsystem.MoveToPositionCommand(() -> Units.Degrees.of(5)));
-		operatorController.leftTrigger()
-				.whileTrue(hoodSubsystem.MoveToPositionCommand(() -> Units.Degrees.of(30)));
+				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> RotationsPerSecond.of(50))
+						.andThen(Commands.waitUntil(() -> shooterSubsystem.isAtTarget()))
+						.andThen(hoodSubsystem.MoveToPositionCommand(() -> Degrees.of(15)))
+						.andThen(Commands.waitUntil(() -> hoodSubsystem.IsAtPosition()))
+						.andThen(hopperUptake.startBothCommand()))
+				.onFalse(hopperUptake.stopBothMotorsCommand()
+						.andThen(hoodSubsystem.MoveToPositionCommand(() -> Degrees.of(1)))
+						.andThen(shooterSubsystem.stopFlywheelCommand()));
 	}
 
 	/**
@@ -122,6 +174,21 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		return Commands.none();
+		// Simple drive forward auton
+		// final var idle = new SwerveRequest.Idle();
+		// return Commands.sequence(
+		// // Reset our field centric heading to match the robot
+		// // facing away from our alliance station wall (0 deg).
+		// drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
+		// // Then slowly drive forward (away from us) for 5 seconds.
+		// drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
+		// .withVelocityY(0)
+		// .withRotationalRate(0))
+		// .withTimeout(5.0),
+		// // Finally idle for the rest of auton
+		// drivetrain.applyRequest(() -> idle));
+		return new Command() {
+
+		};
 	}
 }

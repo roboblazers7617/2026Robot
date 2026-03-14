@@ -5,6 +5,9 @@
 package frc.robot;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -79,7 +82,53 @@ public final class Constants {
 		/**
 		 * AprilTag Field Layout for the current game.
 		 */
-		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+	}
+
+	public static class HopperConstants {
+		// Can ID and DIO pins
+		// UPTAKE MOTOR
+		public static final int BIG_SPINNY_CAN_ID = 33;
+		public static final double UPTAKE_GEAR_RATIO = 1.0;
+		// HOPPER MOTOR
+		public static final int LITTLE_SPINNY_CAN_ID = 32;
+		public static final double HOPPER_GEAR_RATIO = 4.0;
+		// UPTAKE PID values
+		public static final double UPTAKE_KP = 0.38;
+		public static final double UPTAKE_KI = 0;
+		public static final double UPTAKE_KD = 0;
+		public static final double UPTAKE_KV = 0.12;
+		public static final double UPTAKE_KS = 0.29;
+		// UPTAKE Config setup
+		public static final int UPTAKE_STATOR_CURRENT_LIMIT = 60;
+		public static final double UPTAKE_SUPPLY_CURRENT_LIMIT = 70;
+		public static final int UPTAKE_LOWER_CURRENT_LIMIT = 40;
+		public static final boolean UPTAKE_ENABLE_STATOR_LIMIT = true;
+		public static final boolean UPTAKE_ENABLE_SUPPLY_LIMIT = false;
+		public static final InvertedValue UPTAKE_IS_INVERTED = InvertedValue.CounterClockwise_Positive;
+		public static final double UPTAKE_MAXIMUM_VELOCITY = (100 / UPTAKE_GEAR_RATIO) * 0.8;
+		public static final double UPTAKE_ACCELERATION = UPTAKE_MAXIMUM_VELOCITY * 2.0;
+		// HOPPER PID values
+		public static final double HOPPER_KP = 0.22;
+		public static final double HOPPER_KI = 0;
+		public static final double HOPPER_KD = 0.01;
+		public static final double HOPPER_KV = 0.115;
+		public static final double HOPPER_KS = 0.25;
+		// HOPPER Config setup
+		public static final int HOPPER_STATOR_CURRENT_LIMIT = 40;
+		public static final double HOPPER_SUPPLY_CURRENT_LIMIT = 70;
+		public static final int HOPPER_LOWER_CURRENT_LIMIT = 40;
+		public static final boolean HOPPER_ENABLE_STATOR_LIMIT = true;
+		public static final boolean HOPPER_ENABLE_SUPPLY_LIMIT = false;
+		public static final InvertedValue HOPPER_IS_INVERTED = InvertedValue.Clockwise_Positive;
+		public static final double HOPPER_MAXIMUM_VELOCITY = (100 / HOPPER_GEAR_RATIO) * 0.8;
+		public static final double HOPPER_ACCELERATION = HOPPER_MAXIMUM_VELOCITY * 2.0;
+		// Speed Values in RPM
+		public static final AngularVelocity TOLERANCE = RotationsPerSecond.of(5);
+		public static final AngularVelocity FORWARD_HOPPER_RPS = RotationsPerSecond.of(10.0);
+		public static final AngularVelocity FORWARD_UPTAKE_RPS = RotationsPerSecond.of(35.0);
+		public static final AngularVelocity BACKWARD_HOPPER_RPS = RotationsPerSecond.of(-10.0);
+		public static final AngularVelocity BACKWARD_UPTAKE_RPS = RotationsPerSecond.of(-15.0);
 	}
 
 	public static class ShooterConstants {
