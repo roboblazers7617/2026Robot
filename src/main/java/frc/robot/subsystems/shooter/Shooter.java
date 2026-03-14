@@ -5,6 +5,7 @@
 package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.Supplier;
 
@@ -18,6 +19,7 @@ import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -78,19 +80,18 @@ public class Shooter extends SubsystemBase {
 	}
 
 	public boolean isAtTarget() {
-		return leaderMotor.getVelocity()
-				.getValue()
-				.isNear(requestedSpeed, ShooterConstants.TOLERANCE);
+		return MathUtil.isNear(requestedSpeed.in(RotationsPerSecond), leaderMotor.getVelocity().getValueAsDouble(), ShooterConstants.TOLERANCE.in(RotationsPerSecond));
 	}
 
 	public void startFlywheel(AngularVelocity speed) {
 		leaderMotor.setControl(mmvelocityVoltage.withVelocity(speed));
-
-		System.out.println("Speed is" + speed);
+		requestedSpeed = speed;
+		// System.out.println("Speed is" + speed);
 	}
 
 	public void stopFlywheel() {
 		leaderMotor.stopMotor();
+		requestedSpeed = RotationsPerSecond.of(0);
 	}
 
 	public Command startFlywheelCommand(Supplier<AngularVelocity> speed) {

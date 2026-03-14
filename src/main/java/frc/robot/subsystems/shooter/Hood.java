@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Degrees;
 
 import java.util.function.Supplier;
@@ -23,9 +22,7 @@ import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HoodConstants;
 
@@ -81,13 +78,11 @@ public class Hood extends SubsystemBase {
 	@Override
 	public void periodic() {
 		// This method will be called once per scheduler run
-		SmartDashboard.putBoolean("Hood at position", IsAtPosition());
+		// SmartDashboard.putBoolean("Hood at position", IsAtPosition());
 	}
 
 	public boolean IsAtPosition() {
-		System.out.println("Angle is at postition " + hoodMotor.getPosition().getValueAsDouble() + " requested " + requestedAngle.in(Degrees));
-		// return hoodMotor.getPosition()
-		// .isNear(requestedAngle, HoodConstants.TOLERANCE);
+		// System.out.println("Angle is at postition " + hoodMotor.getPosition().getValueAsDouble() + " requested " + requestedAngle.in(Degrees));
 		return MathUtil.isNear(requestedAngle.in(Degrees), hoodMotor.getPosition().getValueAsDouble(), HoodConstants.TOLERANCE.in(Degrees));
 	}
 

@@ -9,7 +9,6 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.Constants.DashboardConstants;
-import frc.robot.Constants.HoodConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
 
