@@ -110,9 +110,9 @@ public class RobotContainer {
 				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.SLOW_SPEED))
 				.onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
 		operatorController.y()
-				.whileTrue(hoodSubsystem.MoveToPositionCommand(() -> Units.Degrees.of(5)));
+				.whileTrue(hoodSubsystem.moveToPositionCommand(() -> Units.Degrees.of(5)));
 		operatorController.leftTrigger()
-				.whileTrue(hoodSubsystem.MoveToPositionCommand(() -> Units.Degrees.of(30)));
+				.whileTrue(hoodSubsystem.moveToPositionCommand(() -> Units.Degrees.of(30)));
 	}
 
 	/**
