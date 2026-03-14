@@ -5,13 +5,16 @@
 package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -95,10 +98,7 @@ public class HopperUptake extends SubsystemBase {
 	}
 
 	public boolean isUptakeAtTarget() {
-		boolean bingus = bigSpinny.getVelocity()
-				.getValue()
-				.isNear(setpoint, HopperConstants.TOLERANCE);
-		return bingus;
+		return MathUtil.isNear(setpoint.in(RotationsPerSecond), bigSpinny.getVelocity().getValueAsDouble(), HopperConstants.TOLERANCE.in(RotationsPerSecond));
 	}
 
 	private void startHopperMotorRPM(AngularVelocity RPS) {
@@ -143,7 +143,7 @@ public class HopperUptake extends SubsystemBase {
 	}
 
 	public void startMotorsUnjam() {
-		startHopperMotorRPM(HopperConstants.BACKWARD_HOPPER_RPS);
+		stopHopper();
 		startUptakeMotorRPM(HopperConstants.BACKWARD_UPTAKE_RPS);
 	}
 
@@ -170,5 +170,7 @@ public class HopperUptake extends SubsystemBase {
 	}
 
 	@Override
-	public void periodic() {}
+	public void periodic() {
+		SmartDashboard.putBoolean("at target", isUptakeAtTarget());
+	}
 }

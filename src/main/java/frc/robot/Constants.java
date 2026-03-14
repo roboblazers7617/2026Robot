@@ -91,11 +91,11 @@ public final class Constants {
 		public static final int LITTLE_SPINNY_CAN_ID = 32;
 		public static final double HOPPER_GEAR_RATIO = 4.0;
 		// UPTAKE PID values
-		public static final double UPTAKE_KP = 0.15;
+		public static final double UPTAKE_KP = 0.38;
 		public static final double UPTAKE_KI = 0;
 		public static final double UPTAKE_KD = 0;
-		public static final double UPTAKE_KV = 0.115;
-		public static final double UPTAKE_KS = 0;
+		public static final double UPTAKE_KV = 0.12;
+		public static final double UPTAKE_KS = 0.29;
 		// UPTAKE Config setup
 		public static final int UPTAKE_STATOR_CURRENT_LIMIT = 60;
 		public static final double UPTAKE_SUPPLY_CURRENT_LIMIT = 70;
@@ -123,8 +123,8 @@ public final class Constants {
 		// Speed Values in RPM
 		public static final AngularVelocity TOLERANCE = RotationsPerSecond.of(5);
 		public static final AngularVelocity FORWARD_HOPPER_RPS = RotationsPerSecond.of(10.0);
-		public static final AngularVelocity FORWARD_UPTAKE_RPS = RotationsPerSecond.of(50.0);
-		public static final AngularVelocity BACKWARD_HOPPER_RPS = RotationsPerSecond.of(-15.0);
+		public static final AngularVelocity FORWARD_UPTAKE_RPS = RotationsPerSecond.of(35.0);
+		public static final AngularVelocity BACKWARD_HOPPER_RPS = RotationsPerSecond.of(-10.0);
 		public static final AngularVelocity BACKWARD_UPTAKE_RPS = RotationsPerSecond.of(-15.0);
 	}
 }
