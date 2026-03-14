@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
@@ -112,22 +114,25 @@ public final class Constants {
 
 	public static class HoodConstants {
 		public static final int HOOD_MOTOR_CAN_ID = 23;
-		public static final double KP = 10;
-		public static final double KS = 0;
+		public static final int HOOT_ENCODER_CAN_ID = 23;
+		public static final double KP = 0.3;
+		public static final double KS = 0.4;
 		public static final double KD = 0;
-		public static final double KV = 0.115;
-		public static final double KG = 0;
+		public static final double KV = 0.03;
+		public static final double KG = 0.6;
 		public static final Angle ANGLE = Units.Degrees.of(90);
-		public static final double RPS = 20.0;
+		public static final double RPS = 100.0; // X44 can go 125 Rotations per Second
 		public static final double CRUISE_VELOCITY = RPS;
-		public static final double ACCELERATION = 2.0 * CRUISE_VELOCITY;
-		public static final Angle TOLERANCE = Units.Degrees.of(5.0);
-		public static final Angle ANGLE1 = Units.Degrees.of(180);
+		public static final double ACCELERATION = 3.0 * CRUISE_VELOCITY;
+		public static final Angle TOLERANCE = Units.Degrees.of(1.0);
 		public static final double SUPPLY_CURRENT_LOWER_LIMIT = 30.0;
 		public static final double SUPPLY_CURRENT_LIMIT = 50.0;
 		public static final double SUPPLY_CURRENT_LOWER_TIME = 0.15;
 		public static final boolean SUPPLY_CURRENT_LIMIT_ENABLE = true;
 		public static final double STATOR_CURRENT_LIMIT = 60.0;
 		public static final boolean STATOR_CURRENT_LIMIT_ENABLE = true;
+		public static final Angle MINIMUM_HOOD_ANGLE = Degrees.of(1);
+		public static final Angle MAXIMUM_HOOD_ANGLE = Degrees.of(32);
+		public static final double SENSOR_TO_MECHANISM_RATIO = 13.78 / 32; // Number of shaft rotations / degrees traveled
 	}
 }

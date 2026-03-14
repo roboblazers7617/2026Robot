@@ -17,6 +17,7 @@ import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -110,9 +111,9 @@ public class RobotContainer {
 				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.SLOW_SPEED))
 				.onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
 		operatorController.y()
-				.whileTrue(hoodSubsystem.MoveToPositionCommand(() -> HoodConstants.ANGLE));
+				.whileTrue(hoodSubsystem.MoveToPositionCommand(() -> Units.Degrees.of(5)));
 		operatorController.leftTrigger()
-				.whileTrue(hoodSubsystem.MoveToPositionCommand(() -> HoodConstants.ANGLE1));
+				.whileTrue(hoodSubsystem.MoveToPositionCommand(() -> Units.Degrees.of(30)));
 	}
 
 	/**
