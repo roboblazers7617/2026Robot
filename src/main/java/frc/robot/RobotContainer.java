@@ -160,7 +160,7 @@ public class RobotContainer {
 		operatorController.x()
 				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> RotationsPerSecond.of(50))
 						.andThen(Commands.waitUntil(() -> shooterSubsystem.isAtTarget()))
-						.andThen(hoodSubsystem.MoveToPositionCommand(() -> Degrees.of(15)))
+						.andThen(hoodSubsystem.MoveToPositionCommand(() -> Degrees.of(30)))
 						.andThen(Commands.waitUntil(() -> hoodSubsystem.IsAtPosition()))
 						.andThen(hopperUptake.startBothCommand()))
 				.onFalse(hopperUptake.stopBothMotorsCommand()

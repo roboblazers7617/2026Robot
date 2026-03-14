@@ -98,6 +98,7 @@ public class HopperUptake extends SubsystemBase {
 	}
 
 	public boolean isUptakeAtTarget() {
+		// System.out.println("Uptake target " + bigSpinny.getVelocity().getValueAsDouble() + " " + setpoint.in(RotationsPerSecond) + " " + HopperConstants.TOLERANCE.in(RotationsPerSecond));
 		return MathUtil.isNear(setpoint.in(RotationsPerSecond), bigSpinny.getVelocity().getValueAsDouble(), HopperConstants.TOLERANCE.in(RotationsPerSecond));
 	}
 
