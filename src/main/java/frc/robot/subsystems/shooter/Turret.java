@@ -60,7 +60,7 @@ public class Turret extends SubsystemBase {
 	/**
 	 * The configuration for the {@link #encoder}.
 	 */
-	private final EasyCRTConfig encoderConfig = new EasyCRTConfig(encoderCandi.getPWM1Position().asSupplier(), encoderCandi.getPWM2Position().asSupplier())
+	private final EasyCRTConfig encoderConfig = new EasyCRTConfig(encoderCandi.getPWM2Position().asSupplier(), encoderCandi.getPWM1Position().asSupplier())
 			.withEncoderRatios(TurretConstants.PRIMARY_ENCODER_RATIO, TurretConstants.SECONDARY_ENCODER_RATIO)
 			.withCrtGearRecommendationInputs(200, 0.1)
 			.withCrtGearRecommendationConstraints(3, 20, 70, 100);
@@ -138,10 +138,8 @@ public class Turret extends SubsystemBase {
 		// Sensor feedback configuration
 		// TODO: Get this set up so the rotor to mechanism ratio works properly
 		talonFXConfiguration.Feedback
-				.withFeedbackRemoteSensorID(encoderCandi.getDeviceID())
-				.withFeedbackSensorSource(FeedbackSensorSourceValue.FusedCANdiPWM1)
-				.withSensorToMechanismRatio(TurretConstants.PRIMARY_ENCODER_RATIO)
-				.withRotorToSensorRatio(TurretConstants.MOTOR_TO_PRIMARY_ENCODER_RATIO);
+				.withFeedbackSensorSource(FeedbackSensorSourceValue.RotorSensor)
+				.withSensorToMechanismRatio(TurretConstants.MOTOR_GEAR_RATIO);
 
 		// PID configuration
 		talonFXConfiguration.Slot0

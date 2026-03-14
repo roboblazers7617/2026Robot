@@ -142,17 +142,17 @@ public final class Constants {
 		 */
 		public static final double TURRET_GEAR_TEETH = 200.0;
 		/**
-		 * The number of teeth on the gear on the turret motor.
+		 * The number of teeth on the pinion gear, interfacing with the main turret gear.
 		 */
-		public static final double MOTOR_GEAR_TEETH = 20.0;
+		public static final double PINION_UPPER_TEETH = 20.0;
 		/**
-		 * The number of teeth on the encoder pinion.
+		 * The number of teeth on the lower pinion gear. This is 1:1 with the upper pinion gear.
 		 */
-		public static final double ENCODER_GEAR_TEETH = 20.0;
+		public static final double PINION_LOWER_TEETH = 24.0;
 		/**
-		 * The number of teeth on the primary encoder's gear.
+		 * The number of teeth on the gear on the turret motor and primary encoder.
 		 */
-		public static final double PRIMARY_ENCODER_GEAR_TEETH = 20.0;
+		public static final double MOTOR_GEAR_TEETH = 48.0;
 		/**
 		 * The number of teeth on the secondary encoder's gear.
 		 */
@@ -160,23 +160,19 @@ public final class Constants {
 		/**
 		 * The ratio of motor turns to mechanism rotations.
 		 */
-		public static final double MOTOR_GEAR_RATIO = SmartMath.gearBox(MOTOR_GEAR_TEETH / TURRET_GEAR_TEETH);
-		/**
-		 * The ratio of encoder pinion turns to mechanism rotations.
-		 */
-		public static final double ENCODER_GEAR_RATIO = SmartMath.gearBox(ENCODER_GEAR_TEETH / TURRET_GEAR_TEETH);
+		public static final double MOTOR_GEAR_RATIO = SmartMath.gearBox(TURRET_GEAR_TEETH / PINION_UPPER_TEETH, PINION_LOWER_TEETH / MOTOR_GEAR_TEETH);
 		/**
 		 * The number of primary encoder rotations per motor rotation.
 		 */
-		public static final double MOTOR_TO_PRIMARY_ENCODER_RATIO = SmartMath.gearBox(MOTOR_GEAR_RATIO, 1 / ENCODER_GEAR_RATIO, ENCODER_GEAR_TEETH / PRIMARY_ENCODER_GEAR_TEETH);
+		public static final double MOTOR_TO_PRIMARY_ENCODER_RATIO = 1.0;
 		/**
 		 * The number of encoder rotations per mechanism rotation for the primary encoder.
 		 */
-		public static final double PRIMARY_ENCODER_RATIO = SmartMath.gearBox(ENCODER_GEAR_RATIO, ENCODER_GEAR_TEETH / PRIMARY_ENCODER_GEAR_TEETH);
+		public static final double PRIMARY_ENCODER_RATIO = MOTOR_GEAR_RATIO;
 		/**
 		 * The number of encoder rotations per mechanism rotation for the secondary encoder.
 		 */
-		public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(ENCODER_GEAR_RATIO, ENCODER_GEAR_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
+		public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(TURRET_GEAR_TEETH / PINION_UPPER_TEETH, PINION_UPPER_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
 
 		/**
 		 * The neutral mode for the motor.
