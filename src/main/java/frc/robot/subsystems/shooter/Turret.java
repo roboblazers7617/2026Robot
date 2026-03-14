@@ -131,7 +131,9 @@ public class Turret extends SubsystemBase {
 				.withSupplyCurrentLimit(TurretConstants.MOTOR_CURRENT_HIGHER_LIMIT)
 				.withSupplyCurrentLowerLimit(TurretConstants.MOTOR_CURRENT_LOWER_LIMIT)
 				.withSupplyCurrentLowerTime(TurretConstants.MOTOR_CURRENT_LOWER_TIME)
-				.withSupplyCurrentLimitEnable(true);
+				.withSupplyCurrentLimitEnable(true)
+				.withStatorCurrentLimit(TurretConstants.MOTOR_STATOR_CURRENT_LIMIT)
+				.withStatorCurrentLimitEnable(true);
 
 		// Sensor feedback configuration
 		// TODO: Get this set up so the rotor to mechanism ratio works properly

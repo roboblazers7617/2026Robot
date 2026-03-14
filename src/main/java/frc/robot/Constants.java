@@ -199,6 +199,10 @@ public final class Constants {
 		 * The time to supply the {@link #MOTOR_CURRENT_HIGHER_LIMIT} for before switching to the {@link #MOTOR_CURRENT_LOWER_LIMIT}.
 		 */
 		public static final Time MOTOR_CURRENT_LOWER_TIME = Milliseconds.of(100);
+		/**
+		 * The stator current limit of the motor. This limits the current to the windings, which should help prevent burnout.
+		 */
+		public static final Current MOTOR_STATOR_CURRENT_LIMIT = Amps.of(60.0);
 
 		/**
 		 * The PID kP for the turret closed loop controller.
