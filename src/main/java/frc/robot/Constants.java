@@ -32,7 +32,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Second;
-import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -203,39 +202,39 @@ public final class Constants {
 		/**
 		 * The PID kP for the turret closed loop controller.
 		 */
-		public static final double TURRET_KP = 10.0;
+		public static final double TURRET_KP = 0.0;
 		/**
 		 * The PID kI for the turret closed loop controller.
 		 */
-		public static final double TURRET_KI = 0;
+		public static final double TURRET_KI = 0.0;
 		/**
 		 * The PID kD for the turret closed loop controller.
 		 */
-		public static final double TURRET_KD = 0;
+		public static final double TURRET_KD = 0.0;
 		/**
 		 * The PID kS for the turret closed loop controller.
 		 */
-		public static final double TURRET_KS = 0.25;
+		public static final double TURRET_KS = 0.0;
 		/**
 		 * The PID kV for the turret closed loop controller.
 		 */
-		public static final double TURRET_KV = 0.12;
+		public static final double TURRET_KV = 0.0;
 		/**
 		 * The PID kA for the turret closed loop controller.
 		 */
-		public static final double TURRET_KA = 0.01;
+		public static final double TURRET_KA = 0.0;
 		/**
 		 * The peak/cruising velocity of the motion.
 		 */
-		public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(80.0);
+		public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(125.0).div(MOTOR_GEAR_RATIO).times(0.8);
 		/**
 		 * The acceleration and deceleration rates during the beginning and end of motion.
 		 */
-		public static final AngularAcceleration ACCELERATION = RotationsPerSecondPerSecond.of(160.0);
+		public static final AngularAcceleration ACCELERATION = CRUISE_VELOCITY.times(2.0).per(Second);
 		/**
 		 * Jerk (derivative of acceleration).
 		 */
-		public static final Velocity<AngularAccelerationUnit> JERK = RotationsPerSecondPerSecond.of(1600).per(Second);
+		public static final Velocity<AngularAccelerationUnit> JERK = ACCELERATION.times(10.0).per(Second);
 
 		/**
 		 * The lowest angle the turret can rotate to.
