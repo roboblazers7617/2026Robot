@@ -51,10 +51,10 @@ public class IntakeShoulder extends SubsystemBase {
 		// Puts the motor in Coast mode to make it easier to move by hand
 		// TODO: This needs to be in brake mode so it stays in place
 		// motorOutputConfigs.NeutralMode = NeutralModeValue.Coast;
-		motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+		motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
 		// Configure the motor to make sure positive voltage is counter clockwise
-		motorConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+		motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 		// motorConfigurator.apply(motorOutputConfigs);
 
 		// Slot0Configs slot0Configs = new Slot0Configs();
@@ -119,12 +119,11 @@ public class IntakeShoulder extends SubsystemBase {
 	 * Method which takes Angle values (no it does not) and sets Kraken to angle.
 	 * Should compensate
 	 * for gear ratios.
-	 * 
+	 *
 	 * @param positionMeters
 	 */
 	private void setPositionPlease(double positionMeters) {
-		positionMeters = MathUtil.clamp(positionMeters, IntakeConstants.SHOULDER_MINIMUM_DISTANCE,
-				IntakeConstants.SHOULDER_MAXIMUM_DISTANCE);
+		positionMeters = MathUtil.clamp(positionMeters, IntakeConstants.SHOULDER_MINIMUM_DISTANCE, IntakeConstants.SHOULDER_MAXIMUM_DISTANCE);
 		setPointMeters = positionMeters;
 		// solution one (post *360) (doesn't work)
 		// motor.setControl(positionRequest.withPosition(position.in(Units.Degrees)));
@@ -136,7 +135,7 @@ public class IntakeShoulder extends SubsystemBase {
 
 	/**
 	 * Command which raises shoulder of intake
-	 * 
+	 *
 	 * @return runOnce(() -> raiseIntake());
 	 */
 	public Command raiseIntakeCommand() {
@@ -145,7 +144,7 @@ public class IntakeShoulder extends SubsystemBase {
 
 	/**
 	 * Command which lowers shoulder of intake
-	 * 
+	 *
 	 * @return runOnce(() - > lowerIntake());
 	 */
 	public Command lowerIntakeCommand() {
@@ -155,7 +154,7 @@ public class IntakeShoulder extends SubsystemBase {
 	/**
 	 * Command which continously runs agitate method when triggered and raises
 	 * intake when cancelled.
-	 * 
+	 *
 	 * @return run(() -> agitate()).finallyDo(() -> raiseIntake());
 	 */
 	// don't need this anymore now that we are a linear slide
@@ -165,7 +164,7 @@ public class IntakeShoulder extends SubsystemBase {
 
 	/**
 	 * Command which calls lowerToDepot method.
-	 * 
+	 *
 	 * @return runOnce(() -> lowerToDepot());
 	 */
 	public Command lowerToDepotCommand() {
@@ -214,11 +213,11 @@ public class IntakeShoulder extends SubsystemBase {
 	// TODO: utilize absolute encoder rather than internal encoder
 	/**
 	 * Method which checks angle of motor using Phoenix and WPILib commands.
-	 * 
+	 *
 	 * @param angle
-	 *                  - angle to be chcked as Angle
+	 *            - angle to be chcked as Angle
 	 * @param tolerance
-	 *                  - acceptable range as Angle
+	 *            - acceptable range as Angle
 	 * @return boolean indicating if motor position is within tolerance to angle
 	 */
 	// private boolean getIsAtTarget(Angle angle, Angle tolerance) {
@@ -229,7 +228,7 @@ public class IntakeShoulder extends SubsystemBase {
 
 	/**
 	 * Runs getIsAtTarget() for specified raised angle (for agitate system)
-	 * 
+	 *
 	 * @return boolean value
 	 */
 	// private boolean getIsRaised() {
@@ -239,7 +238,7 @@ public class IntakeShoulder extends SubsystemBase {
 
 	/**
 	 * Runs getIsAtTarget() for specified lowered angle (for agitate system)
-	 * 
+	 *
 	 * @return boolean value
 	 */
 	// private boolean getIsLowered() {

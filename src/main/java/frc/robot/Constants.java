@@ -121,8 +121,8 @@ public final class Constants {
 		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;
 
 		public static final double INTAKE_KG = 0;
-		public static final double INTAKE_KS = 0;
-		public static final double INTAKE_KV = 0;
+		public static final double INTAKE_KS = 0.34;
+		public static final double INTAKE_KV = 0.1;
 		public static final double INTAKE_KA = 0;
 		public static final double INTAKE_KP = 0;
 		public static final double INTAKE_KI = 0;
@@ -134,13 +134,13 @@ public final class Constants {
 		// new (?) system for gear ratios
 		public static final double GEARBOX_RATIO = 96.0 / 5.0; // to be replaced by talonfx (?)
 		// config things
-		public static final double MAXIMUM_VELOCITY = 100.0 / GEARBOX_RATIO * 0.8;
+		public static final double MAXIMUM_VELOCITY = 20.0;
 		public static final double ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
 
 		// talonfx ratio stuff
 		// public static final double ROTOR_TO_SENSOR_RATIO = 0; // depracated (?)
-		public static final double SENSOR_TO_MECHANISM_RATIO = 36.3 / 0.315; // number of shaft rotations divided by
-																				// distance traveled by intake
+		public static final double SENSOR_TO_MECHANISM_RATIO = 1.0; // number of shaft rotations divided by
+																	// distance traveled by intake
 
 		public static final Angle AGITATE_RAISED_ANGLE = Degrees.of(70); // depracated
 		public static final Angle AGITATE_LOWERED_ANGLE = Degrees.of(0); // depracated
@@ -148,9 +148,9 @@ public final class Constants {
 		public static final double GRABBER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
 		public static final double GRABBER_SUPPLY_CURRENT_LOWER_TIME = 0.1;
 		public static final double GRABBER_STATOR_CURRENT_LIMIT = 40.0;
-		public static final double SHOULDER_SUPPLY_CURRENT_LIMIT = 60.0;
-		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_LIMIT = 30.0;
+		public static final double SHOULDER_SUPPLY_CURRENT_LIMIT = 40.0;
+		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
 		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_TIME = 0.15;
-		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 60.0;
+		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 20.0;
 	}
 }
