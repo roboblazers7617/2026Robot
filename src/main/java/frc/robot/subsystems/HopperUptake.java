@@ -110,19 +110,19 @@ public class HopperUptake extends SubsystemBase {
 		setpoint = RPS;
 	}
 
-	public void startHopperForward() {
+	private void startHopperForward() {
 		startHopperMotorRPM(HopperConstants.FORWARD_HOPPER_RPS);
 	}
 
-	public void startUptakeForward() {
+	private void startUptakeForward() {
 		startUptakeMotorRPM(HopperConstants.FORWARD_UPTAKE_RPS);
 	}
 
-	public void startHopperUnjam() {
+	private void startHopperUnjam() {
 		startHopperMotorRPM(HopperConstants.BACKWARD_HOPPER_RPS);
 	}
 
-	public void startUptakeUnjam() {
+	private void startUptakeUnjam() {
 		startUptakeMotorRPM(HopperConstants.BACKWARD_UPTAKE_RPS);
 	}
 
@@ -153,12 +153,12 @@ public class HopperUptake extends SubsystemBase {
 	}
 
 	// COMMANDS
-	public Command startUptakeForwarCommand() {
+	public Command startUptakeForwardCommand() {
 		return runOnce(() -> startUptakeForward());
 	}
 
 	public Command startBothCommand() {
-		return startUptakeForwarCommand().andThen(Commands.waitUntil(() -> isUptakeAtTarget()).finallyDo(this::startHopperForward));
+		return startUptakeForwardCommand().andThen(Commands.waitUntil(() -> isUptakeAtTarget()).finallyDo(this::startHopperForward));
 	}
 
 	public Command startUnJamCommand() {
