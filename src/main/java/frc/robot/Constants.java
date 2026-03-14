@@ -93,8 +93,10 @@ public final class Constants {
 	 * what it does YET (it contains constants for my dogwater code for intake)
 	 */
 	public static class IntakeConstants {
-		public static final int SHOULDER_CAN_ID = 0;
-		public static final int GRABBER_CAN_ID = 2;
+		public static final int SHOULDER_CAN_ID = 40;
+		public static final int GRABBER_CAN_ID = 41;
+		public static final int SHOULDER_ENCODER_CAN_ID = 40;
+
 		/**
 		 * The current limit for the motor.
 		 */
@@ -106,24 +108,42 @@ public final class Constants {
 		public static final double INTAKE_STOP_CURRENT = 0.0;
 		// public static final double OUTTAKE_SPEED = -0.2;
 		public static final double OUTTAKE_CURRENT = -5.0; // -40 recommended
-		public static final Angle SHOULDER_STOWED_ANGLE = Degrees.of(90);
-		public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
+
+		// intake in-out position constants
+		// public static final Angle SHOULDER_STOWED_ANGLE = Degrees.of(90);
+		// public static final Angle SHOULDER_STOWED_ANGLE = Rotations.of(0);
+		public static final double SHOULDER_MINIMUM_DISTANCE = 0;
+		// public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
+		// public static final Angle SHOULDER_LOWERED_ANGLE = Rotations.of(0);
+		public static final double SHOULDER_MAXIMUM_DISTANCE = 0.31;
+		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
+		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
+		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;
+
 		public static final double INTAKE_KG = 0;
-		public static final double INTAKE_KS = 0.2;
-		public static final double INTAKE_KV = 0.0;
+		public static final double INTAKE_KS = 0;
+		public static final double INTAKE_KV = 0;
 		public static final double INTAKE_KA = 0;
-		public static final double INTAKE_KP = 1;
+		public static final double INTAKE_KP = 0;
 		public static final double INTAKE_KI = 0;
 		public static final double INTAKE_KD = 0;
-		public static final double INTAKE_MM_CRUISE_VELOCITY = 80;
-		public static final double INTAKE_MM_ACCELERATION = 160;
-		public static final double INTAKE_MM_JERK = 1600;
-		// public static final double GEARBOX_RATIO = 1; // to be replaced by talonfx
+		// public static final double INTAKE_MM_CRUISE_VELOCITY = 80; // depracated
+		// public static final double INTAKE_MM_ACCELERATION = 160; // depracated
+		// public static final double INTAKE_MM_JERK = 1600; // depracated
+
+		// new (?) system for gear ratios
+		public static final double GEARBOX_RATIO = 96.0 / 5.0; // to be replaced by talonfx (?)
 		// config things
-		public static final double ROBOT_TO_SENSOR_RATIO = 0;
-		public static final double SENSOR_TO_MECHANISM_RATIO = 0;
-		public static final Angle AGITATE_RAISED_ANGLE = Degrees.of(70);
-		public static final Angle AGITATE_LOWERED_ANGLE = Degrees.of(0);
+		public static final double MAXIMUM_VELOCITY = 100.0 / GEARBOX_RATIO * 0.8;
+		public static final double ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
+
+		// talonfx ratio stuff
+		// public static final double ROTOR_TO_SENSOR_RATIO = 0; // depracated (?)
+		public static final double SENSOR_TO_MECHANISM_RATIO = 36.3 / 0.315; // number of shaft rotations divided by
+																				// distance traveled by intake
+
+		public static final Angle AGITATE_RAISED_ANGLE = Degrees.of(70); // depracated
+		public static final Angle AGITATE_LOWERED_ANGLE = Degrees.of(0); // depracated
 		public static final Angle AGITATE_TOLERANCE = Degrees.of(10);
 		public static final double GRABBER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
 		public static final double GRABBER_SUPPLY_CURRENT_LOWER_TIME = 0.1;
@@ -132,6 +152,5 @@ public final class Constants {
 		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_LIMIT = 30.0;
 		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_TIME = 0.15;
 		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 60.0;
-		public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 	}
 }

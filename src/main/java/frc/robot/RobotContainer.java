@@ -20,9 +20,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 @Logged
@@ -30,12 +33,14 @@ public class RobotContainer {
 	IntakeGrabber intakeGrabber = new IntakeGrabber();
 	IntakeShoulder intakeShoulder = new IntakeShoulder();
 	/**
-	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
+	 * The Controller used by the Driver of the robot, primarily controlling the
+	 * drivetrain.
 	 */
 	@NotLogged
 	private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 	/**
-	 * The Controller used by the Operator of the robot, primarily controlling the superstructure.
+	 * The Controller used by the Operator of the robot, primarily controlling the
+	 * superstructure.
 	 */
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
@@ -80,12 +85,14 @@ public class RobotContainer {
 	private void configureNamedCommands() {}
 
 	/**
-	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller buttons.
+	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller
+	 * buttons.
 	 */
 	private void configureDriverControls() {}
 
 	/**
-	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
+	 * Configures {@link Triggers} to bind Commands to the Operator Controller
+	 * buttons.
 	 */
 	private void configureOperatorControls() {
 		/**
@@ -109,9 +116,9 @@ public class RobotContainer {
 		// .onTrue(intakeShoulder.lowerIntakeCommand()); // original 4 bind
 		operatorController.x()
 				.whileTrue(intakeGrabber.outtakeCommand());
-		operatorController.y()
-				.onTrue(intakeShoulder.lowerIntakeCommand())
-				.whileTrue(intakeShoulder.agitateCommand());
+		// operatorController.y()
+		// .onTrue(intakeShoulder.lowerIntakeCommand())
+		// .whileTrue(intakeShoulder.agitateCommand());
 	}
 
 	/**

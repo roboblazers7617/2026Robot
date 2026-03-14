@@ -4,9 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
-import com.ctre.phoenix6.configs.MotorOutputConfigs;
-import com.ctre.phoenix6.configs.TalonFXConfigurator;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -16,6 +14,9 @@ public class IntakeGrabber extends SubsystemBase {
 	// controller for motor which intakes
 	private final TalonFX Motor;
 
+	private final TorqueCurrentFOC torqueCurrent = new TorqueCurrentFOC(0);
+	// Motor.setControl(torqueCurrent.withOutput(40.0));
+
 	/**
 	 * Constructor for motor for actual intaking part of intake. Uses
 	 * TorqueCurrentFOC.
@@ -23,7 +24,8 @@ public class IntakeGrabber extends SubsystemBase {
 	public IntakeGrabber() {
 		Motor = new TalonFX(IntakeConstants.GRABBER_CAN_ID);
 
-		TalonFXConfigurator MotorConfigurator = Motor.getConfigurator();
+		// TalonFXConfigurator MotorConfigurator = Motor.getConfigurator();
+		TalonFXConfiguration motorConfig = new TalonFXConfiguration();
 
 		// Current limit configuration
 		// TODO: You don't need to create new objects for CurrentLimitConfigs,
@@ -32,31 +34,35 @@ public class IntakeGrabber extends SubsystemBase {
 		// var talonFXConfigs = new TalonFXConfiguration();
 		// var limitConfigs = talonFXConfigs.limitConfigs;
 		// etc.
-		CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
-		limitConfigs.SupplyCurrentLowerLimit = IntakeConstants.GRABBER_SUPPLY_CURRENT_LOWER_LIMIT;
-		limitConfigs.SupplyCurrentLimit = IntakeConstants.GRABBER_SUPPLY_CURRENT_LIMIT;
-		limitConfigs.SupplyCurrentLowerTime = IntakeConstants.GRABBER_SUPPLY_CURRENT_LOWER_TIME;
-		limitConfigs.SupplyCurrentLimitEnable = true;
-		limitConfigs.StatorCurrentLimit = IntakeConstants.GRABBER_STATOR_CURRENT_LIMIT;
-		limitConfigs.StatorCurrentLimitEnable = true;
-		// TODO: Don't need to apply these configs if you use the code above. Just need
-		// to apply once
-		MotorConfigurator.apply(limitConfigs);
 
-		MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
-		outputConfigs.NeutralMode = NeutralModeValue.Coast;
-		outputConfigs.Inverted = InvertedValue.CounterClockwise_Positive;
+		// CurrentLimitsConfigs limitConfigs = new CurrentLimitsConfigs();
+		// limitConfigs.SupplyCurrentLowerLimit =
+		// IntakeConstants.GRABBER_SUPPLY_CURRENT_LOWER_LIMIT;
+		motorConfig.CurrentLimits.SupplyCurrentLowerLimit = IntakeConstants.GRABBER_SUPPLY_CURRENT_LOWER_LIMIT;
+		motorConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.GRABBER_SUPPLY_CURRENT_LIMIT;
+		motorConfig.CurrentLimits.SupplyCurrentLowerTime = IntakeConstants.GRABBER_SUPPLY_CURRENT_LOWER_TIME;
+		motorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+		motorConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.GRABBER_STATOR_CURRENT_LIMIT;
+		motorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+		// TODO: Don't need to apply these configs if you use the code above. Just need
+
+		// MotorOutputConfigs outputConfigs = new MotorOutputConfigs();
+		motorConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
+		motorConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 		// TODO: Don't need to apply these configs individually if you use the code
 		// above.
-		MotorConfigurator.apply(outputConfigs);
+		// MotorConfigurator.apply(outputConfigs);
 		// TODO: (Benjamin) The apply for the configs should be wrapped in a for loop to
 		// ensure it works. See the sample code in the document I created about
 		// configuring the talons
-	}
 
-	// TODO: This should be at the top of the class before the constructor
-	private final TorqueCurrentFOC torqueCurrent = new TorqueCurrentFOC(0);
-	// Motor.setControl(torqueCurrent.withOutput(40.0));
+		for (int i = 0; i < 2; i++) {
+			var status = Motor.getConfigurator().apply(motorConfig);
+			if (status.isOK()) {
+				break;
+			}
+		}
+	}
 
 	/**
 	 * Command which toggles intake on
@@ -115,12 +121,12 @@ public class IntakeGrabber extends SubsystemBase {
 	 * TorqueCurrentFOC.
 	 * 
 	 * @param current
-	 *                [-1,1].
+	 *            [-1,1].
 	 */
 	// private void setSpeed(double speed) {
 	// Motor.set(speed);
 	// }
-	// TODO: This isn't a torque. It is a current
+	// This isn't a torque. It is a current
 	// okay
 	private void setTorque(double current) {
 		Motor.setControl(torqueCurrent.withOutput(current));
