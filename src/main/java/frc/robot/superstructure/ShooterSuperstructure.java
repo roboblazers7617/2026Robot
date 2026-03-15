@@ -285,9 +285,9 @@ public class ShooterSuperstructure {
 				} else {
 					// After a little while of the beam break being off, stop the shooter
 					// if (shooterTimeout.hasElapsed(ShootingConstants.SHOOTING_TIMEOUT)) {
-					// 	stateMachine.fire(ShooterTrigger.HOME);
+					// stateMachine.fire(ShooterTrigger.HOME);
 					//
-					// 	break;
+					// break;
 					// }
 				}
 
