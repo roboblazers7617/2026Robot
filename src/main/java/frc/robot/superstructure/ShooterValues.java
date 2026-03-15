@@ -57,14 +57,14 @@ public class ShooterValues {
 	}
 
 	/**
-	 * Sets the flywheel speed to shoot the gamepiece at a specific {@link LinearVelocity}.
+	 * Sets the flywheel speed as a {@link LinearVelocity} to shoot the gamepiece at (exit velocity).
 	 *
 	 * @param gamepieceSpeed
 	 *            The velocity to shoot the gamepiece at.
 	 * @return
 	 *         This object for method chaining.
 	 */
-	public ShooterValues setFlywheelSpeed(LinearVelocity gamepieceSpeed) {
+	public ShooterValues setGamepieceSpeed(LinearVelocity gamepieceSpeed) {
 		this.flywheelSpeed = ShootingConstants.FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.get(gamepieceSpeed);
 		return this;
 	}
@@ -96,7 +96,7 @@ public class ShooterValues {
 	}
 
 	/**
-	 * Sets the hood angle to shoot the gamepiece at a specific {@link Angle}.
+	 * Sets the hood angle as an {@link Angle} to shoot the gamepiece at (exit angle).
 	 *
 	 * @param gamepieceTheta
 	 *            The angle to shoot the gamepiece at.

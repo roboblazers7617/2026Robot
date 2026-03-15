@@ -129,7 +129,7 @@ public class ShootingCalculator {
 		// Set the ShooterValues accordingly
 		values.setTurretAngle(targetAngle);
 		values.setGamepieceTheta(gamepieceTheta);
-		values.setFlywheelSpeed(gamepieceSpeed);
+		values.setGamepieceSpeed(gamepieceSpeed);
 
 		// Set the ShooterValues into the simulation class
 		// Theoretically this could be removed in favor of doing the gamepiece -> mechanism calculations backwards but I don't have time for that right now
