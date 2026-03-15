@@ -6,8 +6,6 @@ package frc.robot;
 
 import com.pathplanner.lib.config.PIDConstants;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import com.ctre.phoenix6.signals.InvertedValue;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -22,8 +20,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import edu.wpi.first.units.measure.AngularVelocity;
-import frc.robot.generated.TunerConstants;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean

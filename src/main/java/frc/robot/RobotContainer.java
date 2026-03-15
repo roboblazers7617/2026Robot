@@ -85,13 +85,6 @@ public class RobotContainer {
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
-
-	/* Path follower */
-	// private final SendableChooser<Command> autoChooser;
-
-	/* Path follower */
-	// private final SendableChooser<Command> autoChooser;
-
 	public RobotContainer() {
 		// Publish version metadata
 		VersionConstants.publishNetworkTables(NetworkTableInstance.getDefault().getTable("/Metadata"));
