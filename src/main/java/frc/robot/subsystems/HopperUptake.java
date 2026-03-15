@@ -38,6 +38,7 @@ public class HopperUptake extends SubsystemBase {
 	MotionMagicVelocityVoltage velocity = new MotionMagicVelocityVoltage(0);
 
 	private AngularVelocity setpoint = RadiansPerSecond.zero();
+	private AngularVelocity simVelocity = RadiansPerSecond.zero();
 
 	/**
 	 * Keeps track of whether or not the hopper is running forwards (basically are we shooting). Mostly exists just for sim and logging.
@@ -102,6 +103,19 @@ public class HopperUptake extends SubsystemBase {
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void simulationPeriodic() {
+		// Simulate proportional control to the setpoint
+		// This is very basic simulation but it works well enough
+		// Could maybe add some more advanced stuff later if needed
+		double setpointRadiansPerSecond = setpoint.in(RadiansPerSecond);
+		double simVelocityRadiansPerSecond = simVelocity.in(RadiansPerSecond);
+
+		simVelocity = RadiansPerSecond.of(MathUtil.interpolate(simVelocityRadiansPerSecond, setpointRadiansPerSecond, 0.1));
+
+		bigSpinny.getSimState().setRotorVelocity(simVelocity);
 	}
 
 	public boolean isUptakeAtTarget() {
