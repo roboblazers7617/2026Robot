@@ -412,13 +412,13 @@ public class ShooterSuperstructure {
 	}
 
 	/**
-	 * Checks if the subsystems are at their targets. This checks flywheel speed, hood position, and turret position.
+	 * Checks if the subsystems are at their targets. This checks flywheel speed, hood position, turret position, and uptake speed.
 	 *
 	 * @return
 	 *         Are all the shooter subsystems at their targets?
 	 */
 	public boolean subsystemsAtTargets() {
-		return flywheel.isAtTarget() && hood.isAtPosition() && turret.isAtTarget();
+		return flywheel.isAtTarget() && hood.isAtPosition() && turret.isAtTarget() && hopperUptake.isUptakeAtTarget();
 	}
 
 	/**
