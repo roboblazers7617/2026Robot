@@ -249,12 +249,6 @@ public class ShooterSuperstructure {
 			case SHOOTING_STAGE_1_INITIALIZING:
 				// Preparing to track a target
 
-				// Once we reach the target, start to track
-				if (subsystemsAtTargets()) {
-					stateMachine.fire(ShooterTrigger.READY_TO_SHOOT);
-					break;
-				}
-
 				// Get the shooter to an initial setpoint so we can start tracking
 				if (targetShooterValues.isPresent()) {
 					setValues(targetShooterValues.get(), false);
@@ -262,6 +256,13 @@ public class ShooterSuperstructure {
 					// If we don't have a target anymore, home the shooter
 					stateMachine.fire(ShooterTrigger.HOME);
 				}
+
+				// Once we reach the target, start to track
+				if (subsystemsAtTargets()) {
+					stateMachine.fire(ShooterTrigger.READY_TO_SHOOT);
+					break;
+				}
+
 				break;
 
 			case SHOOTING_STAGE_2_READY_TO_SHOOT:
