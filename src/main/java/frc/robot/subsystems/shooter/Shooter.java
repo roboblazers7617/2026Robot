@@ -86,6 +86,7 @@ public class Shooter extends SubsystemBase {
 		simVelocity = RadiansPerSecond.of(MathUtil.interpolate(simVelocityRadiansPerSecond, setpointRadiansPerSecond, 0.1));
 
 		leaderMotor.getSimState().setRotorVelocity(simVelocity);
+		followermotor.getSimState().setRotorVelocity(simVelocity);
 	}
 
 	@Override
