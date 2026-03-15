@@ -292,7 +292,7 @@ public class ShooterSuperstructure {
 					// }
 				}
 
-				if (!subsystemsAtTargets()) {
+				if (subsystemsNeedPause()) {
 					// If subsystems stray away from their targets (like if the turret has to wrap), pause shooting
 					stateMachine.fire(ShooterTrigger.PAUSE_SHOOTING);
 					break;
@@ -310,7 +310,7 @@ public class ShooterSuperstructure {
 			case SHOOTING_PAUSED:
 				// Was shooting, but needed to pause for subsystems to catch up
 
-				if (subsystemsAtTargets()) {
+				if (!subsystemsNeedPause()) {
 					// Ready to start shooting again, so let's do that
 					stateMachine.fire(ShooterTrigger.START_SHOOTING);
 					break;
@@ -419,6 +419,18 @@ public class ShooterSuperstructure {
 	 */
 	public boolean subsystemsAtTargets() {
 		return flywheel.isAtTarget() && hood.isAtPosition() && turret.isAtTarget() && hopperUptake.isUptakeAtTarget();
+	}
+
+	/**
+	 * Checks if the subsystems need for shooting to pause. This checks if the turret is no longer at its target (we can assume other subsystems are close enough).
+	 *
+	 * @return
+	 *         True if we need to pause shooting to wait for subsystems to catch up, false otherwise.
+	 * @apiNote
+	 *          This is intended for internal use, but is made public for logging purposes.
+	 */
+	public boolean subsystemsNeedPause() {
+		return !turret.isAtTarget();
 	}
 
 	/**
