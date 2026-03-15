@@ -12,9 +12,12 @@ import frc.robot.subsystems.DrivetrainControls;
 import frc.robot.subsystems.HopperUptake;
 import frc.robot.subsystems.StubbedTurret;
 import frc.robot.superstructure.ShooterSim;
+import frc.robot.superstructure.ShooterValues;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.superstructure.sources.ShootFromAnywhereSource;
+import frc.robot.superstructure.sources.ShootingSourceConstant;
+import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
@@ -263,17 +266,12 @@ public class RobotContainer {
 	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
 	 */
 	private void configureOperatorControls() {
-		operatorController.a()
-				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.FAST_SPEED))
-				.onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
-		operatorController.b().whileTrue(shooterSubsystem.stopFlywheelCommand());
-		operatorController.x()
-				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.SLOW_SPEED))
-				.onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
-		operatorController.y()
-				.whileTrue(hoodSubsystem.moveToPositionCommand(() -> Units.Degrees.of(5)));
 		operatorController.leftTrigger()
-				.whileTrue(hoodSubsystem.moveToPositionCommand(() -> Units.Degrees.of(30)));
+				.whileTrue(shooterSuperstructure.startShootingCommand());
+		operatorController.a()
+				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Test Position", new ShooterValues(ShooterConstants.FAST_SPEED, Units.Degrees.of(30), Units.Degrees.of(0)))));
+		operatorController.x()
+				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()));
 	}
 
 	/**
