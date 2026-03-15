@@ -282,14 +282,13 @@ public class ShooterSuperstructure {
 				// Shooter timeout
 				if (!uptakeBeamBreak.get()) {
 					shooterTimeout.restart();
-					System.out.println("Reset the shooting timeout");
 				} else {
 					// After a little while of the beam break being off, stop the shooter
-					if (shooterTimeout.hasElapsed(ShootingConstants.SHOOTING_TIMEOUT)) {
-						stateMachine.fire(ShooterTrigger.HOME);
-
-						break;
-					}
+					// if (shooterTimeout.hasElapsed(ShootingConstants.SHOOTING_TIMEOUT)) {
+					// 	stateMachine.fire(ShooterTrigger.HOME);
+					//
+					// 	break;
+					// }
 				}
 
 				if (!subsystemsAtTargets()) {
