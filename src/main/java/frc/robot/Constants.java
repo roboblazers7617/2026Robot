@@ -222,8 +222,8 @@ public final class Constants {
 
 		static {
 			// Add values to the interpolation table
-			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(0.0), Degrees.of(0.0));
-			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(90.0), Degrees.of(90.0));
+			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(37.0), Degrees.of(1.0));
+			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(69.5), Degrees.of(32.0));
 		}
 
 		/**
