@@ -111,7 +111,7 @@ public final class Constants {
 		public static final double MAX_ANGULAR_RATE_DEADBAND = 0.5 * RotationsPerSecond.of(0.75).in(RadiansPerSecond);
 	}
 
-	public static class HopperConstants {
+	public static class HopperUptakeConstants {
 		// Can ID and DIO pins
 		// UPTAKE MOTOR
 		public static final int BIG_SPINNY_CAN_ID = 33;
@@ -151,8 +151,10 @@ public final class Constants {
 		public static final double HOPPER_ACCELERATION = HOPPER_MAXIMUM_VELOCITY * 2.0;
 		// Speed Values in RPM
 		public static final AngularVelocity TOLERANCE = RotationsPerSecond.of(5);
+		// // Forward
 		public static final AngularVelocity FORWARD_HOPPER_RPS = RotationsPerSecond.of(10.0);
 		public static final AngularVelocity FORWARD_UPTAKE_RPS = RotationsPerSecond.of(35.0);
+		// // Backward
 		public static final AngularVelocity BACKWARD_HOPPER_RPS = RotationsPerSecond.of(-10.0);
 		public static final AngularVelocity BACKWARD_UPTAKE_RPS = RotationsPerSecond.of(-15.0);
 	}

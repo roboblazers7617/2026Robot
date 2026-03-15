@@ -18,18 +18,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.HopperConstants;
+import frc.robot.Constants.HopperUptakeConstants;
 
-/** Add your docs here. */
+/** This class covers the Hopper/Spindexer motor and the Uptake motor */
 public class HopperUptake extends SubsystemBase {
 
 	// Motors private final TalonFX bigSpinny;
 	/**
-	 * The Hopper motor
+	 * The Hopper motor tallon x60
+	 * Mechanical calls this Spindexer
 	 */
 	private final TalonFX littleSpinny;
 	/**
-	 * the Intake motor
+	 * the Intake motor tallon x60
 	 */
 	private final TalonFX bigSpinny;
 
@@ -38,50 +39,50 @@ public class HopperUptake extends SubsystemBase {
 	private AngularVelocity setpoint = RadiansPerSecond.zero();
 
 	public HopperUptake() {
-		bigSpinny = new TalonFX(HopperConstants.BIG_SPINNY_CAN_ID);
-		littleSpinny = new TalonFX(HopperConstants.LITTLE_SPINNY_CAN_ID);
+		bigSpinny = new TalonFX(HopperUptakeConstants.BIG_SPINNY_CAN_ID);
+		littleSpinny = new TalonFX(HopperUptakeConstants.LITTLE_SPINNY_CAN_ID);
 		// The configuration for uptake
 		TalonFXConfiguration uptakeConfig = new TalonFXConfiguration();
 		// // Neutral mode
 		uptakeConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 		// // Current limits
-		uptakeConfig.CurrentLimits.StatorCurrentLimit = HopperConstants.UPTAKE_STATOR_CURRENT_LIMIT;
-		uptakeConfig.CurrentLimits.SupplyCurrentLimit = HopperConstants.UPTAKE_SUPPLY_CURRENT_LIMIT;
-		uptakeConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperConstants.UPTAKE_LOWER_CURRENT_LIMIT;
-		uptakeConfig.CurrentLimits.StatorCurrentLimitEnable = HopperConstants.UPTAKE_ENABLE_STATOR_LIMIT;
-		uptakeConfig.CurrentLimits.SupplyCurrentLimitEnable = HopperConstants.UPTAKE_ENABLE_SUPPLY_LIMIT;
+		uptakeConfig.CurrentLimits.StatorCurrentLimit = HopperUptakeConstants.UPTAKE_STATOR_CURRENT_LIMIT;
+		uptakeConfig.CurrentLimits.SupplyCurrentLimit = HopperUptakeConstants.UPTAKE_SUPPLY_CURRENT_LIMIT;
+		uptakeConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperUptakeConstants.UPTAKE_LOWER_CURRENT_LIMIT;
+		uptakeConfig.CurrentLimits.StatorCurrentLimitEnable = HopperUptakeConstants.UPTAKE_ENABLE_STATOR_LIMIT;
+		uptakeConfig.CurrentLimits.SupplyCurrentLimitEnable = HopperUptakeConstants.UPTAKE_ENABLE_SUPPLY_LIMIT;
 		// // Velocity voltage motion magic
-		uptakeConfig.MotionMagic.MotionMagicAcceleration = HopperConstants.UPTAKE_ACCELERATION;
-		uptakeConfig.MotionMagic.MotionMagicCruiseVelocity = HopperConstants.UPTAKE_MAXIMUM_VELOCITY;
+		uptakeConfig.MotionMagic.MotionMagicAcceleration = HopperUptakeConstants.UPTAKE_ACCELERATION;
+		uptakeConfig.MotionMagic.MotionMagicCruiseVelocity = HopperUptakeConstants.UPTAKE_MAXIMUM_VELOCITY;
 		// // Velocity voltage motion magic
-		uptakeConfig.MotorOutput.Inverted = HopperConstants.UPTAKE_IS_INVERTED;
+		uptakeConfig.MotorOutput.Inverted = HopperUptakeConstants.UPTAKE_IS_INVERTED;
 		// Uptake PID
-		uptakeConfig.Slot0.kP = HopperConstants.UPTAKE_KP;
-		uptakeConfig.Slot0.kI = HopperConstants.UPTAKE_KI;
-		uptakeConfig.Slot0.kD = HopperConstants.UPTAKE_KD;
-		uptakeConfig.Slot0.kV = HopperConstants.UPTAKE_KV;
-		uptakeConfig.Slot0.kS = HopperConstants.UPTAKE_KS;
+		uptakeConfig.Slot0.kP = HopperUptakeConstants.UPTAKE_KP;
+		uptakeConfig.Slot0.kI = HopperUptakeConstants.UPTAKE_KI;
+		uptakeConfig.Slot0.kD = HopperUptakeConstants.UPTAKE_KD;
+		uptakeConfig.Slot0.kV = HopperUptakeConstants.UPTAKE_KV;
+		uptakeConfig.Slot0.kS = HopperUptakeConstants.UPTAKE_KS;
 		// The configuration for hopper
 		TalonFXConfiguration hopperConfig = new TalonFXConfiguration();
 		// // Neutral mode
 		hopperConfig.MotorOutput.NeutralMode = NeutralModeValue.Coast;
 		// // Current limits
-		hopperConfig.CurrentLimits.StatorCurrentLimit = HopperConstants.HOPPER_STATOR_CURRENT_LIMIT;
-		hopperConfig.CurrentLimits.SupplyCurrentLimit = HopperConstants.HOPPER_SUPPLY_CURRENT_LIMIT;
-		hopperConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperConstants.HOPPER_LOWER_CURRENT_LIMIT;
-		hopperConfig.CurrentLimits.StatorCurrentLimitEnable = HopperConstants.HOPPER_ENABLE_STATOR_LIMIT;
-		hopperConfig.CurrentLimits.SupplyCurrentLimitEnable = HopperConstants.HOPPER_ENABLE_SUPPLY_LIMIT;
+		hopperConfig.CurrentLimits.StatorCurrentLimit = HopperUptakeConstants.HOPPER_STATOR_CURRENT_LIMIT;
+		hopperConfig.CurrentLimits.SupplyCurrentLimit = HopperUptakeConstants.HOPPER_SUPPLY_CURRENT_LIMIT;
+		hopperConfig.CurrentLimits.SupplyCurrentLowerLimit = HopperUptakeConstants.HOPPER_LOWER_CURRENT_LIMIT;
+		hopperConfig.CurrentLimits.StatorCurrentLimitEnable = HopperUptakeConstants.HOPPER_ENABLE_STATOR_LIMIT;
+		hopperConfig.CurrentLimits.SupplyCurrentLimitEnable = HopperUptakeConstants.HOPPER_ENABLE_SUPPLY_LIMIT;
 		// // Velocity voltage motion magic
-		hopperConfig.MotionMagic.MotionMagicAcceleration = HopperConstants.HOPPER_ACCELERATION;
-		hopperConfig.MotionMagic.MotionMagicCruiseVelocity = HopperConstants.HOPPER_MAXIMUM_VELOCITY;
+		hopperConfig.MotionMagic.MotionMagicAcceleration = HopperUptakeConstants.HOPPER_ACCELERATION;
+		hopperConfig.MotionMagic.MotionMagicCruiseVelocity = HopperUptakeConstants.HOPPER_MAXIMUM_VELOCITY;
 		// // Inverted Value
-		hopperConfig.MotorOutput.Inverted = HopperConstants.HOPPER_IS_INVERTED;
+		hopperConfig.MotorOutput.Inverted = HopperUptakeConstants.HOPPER_IS_INVERTED;
 		// Hopper PID
-		hopperConfig.Slot0.kP = HopperConstants.HOPPER_KP;
-		hopperConfig.Slot0.kI = HopperConstants.HOPPER_KI;
-		hopperConfig.Slot0.kD = HopperConstants.HOPPER_KD;
-		hopperConfig.Slot0.kV = HopperConstants.HOPPER_KV;
-		hopperConfig.Slot0.kS = HopperConstants.HOPPER_KS;
+		hopperConfig.Slot0.kP = HopperUptakeConstants.HOPPER_KP;
+		hopperConfig.Slot0.kI = HopperUptakeConstants.HOPPER_KI;
+		hopperConfig.Slot0.kD = HopperUptakeConstants.HOPPER_KD;
+		hopperConfig.Slot0.kV = HopperUptakeConstants.HOPPER_KV;
+		hopperConfig.Slot0.kS = HopperUptakeConstants.HOPPER_KS;
 		// Try to apply config multiple time. Break after successfully applying
 		for (int i = 0; i < 2; ++i) {
 			var status = bigSpinny.getConfigurator().apply(uptakeConfig);
@@ -98,7 +99,7 @@ public class HopperUptake extends SubsystemBase {
 	}
 
 	public boolean isUptakeAtTarget() {
-		return MathUtil.isNear(setpoint.in(RotationsPerSecond), bigSpinny.getVelocity().getValueAsDouble(), HopperConstants.TOLERANCE.in(RotationsPerSecond));
+		return MathUtil.isNear(setpoint.in(RotationsPerSecond), bigSpinny.getVelocity().getValueAsDouble(), HopperUptakeConstants.TOLERANCE.in(RotationsPerSecond));
 	}
 
 	private void startHopperMotorRPM(AngularVelocity RPS) {
@@ -111,19 +112,19 @@ public class HopperUptake extends SubsystemBase {
 	}
 
 	private void startHopperForward() {
-		startHopperMotorRPM(HopperConstants.FORWARD_HOPPER_RPS);
+		startHopperMotorRPM(HopperUptakeConstants.FORWARD_HOPPER_RPS);
 	}
 
 	private void startUptakeForward() {
-		startUptakeMotorRPM(HopperConstants.FORWARD_UPTAKE_RPS);
+		startUptakeMotorRPM(HopperUptakeConstants.FORWARD_UPTAKE_RPS);
 	}
 
 	private void startHopperUnjam() {
-		startHopperMotorRPM(HopperConstants.BACKWARD_HOPPER_RPS);
+		startHopperMotorRPM(HopperUptakeConstants.BACKWARD_HOPPER_RPS);
 	}
 
 	private void startUptakeUnjam() {
-		startUptakeMotorRPM(HopperConstants.BACKWARD_UPTAKE_RPS);
+		startUptakeMotorRPM(HopperUptakeConstants.BACKWARD_UPTAKE_RPS);
 	}
 
 	public void stopHopper() {
@@ -138,13 +139,13 @@ public class HopperUptake extends SubsystemBase {
 	}
 
 	public void startAllMotors() {
-		startHopperMotorRPM(HopperConstants.FORWARD_HOPPER_RPS);
-		startUptakeMotorRPM(HopperConstants.FORWARD_UPTAKE_RPS);
+		startHopperMotorRPM(HopperUptakeConstants.FORWARD_HOPPER_RPS);
+		startUptakeMotorRPM(HopperUptakeConstants.FORWARD_UPTAKE_RPS);
 	}
 
 	public void startMotorsUnjam() {
 		stopHopper();
-		startUptakeMotorRPM(HopperConstants.BACKWARD_UPTAKE_RPS);
+		startUptakeMotorRPM(HopperUptakeConstants.BACKWARD_UPTAKE_RPS);
 	}
 
 	public void stopBothMotors() {
@@ -170,7 +171,5 @@ public class HopperUptake extends SubsystemBase {
 	}
 
 	@Override
-	public void periodic() {
-		SmartDashboard.putBoolean("at target", isUptakeAtTarget());
-	}
+	public void periodic() {}
 }
