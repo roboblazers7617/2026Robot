@@ -368,5 +368,6 @@ public final class Constants {
 		public static final Angle MINIMUM_HOOD_ANGLE = Degrees.of(1);
 		public static final Angle MAXIMUM_HOOD_ANGLE = Degrees.of(32);
 		public static final double SENSOR_TO_MECHANISM_RATIO = 13.78 / 32; // Number of shaft rotations / degrees traveled
+		public static final Angle HOME_ANGLE = Degrees.of(5.0);
 	}
 }
