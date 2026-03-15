@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.subsystems.HopperUptake;
@@ -24,7 +25,6 @@ import frc.robot.superstructure.sources.ShootingSource;
 import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.util.AlertUtil;
 
-import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -467,8 +467,8 @@ public class ShooterSuperstructure {
 	 */
 	private void home() {
 		// TODO: Update this once subsystems are in place
-		flywheel.startFlywheel(RPM.of(10));
-		hood.moveToPosition(Degrees.of(90));
+		flywheel.startFlywheel(ShooterConstants.COAST_SPEED);
+		hood.moveToPosition(Degrees.of(5));
 		turret.unspool();
 
 		// Temporary debug stuff
