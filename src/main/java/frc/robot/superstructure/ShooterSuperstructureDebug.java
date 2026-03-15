@@ -1,17 +1,20 @@
 package frc.robot.superstructure;
 
+import java.util.Optional;
+
 import edu.wpi.first.networktables.DoubleEntry;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SuperstructureConstants;
+import frc.robot.superstructure.sources.ShootingSource;
 
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Degrees;
 
 /**
- * A debug controller for the shooter superstructure. Allows for manually setting shooter speed, hood angle, turret angle.
+ * A debug controller for the shooter superstructure. Allows for manually setting shooter speed, hood angle, and turret angle.
  */
 public class ShooterSuperstructureDebug {
 	private final ShooterSuperstructure shooterSuperstructure;
@@ -30,7 +33,8 @@ public class ShooterSuperstructureDebug {
 		this.shooterSuperstructure = shooterSuperstructure;
 
 		final NetworkTable table = NetworkTableInstance.getDefault()
-				.getTable("Debug/" + SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME);
+				.getTable(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME)
+				.getSubTable("Debug");
 
 		flywheelSpeedEntry = table.getDoubleTopic("Flywheel Speed")
 				.getEntry(0.0);
@@ -45,20 +49,34 @@ public class ShooterSuperstructureDebug {
 		turretAngleEntry.set(0.0);
 
 		// Set up dashboard
-		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Debug/Commit Shooter Values", commitShooterValuesCommand());
+		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Debug/Start Debug Control", startDebugControlCommand());
 	}
 
 	/**
-	 * Command to set the shooter values to the values specified on NetworkTables.
+	 * Command to start debug control. This sets the shooting value source to an internal debug value source.
 	 *
 	 * @return
 	 *         Command to run.
 	 */
-	private Command commitShooterValuesCommand() {
-		return shooterSuperstructure.setStateCommand(() -> new ShooterValues()
-				.setFlywheelSpeed(RPM.of(flywheelSpeedEntry.get()))
-				.setTurretAngle(Degrees.of(turretAngleEntry.get()))
-				.setHoodAngle(Degrees.of(hoodAngleEntry.get())))
-				.ignoringDisable(true);
+	private Command startDebugControlCommand() {
+		return shooterSuperstructure.setSourceCommand(new ShootingSourceDebug());
+	}
+
+	/**
+	 * A shooting source that just provides the values from the Debug class.
+	 */
+	private class ShootingSourceDebug extends ShootingSource {
+		public ShootingSourceDebug() {
+			super("Debug");
+		}
+
+		public Optional<ShooterValues> get() {
+			ShooterValues values = new ShooterValues()
+					.setFlywheelSpeed(RPM.of(flywheelSpeedEntry.get()))
+					.setTurretAngle(Degrees.of(turretAngleEntry.get()))
+					.setHoodAngle(Degrees.of(hoodAngleEntry.get()));
+
+			return Optional.of(values);
+		}
 	}
 }
