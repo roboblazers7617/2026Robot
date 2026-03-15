@@ -9,13 +9,18 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.DrivetrainControls;
+import frc.robot.subsystems.HopperUptake;
+import frc.robot.subsystems.StubbedTurret;
+import frc.robot.superstructure.ShooterSim;
+import frc.robot.superstructure.ShooterSuperstructure;
+import frc.robot.superstructure.ShooterSuperstructureDebug;
+import frc.robot.superstructure.sources.ShootFromAnywhereSource;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
-import frc.robot.subsystems.HopperUptake;
-import frc.robot.subsystems.DrivetrainControls;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
 
@@ -29,9 +34,10 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -45,6 +51,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 @Logged
 public class RobotContainer {
+	private final NetworkTable networkTableInst = (NetworkTableInstance.getDefault().getTable("/RoboBlazers"));
+
 	// swerve request for face heading on right stick
 	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
 			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
@@ -60,11 +68,25 @@ public class RobotContainer {
 			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1) // Add a 10% deadband
 			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // se open-loop control for drive motors
 
-	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
+	/**
+	 * The beam break on the uptake.
+	 * <p>
+	 * Reads true if there is a ball going through uptake, false otherwise.
+	 */
+	public final DigitalInput uptakeBeamBreak = new DigitalInput(HopperConstants.BEAM_BREAK_DIO_PIN);
+	public final DIOSim uptakeBeamBreakSim = new DIOSim(uptakeBeamBreak);
+
+	// Define subsystems
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
-	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
+	private final Shooter shooterSubsystem;
+	private final Hood hoodSubsystem;
+	public final StubbedTurret turret = new StubbedTurret();
 	private final HopperUptake hopperUptake = new HopperUptake();
+
+	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
+	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
+
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */
@@ -76,11 +98,18 @@ public class RobotContainer {
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
-	private final Shooter shooterSubsystem;
-
-	private final Hood hoodSubsystem;
-
-	private final NetworkTable networkTableInst = (NetworkTableInstance.getDefault().getTable("/RoboBlazers"));
+	/**
+	 * Superstructure that handles controlling the shooter and related subsystems.
+	 */
+	private final ShooterSuperstructure shooterSuperstructure;
+	/**
+	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
+	 */
+	private ShooterSuperstructureDebug shooterSuperstructureDebug;
+	/**
+	 * Simulation functionality for the shooter. Only initialized when in simulation.
+	 */
+	private ShooterSim shooterSim;
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -92,19 +121,29 @@ public class RobotContainer {
 
 		// autoChooser = AutoBuilder.buildAutoChooser("Tests");
 		// SmartDashboard.putData("Auto Mode", autoChooser);
+		//
+		// Set up subsystems
 		shooterSubsystem = new Shooter(networkTableInst.getSubTable("Shooter"));
-
 		hoodSubsystem = new Hood(networkTableInst.getSubTable("Hood"));
+
+		// Set up superstructure
+		shooterSuperstructure = new ShooterSuperstructure(shooterSubsystem, hoodSubsystem, turret, hopperUptake, uptakeBeamBreak);
 
 		// Configure the trigger bindings
 		configureNamedCommands();
 		configureDriverControls();
 		configureOperatorControls();
 
+		if (LoggingConstants.DEBUG_MODE) {
+			shooterSuperstructureDebug = new ShooterSuperstructureDebug(shooterSuperstructure);
+		}
+
+		// Set up a trigger so, when we enable in teleop we go into shoot while move
+		RobotModeTriggers.teleop()
+				.onTrue(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain)));
+
 		// Warmup PathPlanner to avoid Java pauses
 		FollowPathCommand.warmupCommand().schedule();
-
-		SmartDashboard.putNumber("Shooter speed", 10);
 	}
 
 	/**
@@ -128,9 +167,35 @@ public class RobotContainer {
 	}
 
 	/**
+	 * This function is called once when the robot is first started up whilst in simulation.
+	 */
+	public void simulationInit() {
+		shooterSim = new ShooterSim(drivetrain, shooterSubsystem, hoodSubsystem, turret, hopperUptake);
+	}
+
+	/**
+	 * This function is called periodically whilst in simulation.
+	 */
+	public void simulationPeriodic() {
+		shooterSim.simulationPeriodic();
+	}
+
+	/**
+	 * This method handles the periodic functionality for the superstructure.
+	 * This is done seperate from the subsystem periodic so it can be updated more frequently.
+	 */
+	public void superstructurePeriodic() {
+		shooterSuperstructure.update();
+	}
+
+	/**
 	 * Sets up the {@link NamedCommands} used by the autonomous routine.
 	 */
-	private void configureNamedCommands() {}
+	private void configureNamedCommands() {
+		NamedCommands.registerCommand("home", shooterSuperstructure.homeCommand());
+		NamedCommands.registerCommand("shoot", Commands.waitUntil(shooterSuperstructure.readyToShootTrigger())
+				.andThen(shooterSuperstructure.startShootingCommand()));
+	}
 
 	/**
 	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller buttons.
@@ -258,6 +323,6 @@ public class RobotContainer {
 	 *         True if there is a ball in uptake, false otherwise.
 	 */
 	public boolean getIsBallInUptake() {
-		return true;
+		return uptakeBeamBreak.get();
 	}
 }
