@@ -110,19 +110,19 @@ public class HopperUptake extends SubsystemBase {
 		setpoint = RPS;
 	}
 
-	private void startHopperForward() {
+	public void startHopperForward() {
 		startHopperMotorRPM(HopperUptakeConstants.FORWARD_HOPPER_RPS);
 	}
 
-	private void startUptakeForward() {
+	public void startUptakeForward() {
 		startUptakeMotorRPM(HopperUptakeConstants.FORWARD_UPTAKE_RPS);
 	}
 
-	private void startHopperUnjam() {
+	public void startHopperUnjam() {
 		startHopperMotorRPM(HopperUptakeConstants.BACKWARD_HOPPER_RPS);
 	}
 
-	private void startUptakeUnjam() {
+	public void startUptakeUnjam() {
 		startUptakeMotorRPM(HopperUptakeConstants.BACKWARD_UPTAKE_RPS);
 	}
 

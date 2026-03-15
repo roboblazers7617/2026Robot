@@ -16,10 +16,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
-import frc.robot.subsystems.StubbedHood;
-import frc.robot.subsystems.StubbedHopperUptake;
-import frc.robot.subsystems.StubbedFlywheel;
+import frc.robot.subsystems.HopperUptake;
 import frc.robot.subsystems.StubbedTurret;
+import frc.robot.subsystems.shooter.Hood;
+import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.superstructure.sources.ShootingSource;
 import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.util.AlertUtil;
@@ -41,11 +41,11 @@ public class ShooterSuperstructure {
 	@NotLogged
 	private final StubbedTurret turret;
 	@NotLogged
-	private final StubbedHood hood;
+	private final Hood hood;
 	@NotLogged
-	private final StubbedFlywheel flywheel;
+	private final Shooter flywheel;
 	@NotLogged
-	private final StubbedHopperUptake hopperUptake;
+	private final HopperUptake hopperUptake;
 	@NotLogged
 	private final DigitalInput uptakeBeamBreak;
 
@@ -154,7 +154,7 @@ public class ShooterSuperstructure {
 	 * @param uptakeBeamBreak
 	 *            The beam break for the uptake.
 	 */
-	public ShooterSuperstructure(StubbedFlywheel shooter, StubbedHood hood, StubbedTurret turret, StubbedHopperUptake hopperUptake, DigitalInput uptakeBeamBreak) {
+	public ShooterSuperstructure(Shooter shooter, Hood hood, StubbedTurret turret, HopperUptake hopperUptake, DigitalInput uptakeBeamBreak) {
 		this.flywheel = shooter;
 		this.hood = hood;
 		this.turret = turret;
@@ -418,7 +418,7 @@ public class ShooterSuperstructure {
 	 *         Are all the shooter subsystems at their targets?
 	 */
 	public boolean subsystemsAtTargets() {
-		return flywheel.isAtCruiseVelocity() && hood.isAtPosition() && turret.isAtTarget();
+		return flywheel.isAtTarget() && hood.isAtPosition() && turret.isAtTarget();
 	}
 
 	/**

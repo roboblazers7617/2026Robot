@@ -9,9 +9,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.DrivetrainControls;
-import frc.robot.subsystems.StubbedHood;
-import frc.robot.subsystems.StubbedHopperUptake;
-import frc.robot.subsystems.StubbedFlywheel;
+import frc.robot.subsystems.HopperUptake;
 import frc.robot.subsystems.StubbedTurret;
 import frc.robot.superstructure.ShooterSim;
 import frc.robot.superstructure.ShooterSuperstructure;
@@ -40,7 +38,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.units.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -54,6 +51,8 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  */
 @Logged
 public class RobotContainer {
+	private final NetworkTable networkTableInst = (NetworkTableInstance.getDefault().getTable("/RoboBlazers"));
+
 	// swerve request for face heading on right stick
 	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
 			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
@@ -80,11 +79,10 @@ public class RobotContainer {
 	// Define subsystems
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
-	public final StubbedFlywheel shooter = new StubbedFlywheel();
-	public final StubbedHood hood = new StubbedHood();
+	private final Shooter shooterSubsystem;
+	private final Hood hoodSubsystem;
 	public final StubbedTurret turret = new StubbedTurret();
-	public final StubbedHopperUptake hopperUptake = new StubbedHopperUptake(uptakeBeamBreakSim);
-	// private final HopperUptake hopperUptake = new HopperUptake();
+	private final HopperUptake hopperUptake = new HopperUptake();
 
 	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
@@ -100,16 +98,10 @@ public class RobotContainer {
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
 
-	private final Shooter shooterSubsystem;
-
-	private final Hood hoodSubsystem;
-
-	private final NetworkTable networkTableInst = (NetworkTableInstance.getDefault().getTable("/RoboBlazers"));
-
 	/**
 	 * Superstructure that handles controlling the shooter and related subsystems.
 	 */
-	private final ShooterSuperstructure shooterSuperstructure = new ShooterSuperstructure(shooter, hood, turret, hopperUptake, uptakeBeamBreak);
+	private final ShooterSuperstructure shooterSuperstructure;
 	/**
 	 * Debug controls for the ShooterController. Only initialized in {@link LoggingConstants#DEBUG_MODE debug mode}.
 	 */
@@ -129,17 +121,18 @@ public class RobotContainer {
 
 		// autoChooser = AutoBuilder.buildAutoChooser("Tests");
 		// SmartDashboard.putData("Auto Mode", autoChooser);
+		//
+		// Set up subsystems
 		shooterSubsystem = new Shooter(networkTableInst.getSubTable("Shooter"));
-
 		hoodSubsystem = new Hood(networkTableInst.getSubTable("Hood"));
+
+		// Set up superstructure
+		shooterSuperstructure = new ShooterSuperstructure(shooterSubsystem, hoodSubsystem, turret, hopperUptake, uptakeBeamBreak);
 
 		// Configure the trigger bindings
 		configureNamedCommands();
 		configureDriverControls();
 		configureOperatorControls();
-
-		// Warmup PathPlanner to avoid Java pauses
-		FollowPathCommand.warmupCommand().schedule();
 
 		if (LoggingConstants.DEBUG_MODE) {
 			shooterSuperstructureDebug = new ShooterSuperstructureDebug(shooterSuperstructure);
@@ -149,7 +142,8 @@ public class RobotContainer {
 		RobotModeTriggers.teleop()
 				.onTrue(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain)));
 
-		SmartDashboard.putNumber("Shooter speed", 10);
+		// Warmup PathPlanner to avoid Java pauses
+		FollowPathCommand.warmupCommand().schedule();
 	}
 
 	/**
@@ -176,7 +170,7 @@ public class RobotContainer {
 	 * This function is called once when the robot is first started up whilst in simulation.
 	 */
 	public void simulationInit() {
-		shooterSim = new ShooterSim(drivetrain, shooter, hood, turret, hopperUptake);
+		shooterSim = new ShooterSim(drivetrain, shooterSubsystem, hoodSubsystem, turret, hopperUptake);
 	}
 
 	/**
