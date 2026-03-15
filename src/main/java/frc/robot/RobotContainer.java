@@ -17,6 +17,9 @@ import frc.robot.superstructure.ShooterSim;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.superstructure.sources.ShootFromAnywhereSource;
+import frc.robot.Constants.ShooterConstants;
+import frc.robot.subsystems.shooter.Hood;
+import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.HopperConstants;
@@ -35,6 +38,9 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.units.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -51,6 +57,7 @@ public class RobotContainer {
 	// swerve request for face heading on right stick
 	public final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
 			.withDeadband(DrivetrainConstants.MAX_SPEED_DEADBAND * 0.1)
+			// TODO: (Caleb) Please put in constants file
 			.withHeadingPID(5, 0, 0.1)
 			.withRotationalDeadband(DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND * 0.1)
 			.withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Add a 10% deadband
@@ -77,9 +84,10 @@ public class RobotContainer {
 	public final StubbedHood hood = new StubbedHood();
 	public final StubbedTurret turret = new StubbedTurret();
 	public final StubbedHopperUptake hopperUptake = new StubbedHopperUptake(uptakeBeamBreakSim);
+	// private final HopperUptake hopperUptake = new HopperUptake();
 
-	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
 	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
+	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
 
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
@@ -91,6 +99,12 @@ public class RobotContainer {
 	 */
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
+
+	private final Shooter shooterSubsystem;
+
+	private final Hood hoodSubsystem;
+
+	private final NetworkTable networkTableInst = (NetworkTableInstance.getDefault().getTable("/RoboBlazers"));
 
 	/**
 	 * Superstructure that handles controlling the shooter and related subsystems.
@@ -115,6 +129,9 @@ public class RobotContainer {
 
 		// autoChooser = AutoBuilder.buildAutoChooser("Tests");
 		// SmartDashboard.putData("Auto Mode", autoChooser);
+		shooterSubsystem = new Shooter(networkTableInst.getSubTable("Shooter"));
+
+		hoodSubsystem = new Hood(networkTableInst.getSubTable("Hood"));
 
 		// Configure the trigger bindings
 		configureNamedCommands();
@@ -123,6 +140,7 @@ public class RobotContainer {
 
 		// Warmup PathPlanner to avoid Java pauses
 		FollowPathCommand.warmupCommand().schedule();
+
 		if (LoggingConstants.DEBUG_MODE) {
 			shooterSuperstructureDebug = new ShooterSuperstructureDebug(shooterSuperstructure);
 		}
@@ -130,6 +148,8 @@ public class RobotContainer {
 		// Set up a trigger so, when we enable in teleop we go into shoot while move
 		RobotModeTriggers.teleop()
 				.onTrue(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain)));
+
+		SmartDashboard.putNumber("Shooter speed", 10);
 	}
 
 	/**
@@ -196,6 +216,11 @@ public class RobotContainer {
 							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
 							.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
 				}));
+		drivetrain.applyRequest(() -> {
+			return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
+					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
+					.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
+		});
 
 		// Idle while the robot is disabled. This ensures the configured
 		// neutral mode is applied to the drive motors while disabled.
@@ -207,11 +232,29 @@ public class RobotContainer {
 		// letter buttons
 		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
 		// bumpers
+		// TODO: (Caleb) Please put in some comments to describe this logic
 		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
 			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
 				drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
 			}
-
+			// TODO: (Caleb) Can you pleas comment what this return is doing?
+			return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
+					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
+		})));
+		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
+		// triggers
+		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
+		// start and stop
+		driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+		// letter buttons
+		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
+		// bumpers
+		// TODO: (Caleb) Please put in some comments to describe this logic
+		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
+			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
+				drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
+			}
+			// TODO: (Caleb) Can you pleas comment what this return is doing?
 			return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
 					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
 		})));
@@ -225,7 +268,19 @@ public class RobotContainer {
 	/**
 	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
 	 */
-	private void configureOperatorControls() {}
+	private void configureOperatorControls() {
+		operatorController.a()
+				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.FAST_SPEED))
+				.onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
+		operatorController.b().whileTrue(shooterSubsystem.stopFlywheelCommand());
+		operatorController.x()
+				.whileTrue(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.SLOW_SPEED))
+				.onFalse(shooterSubsystem.startFlywheelCommand(() -> ShooterConstants.COAST_SPEED));
+		operatorController.y()
+				.whileTrue(hoodSubsystem.moveToPositionCommand(() -> Units.Degrees.of(5)));
+		operatorController.leftTrigger()
+				.whileTrue(hoodSubsystem.moveToPositionCommand(() -> Units.Degrees.of(30)));
+	}
 
 	/**
 	 * Use this to pass the autonomous command to the main {@link Robot} class.

@@ -55,6 +55,7 @@ public class Auto {
 					}, commandSwerveDrivetrain
 			// Reference to this subsystem to set requirements
 			);
+			System.out.println("ACUTALLY configured path path planner");
 		} catch (Exception e) {
 			// Handle exception as needed
 			e.printStackTrace();
