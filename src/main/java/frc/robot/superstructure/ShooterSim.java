@@ -78,40 +78,39 @@ public class ShooterSim {
 
 		tickCounter += 1;
 		if (tickCounter >= 10) {
-			// TODO: Add this check back once hopper sim is in place
-			// if (hopperUptake.isHopperRunning()) {
-			// If we're running the hopper, we just assume we can shoot and start simulating shooting balls
+			if (hopperUptake.getIsHopperRunningForwards()) {
+				// If we're running the hopper, we just assume we can shoot and start simulating shooting balls
 
-			Pose2d robotPose = drivetrain.getPose2d();
-			ChassisSpeeds robotVelocity = drivetrain.getFeildRelativeSpeeds();
+				Pose2d robotPose = drivetrain.getPose2d();
+				ChassisSpeeds robotVelocity = drivetrain.getFeildRelativeSpeeds();
 
-			RebuiltFuelOnFly fuelOnFly = new RebuiltFuelOnFly(
-					// Specify the position of the chassis
-					robotPose.getTranslation(),
-					// Specify the translation of the shooter from the robot center (in the shooter’s reference frame)
-					TurretConstants.TURRET_OFFSET.getTranslation().toTranslation2d(),
-					// Specify the field-relative speed of the chassis, adding it to the initial velocity of the projectile
-					robotVelocity,
-					// Turret facing direction
-					new Rotation2d(turret.getPosition()),
-					// Initial height of the flying note
-					TurretConstants.TURRET_OFFSET.getMeasureZ(),
-					// The launch speed
-					gamepieceSpeed,
-					// The launch angle
-					gamepieceTheta);
+				RebuiltFuelOnFly fuelOnFly = new RebuiltFuelOnFly(
+						// Specify the position of the chassis
+						robotPose.getTranslation(),
+						// Specify the translation of the shooter from the robot center (in the shooter’s reference frame)
+						TurretConstants.TURRET_OFFSET.getTranslation().toTranslation2d(),
+						// Specify the field-relative speed of the chassis, adding it to the initial velocity of the projectile
+						robotVelocity,
+						// Turret facing direction
+						new Rotation2d(turret.getPosition()),
+						// Initial height of the flying note
+						TurretConstants.TURRET_OFFSET.getMeasureZ(),
+						// The launch speed
+						gamepieceSpeed,
+						// The launch angle
+						gamepieceTheta);
 
-			// Configure callbacks to visualize the flight trajectory of the projectile
-			fuelOnFly.withProjectileTrajectoryDisplayCallBack(
-					// Callback for when the fuel will eventually hit the target (if configured)
-					(pose3ds) -> fuelTrajectoryHit.accept(pose3ds.toArray(Pose3d[]::new)),
-					// Callback for when the fuel will eventually miss the target, or if no target is configured
-					(pose3ds) -> fuelTrajectoryMiss.accept(pose3ds.toArray(Pose3d[]::new)));
+				// Configure callbacks to visualize the flight trajectory of the projectile
+				fuelOnFly.withProjectileTrajectoryDisplayCallBack(
+						// Callback for when the fuel will eventually hit the target (if configured)
+						(pose3ds) -> fuelTrajectoryHit.accept(pose3ds.toArray(Pose3d[]::new)),
+						// Callback for when the fuel will eventually miss the target, or if no target is configured
+						(pose3ds) -> fuelTrajectoryMiss.accept(pose3ds.toArray(Pose3d[]::new)));
 
-			SimulatedArena.getInstance().addGamePieceProjectile(fuelOnFly);
+				SimulatedArena.getInstance().addGamePieceProjectile(fuelOnFly);
 
-			tickCounter = 0;
-			// }
+				tickCounter = 0;
+			}
 		}
 	}
 

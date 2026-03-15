@@ -37,6 +37,11 @@ public class HopperUptake extends SubsystemBase {
 
 	private AngularVelocity setpoint = RadiansPerSecond.zero();
 
+	/**
+	 * Keeps track of whether or not the hopper is running forwards (basically are we shooting). Mostly exists just for sim and logging.
+	 */
+	private boolean isHopperRunningForwards = false;
+
 	public HopperUptake() {
 		bigSpinny = new TalonFX(HopperUptakeConstants.BIG_SPINNY_CAN_ID);
 		littleSpinny = new TalonFX(HopperUptakeConstants.LITTLE_SPINNY_CAN_ID);
@@ -112,6 +117,7 @@ public class HopperUptake extends SubsystemBase {
 
 	public void startHopperForward() {
 		startHopperMotorRPM(HopperUptakeConstants.FORWARD_HOPPER_RPS);
+		isHopperRunningForwards = true;
 	}
 
 	public void startUptakeForward() {
@@ -120,6 +126,7 @@ public class HopperUptake extends SubsystemBase {
 
 	public void startHopperUnjam() {
 		startHopperMotorRPM(HopperUptakeConstants.BACKWARD_HOPPER_RPS);
+		isHopperRunningForwards = false;
 	}
 
 	public void startUptakeUnjam() {
@@ -128,6 +135,7 @@ public class HopperUptake extends SubsystemBase {
 
 	public void stopHopper() {
 		littleSpinny.stopMotor();
+		isHopperRunningForwards = false;
 	}
 
 	// TODO: I'm wondering if we need separate stopUptake and stopHopper functions as we would always
@@ -167,6 +175,13 @@ public class HopperUptake extends SubsystemBase {
 
 	public Command stopBothMotorsCommand() {
 		return runOnce(() -> stopBothMotors());
+	}
+
+	/**
+	 * Returns true if the hopper is running forwards, false otherwise. This mostly exists for sim.
+	 */
+	public boolean getIsHopperRunningForwards() {
+		return isHopperRunningForwards;
 	}
 
 	@Override
