@@ -17,6 +17,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.RobotController;
@@ -28,6 +29,7 @@ import frc.robot.Constants.TurretConstants;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Microseconds;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
@@ -88,7 +90,7 @@ public class ShootingCalculator {
 		SignalLogger.writeStruct(SHOOTING_CALCULATOR_TABLE_NAME + "/Target Pose", Pose3d.struct, targetPose);
 
 		// Figure out where the turret is since it isn't centered on the robot
-		Pose3d turretPose = robotPose.transformBy(TurretConstants.TURRET_OFFSET);
+		Pose3d turretPose = solveTurretPose(robotPose, values.getTurretAngle(), values.getHoodAngle());
 
 		// ----- FIRST CALCULATION (NO VELOCITY) -----
 		// This stage is mainly just to calculate how long the ball will be in the air for
@@ -120,6 +122,8 @@ public class ShootingCalculator {
 			gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose);
 			gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
 			gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
+
+			turretPose = solveTurretPose(robotPose, targetAngle, gamepieceTheta);
 		}
 		modifiedTargetPosePublisher.set(turretPose.plus(new Transform3d(gamepieceTranslation.getX() * Math.cos(targetAngle.in(Radians)), gamepieceTranslation.getX() * Math.sin(targetAngle.in(Radians)), gamepieceTranslation.getY(), new Rotation3d())));
 		modifiedTranslationPublisher.set(gamepieceTranslation);
@@ -158,6 +162,32 @@ public class ShootingCalculator {
 		}
 
 		return Radians.of(MathUtil.clamp(a, ShootingConstants.MIN_SHOOT_ANGLE.in(Radians), ShootingConstants.MAX_SHOOT_ANGLE.in(Radians)));
+	}
+
+	/**
+	 * @param thetaTurret
+	 *            the angle of the turret, where 0 is facing towards the intake
+	 * @param thetaHood
+	 *            the angle of the shooter hood, ranging from 37 to 69 degrees
+	 * @return the pose of where the ball leaves the shooter
+	 */
+	private static Pose3d solveTurretPose(Pose3d robotPose, Angle thetaTurret, Angle thetaHood) {
+		// calculate the distance from the center of the turret pivot to where the ball is launched from
+		Distance xHoodOffset = Inches.of(4.99 - 4.50204 * Math.sin(thetaHood.in(Radians)));
+		// use this to calculate the offset due to the hood and turret from the center of the turret pivot
+		Distance xPos = Inches.of(-(5.249921 - xHoodOffset.in(Inches) * Math.cos(thetaTurret.in(Radians))));
+		Distance yPos = Inches.of(-(5.062500 + xHoodOffset.in(Inches) * Math.sin(thetaTurret.in(Radians))));
+		Distance zPos = Inches.of(14.847305 + 2.5 - 4.50204 * Math.cos(thetaHood.in(Radians)));
+		// calculate the transform rotated by the robots pose
+		// this assumes the robotpose ccw is positive
+
+		// xMod = xcos(a) - ysin(a)
+		Distance xModifiedPos = xPos.times(Math.cos(robotPose.getRotation().getZ())).minus(yPos.times(Math.sin(robotPose.getRotation().getZ())));
+		// yMod = xsin(a)+ycos(a)
+		Distance yModifiedPos = xPos.times(Math.sin(robotPose.getRotation().getZ())).plus(yPos.times(Math.cos(robotPose.getRotation().getZ())));
+
+		Transform3d modifieTransformTurret = new Transform3d(xModifiedPos, yModifiedPos, zPos, new Rotation3d());
+		return robotPose.plus(modifieTransformTurret);
 	}
 
 	/**
