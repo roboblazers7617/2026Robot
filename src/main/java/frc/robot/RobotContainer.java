@@ -19,6 +19,7 @@ import frc.robot.superstructure.sources.ShootFromAnywhereSource;
 import frc.robot.superstructure.sources.ShootingSourceConstant;
 import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.Constants.DashboardConstants;
@@ -139,6 +140,12 @@ public class RobotContainer {
 
 		if (LoggingConstants.DEBUG_MODE) {
 			shooterSuperstructureDebug = new ShooterSuperstructureDebug(shooterSuperstructure);
+		}
+
+		if (SuperstructureConstants.HOME_ON_ENABLE) {
+			// Set up a trigger to go into the home state when we enable
+			RobotModeTriggers.disabled()
+					.onFalse(shooterSuperstructure.homeCommand());
 		}
 
 		// Set up a trigger so, when we enable in teleop we go into shoot while move

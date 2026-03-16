@@ -198,6 +198,12 @@ public final class Constants {
 		 * The number of times to recalculate the shooting position for shoot-while-move. More iterations should give more accurate shoot-while-move outputs.
 		 */
 		public static final int SHOOTING_CALCULATOR_ITERATIONS = 3;
+		/**
+		 * Should we automatically enter the {@link frc.robot.superstructure.ShooterSuperstructure.ShooterState#HOME} state on enable?
+		 * <p>
+		 * This should be set to true for competitions, since we want to spin up the shooter automatically.
+		 */
+		public static final boolean HOME_ON_ENABLE = true;
 
 		// all things used for calculating the turret pose because if i left them as magic number Max would pipe bomb my mailbox
 
