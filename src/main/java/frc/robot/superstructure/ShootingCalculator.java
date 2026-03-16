@@ -28,7 +28,6 @@ import frc.robot.Constants.SuperstructureConstants;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Microseconds;
 import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
@@ -171,11 +170,13 @@ public class ShootingCalculator {
 	 */
 	private static Pose3d solveTurretPose(Pose3d robotPose, Angle thetaTurret, Angle thetaHood) {
 		// calculate the distance from the center of the turret pivot to where the ball is launched from
-		Distance xHoodOffset = Meter.of(SuperstructureConstants.TURRET_BASE_TO_HOOD_PIVOT.getX()).minus(SuperstructureConstants.HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS.times(Math.sin(thetaHood.in(Radians))));
+		Distance xHoodOffset = SuperstructureConstants.TURRET_BASE_TO_HOOD_PIVOT.getMeasureX().minus(SuperstructureConstants.HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS.times(Math.sin(thetaHood.in(Radians))));
 		// use this to calculate the offset due to the hood and turret from the center of the turret pivot
-		Distance xPos = Meter.of(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM.getX()).plus(xHoodOffset.times(Math.cos(thetaTurret.in(Radians))));
-		Distance yPos = Meter.of(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM.getY()).plus(xHoodOffset.times(Math.sin(thetaTurret.in(Radians))));
-		Distance zPos = Meter.of(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM.getZ() + SuperstructureConstants.TURRET_BASE_TO_HOOD_PIVOT.getZ()).plus(SuperstructureConstants.HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS.times(Math.cos(thetaHood.in(Radians))));
+		Distance xPos = SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM.getMeasureX().plus(xHoodOffset.times(Math.cos(thetaTurret.in(Radians))));
+		Distance yPos = SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM.getMeasureY().plus(xHoodOffset.times(Math.sin(thetaTurret.in(Radians))));
+		Distance zPos = SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM.getMeasureZ()
+				.plus(SuperstructureConstants.TURRET_BASE_TO_HOOD_PIVOT.getMeasureZ())
+				.plus(SuperstructureConstants.HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS.times(Math.cos(thetaHood.in(Radians))));
 		// calculate the transform rotated by the robots pose
 		// this assumes the robotpose ccw is positive
 
