@@ -24,6 +24,7 @@ import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.units.LinearVelocityUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
@@ -201,18 +202,18 @@ public final class Constants {
 		// all things used for calculating the turret pose because if i left them as magic number Max would pipe bomb my mailbox
 
 		/**
-		 * the distance from the pivot of the hood to the halfway point between the edges of the flywheels, AKA where the ball will be launched from, in inches
+		 * the distance from the pivot of the hood to the halfway point between the edges of the flywheels, AKA where the ball will be launched from
 		 */
-		public static final double HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS = 4.50204;
+		public static final Distance HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS = Meters.of(0.114351816);
 
 		/**
-		 * the transform from the center of the robot on the floor to the center of the pivot on the top of the shooter base plate, in inches
+		 * the transform from the center of the robot on the floor to the center of the pivot on the top of the shooter base plate, in meters
 		 */
-		public static final Transform3d ROBOT_TO_TURRET_BASE_TRANSFORM = new Transform3d(-5.249921, -5.062500, 14.847305, new Rotation3d());
+		public static final Transform3d ROBOT_TO_TURRET_BASE_TRANSFORM = new Transform3d(-0.1333479934, -0.1285875, 0.377121547, new Rotation3d());
 		/**
-		 * the transform from the center of the pivot on top of the shooter base plate to the center of the hood pivot axis
+		 * the transform from the center of the pivot on top of the shooter base plate to the center of the hood pivot axis in meters
 		 */
-		public static final Transform3d TURRET_BASE_TO_HOOD_PIVOT = new Transform3d(4.99, 0, 2.5, new Rotation3d());
+		public static final Transform3d TURRET_BASE_TO_HOOD_PIVOT = new Transform3d(0.126746, 0, 0.0635, new Rotation3d());
 	}
 
 	/**

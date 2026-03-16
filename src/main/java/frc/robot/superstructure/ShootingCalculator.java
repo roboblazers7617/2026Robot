@@ -28,7 +28,7 @@ import frc.robot.Constants.SuperstructureConstants;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Microseconds;
 import static edu.wpi.first.units.Units.Seconds;
-import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meter;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
@@ -104,6 +104,7 @@ public class ShootingCalculator {
 
 		// ----- RE-CALCUlATION (WITH VELOCITY) -----
 		for (int i = 0; i < SuperstructureConstants.SHOOTING_CALCULATOR_ITERATIONS; i++) {
+			turretPose = solveTurretPose(robotPose, targetAngle, gamepieceTheta);
 			// Figure out how long the gamepiece will be in the air for
 			Time time = calculateTimeTillScore(gamepieceTranslation, gamepieceTheta, gamepieceSpeed);
 			timeTillScorePublisher.set(time.in(Seconds));
@@ -121,8 +122,6 @@ public class ShootingCalculator {
 			gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose);
 			gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
 			gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
-
-			turretPose = solveTurretPose(robotPose, targetAngle, gamepieceTheta);
 		}
 		modifiedTargetPosePublisher.set(turretPose.plus(new Transform3d(gamepieceTranslation.getX() * Math.cos(targetAngle.in(Radians)), gamepieceTranslation.getX() * Math.sin(targetAngle.in(Radians)), gamepieceTranslation.getY(), new Rotation3d())));
 		modifiedTranslationPublisher.set(gamepieceTranslation);
@@ -172,11 +171,11 @@ public class ShootingCalculator {
 	 */
 	private static Pose3d solveTurretPose(Pose3d robotPose, Angle thetaTurret, Angle thetaHood) {
 		// calculate the distance from the center of the turret pivot to where the ball is launched from
-		Distance xHoodOffset = Inches.of(SuperstructureConstants.TURRET_BASE_TO_HOOD_PIVOT.getX() - SuperstructureConstants.HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS * Math.sin(thetaHood.in(Radians)));
+		Distance xHoodOffset = Meter.of(SuperstructureConstants.TURRET_BASE_TO_HOOD_PIVOT.getX()).minus(SuperstructureConstants.HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS.times(Math.sin(thetaHood.in(Radians))));
 		// use this to calculate the offset due to the hood and turret from the center of the turret pivot
-		Distance xPos = Inches.of(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM.getX() + xHoodOffset.in(Inches) * Math.cos(thetaTurret.in(Radians)));
-		Distance yPos = Inches.of(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM.getY() + xHoodOffset.in(Inches) * Math.sin(thetaTurret.in(Radians)));
-		Distance zPos = Inches.of(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM.getZ() + SuperstructureConstants.TURRET_BASE_TO_HOOD_PIVOT.getZ() - SuperstructureConstants.HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS * Math.cos(thetaHood.in(Radians)));
+		Distance xPos = Meter.of(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM.getX()).plus(xHoodOffset.times(Math.cos(thetaTurret.in(Radians))));
+		Distance yPos = Meter.of(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM.getY()).plus(xHoodOffset.times(Math.sin(thetaTurret.in(Radians))));
+		Distance zPos = Meter.of(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM.getZ() + SuperstructureConstants.TURRET_BASE_TO_HOOD_PIVOT.getZ()).plus(SuperstructureConstants.HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS.times(Math.cos(thetaHood.in(Radians))));
 		// calculate the transform rotated by the robots pose
 		// this assumes the robotpose ccw is positive
 
