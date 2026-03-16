@@ -54,6 +54,10 @@ public class ShooterSuperstructure {
 	 */
 	public enum ShooterState {
 		/**
+		 * Stopped. This won't automatically transition into any other states.
+		 */
+		OFF,
+		/**
 		 * Homed and waiting for a target.
 		 * <p>
 		 * If a target is given by the current source, this will automatically transition to {@link #SHOOTING}.
@@ -95,6 +99,10 @@ public class ShooterSuperstructure {
 	 * Triggers for the shooter's state machine.
 	 */
 	enum ShooterTrigger {
+		/**
+		 * Turns off the shooter.
+		 */
+		TURN_OFF,
 		/**
 		 * Home the shooter.
 		 */
@@ -162,15 +170,24 @@ public class ShooterSuperstructure {
 		this.uptakeBeamBreak = uptakeBeamBreak;
 
 		// Set up the state machine
+		// ---- Off state ----
+		stateMachineConfig.configure(ShooterState.OFF)
+				.onEntry(this::stop)
+				.permitReentry(ShooterTrigger.TURN_OFF)
+				.permit(ShooterTrigger.HOME, ShooterState.HOME)
+				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL);
+
 		// ---- Home state ----
 		stateMachineConfig.configure(ShooterState.HOME)
 				.onEntry(this::home)
 				.permitReentry(ShooterTrigger.HOME)
+				.permit(ShooterTrigger.TURN_OFF, ShooterState.OFF)
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL)
 				.permit(ShooterTrigger.INITIALIZE, ShooterState.SHOOTING_STAGE_1_INITIALIZING);
 
 		// ---- Manual control ----
 		stateMachineConfig.configure(ShooterState.MANUAL_CONTROL)
+				.permit(ShooterTrigger.TURN_OFF, ShooterState.OFF)
 				.permit(ShooterTrigger.HOME, ShooterState.HOME);
 
 		// ---- Shooting state -----
@@ -178,6 +195,7 @@ public class ShooterSuperstructure {
 				// Spin up uptake while shooting
 				.onEntry(hopperUptake::startUptakeForward)
 				.onExit(hopperUptake::stopUptake)
+				.permit(ShooterTrigger.TURN_OFF, ShooterState.OFF)
 				.permit(ShooterTrigger.HOME, ShooterState.HOME)
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL);
 
@@ -207,13 +225,14 @@ public class ShooterSuperstructure {
 				.substateOf(ShooterState.SHOOTING)
 				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING_STAGE_3_SHOOTING);
 
-		stateMachine = new StateMachine<>(ShooterState.HOME, stateMachineConfig);
+		stateMachine = new StateMachine<>(ShooterState.OFF, stateMachineConfig);
 
 		stateMachine.onUnhandledTrigger((ShooterState state, ShooterTrigger trigger) -> {
 			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Unhandled trigger", "Unhandled trigger: " + trigger + " from state: " + state, Seconds.of(3.0));
 		});
 
 		// Put commands on SmartDashboard
+		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Turn Off", turnOffCommand());
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Home", homeCommand());
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Start Manual Control", startManualControlCommand());
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Start Shooting", startShootingCommand());
@@ -229,6 +248,9 @@ public class ShooterSuperstructure {
 
 		// Check the current state and handle sequence transitions.
 		switch (stateMachine.getState()) {
+			case OFF:
+				break;
+
 			case HOME:
 				// Homed and waiting for a target
 				// This is just the idle state of the shooter
@@ -325,6 +347,19 @@ public class ShooterSuperstructure {
 				}
 				break;
 		}
+	}
+
+	/**
+	 * Command to turn off the shooter. This can be called from any state, and completely stops the shooter.
+	 * <p>
+	 * Can be run while disabled.
+	 *
+	 * @return
+	 *         Command to run.
+	 */
+	public Command turnOffCommand() {
+		return Commands.runOnce(() -> stateMachine.fire(ShooterTrigger.TURN_OFF))
+				.ignoringDisable(true);
 	}
 
 	/**
@@ -485,5 +520,18 @@ public class ShooterSuperstructure {
 
 		// Temporary debug stuff
 		System.out.println("Homed shooter");
+	}
+
+	/**
+	 * Stops the various components of the turret.
+	 */
+	private void stop() {
+		// TODO: Update this once subsystems are in place
+		flywheel.stopFlywheel();
+		hood.moveToPosition(HoodConstants.HOME_ANGLE);
+		turret.unspool();
+
+		// Temporary debug stuff
+		System.out.println("Stopped shooter");
 	}
 }

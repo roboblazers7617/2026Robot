@@ -268,10 +268,16 @@ public class RobotContainer {
 	private void configureOperatorControls() {
 		operatorController.leftTrigger()
 				.whileTrue(shooterSuperstructure.startShootingCommand());
+
 		operatorController.a()
 				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Test Position", new ShooterValues(ShooterConstants.FAST_SPEED, Units.Degrees.of(30), Units.Degrees.of(0)))));
 		operatorController.x()
 				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()));
+
+		operatorController.back()
+				.onTrue(shooterSuperstructure.turnOffCommand());
+		operatorController.start()
+				.onTrue(shooterSuperstructure.homeCommand());
 	}
 
 	/**
