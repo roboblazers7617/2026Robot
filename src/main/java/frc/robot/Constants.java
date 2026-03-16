@@ -197,6 +197,22 @@ public final class Constants {
 		 * The number of times to recalculate the shooting position for shoot-while-move. More iterations should give more accurate shoot-while-move outputs.
 		 */
 		public static final int SHOOTING_CALCULATOR_ITERATIONS = 3;
+
+		// all things used for calculating the turret pose because if i left them as magic number Max would pipe bomb my mailbox
+
+		/**
+		 * the distance from the pivot of the hood to the halfway point between the edges of the flywheels, AKA where the ball will be launched from, in inches
+		 */
+		public static final double HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS = 4.50204;
+
+		/**
+		 * the transform from the center of the robot on the floor to the center of the pivot on the top of the shooter base plate, in inches
+		 */
+		public static final Transform3d ROBOT_TO_TURRET_BASE_TRANSFORM = new Transform3d(-5.249921, -5.062500, 14.847305, new Rotation3d());
+		/**
+		 * the transform from the center of the pivot on top of the shooter base plate to the center of the hood pivot axis
+		 */
+		public static final Transform3d TURRET_BASE_TO_HOOD_PIVOT = new Transform3d(4.99, 0, 2.5, new Rotation3d());
 	}
 
 	/**
