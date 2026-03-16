@@ -68,7 +68,7 @@ public class ShootingCalculator {
 	/**
 	 * Solves shooter values for a given robot pose and target.
 	 * <p>
-	 * The math behind this is documented in <a href="https://www.desmos.com/calculator/zixuz1clhy">this Desmos calculator</a>.
+	 * The math behind this is documented in <a href="https://www.desmos.com/calculator/s8yyqyc8iw">this Desmos calculator</a>.
 	 *
 	 * @param robotPose
 	 *            The pose of the robot.
@@ -151,7 +151,11 @@ public class ShootingCalculator {
 	 *         The theta to shoot the gamepiece at.
 	 */
 	public static Angle calculateHoodAngle(Translation2d targetTranslation) {
-		double a = 0.5 * Math.atan(-targetTranslation.getX() / targetTranslation.getY()) + (Math.PI / 2);
+		double a = 0.5 * Math.atan(-targetTranslation.getX() / targetTranslation.getY());
+
+		if (a < 0) {
+			a += (Math.PI / 2);
+		}
 
 		return Radians.of(MathUtil.clamp(a, ShootingConstants.MIN_SHOOT_ANGLE.in(Radians), ShootingConstants.MAX_SHOOT_ANGLE.in(Radians)));
 	}

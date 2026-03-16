@@ -258,7 +258,7 @@ public final class Constants {
 		/**
 		 * The turret's offset from the center of the robot (drivetrain pose).
 		 */
-		public static final Transform3d TURRET_OFFSET = new Transform3d(Inches.of(5.0), Inches.of(5.062), Meters.of(0.0), Rotation3d.kZero);
+		public static final Transform3d TURRET_OFFSET = new Transform3d(Inches.of(5.0), Inches.of(5.062), Meters.of(0.3), Rotation3d.kZero);
 	}
 
 	/**
