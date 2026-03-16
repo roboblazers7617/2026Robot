@@ -98,17 +98,17 @@ public class RobotContainer {
 		/**
 		 * code for demo controls
 		 */
-		// Press A to start and lower intake
+		// Press A to START and LOWER intake
 		operatorController.a()
 				// .onTrue(intakeGrabber.startIntakeCommand()); // from original 4 bind
 				.onTrue(intakeGrabber.startIntakeCommand())
 				.onTrue(intakeShoulder.lowerIntakeCommand());
-		// Press B to stop raise intake
+		// Press B to STOP and RAISE intake
 		operatorController.b()
 				// .onTrue(intakeGrabber.stopIntakeCommand()); // original 4 bind
 				.onTrue(intakeShoulder.raiseIntakeCommand())
 				.onTrue(intakeGrabber.stopIntakeCommand());
-		// Press X to raise shoulder (old)
+		// Press X to RAISE shoulder (old)
 		// operatorController.x()
 		// .onTrue(intakeShoulder.raiseIntakeCommand()); // original 4 bind
 		// Press Y to lower shoulder (old)

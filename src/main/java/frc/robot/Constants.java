@@ -103,11 +103,11 @@ public final class Constants {
 		public static final double GRABBER_SUPPLY_CURRENT_LIMIT = 30.0;
 		// public static final double INTAKE_START_SPEED = 0.2; //ts is old (as are the
 		// following three)
-		public static final double INTAKE_START_CURRENT = 5.0; // 40 recommended
+		public static final double INTAKE_START_VOLTAGE = 4.5;
 		// public static final double INTAKE_STOP_SPEED = 0.0;
-		public static final double INTAKE_STOP_CURRENT = 0.0;
+		public static final double INTAKE_STOP_VOLTAGE = 0.0;
 		// public static final double OUTTAKE_SPEED = -0.2;
-		public static final double OUTTAKE_CURRENT = -5.0; // -40 recommended
+		public static final double OUTTAKE_VOLTAGE = -2;
 
 		// intake in-out position constants
 		// public static final Angle SHOULDER_STOWED_ANGLE = Degrees.of(90);
@@ -115,16 +115,16 @@ public final class Constants {
 		public static final double SHOULDER_MINIMUM_DISTANCE = 0;
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Rotations.of(0);
-		public static final double SHOULDER_MAXIMUM_DISTANCE = 0.31;
+		public static final double SHOULDER_MAXIMUM_DISTANCE = 36.0;
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
 		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;
 
-		public static final double INTAKE_KG = 0;
+		public static final double INTAKE_KG = 0.1;
 		public static final double INTAKE_KS = 0.34;
-		public static final double INTAKE_KV = 0.1;
+		public static final double INTAKE_KV = 0.16;
 		public static final double INTAKE_KA = 0;
-		public static final double INTAKE_KP = 0;
+		public static final double INTAKE_KP = 0.2;
 		public static final double INTAKE_KI = 0;
 		public static final double INTAKE_KD = 0;
 		// public static final double INTAKE_MM_CRUISE_VELOCITY = 80; // depracated
@@ -152,5 +152,7 @@ public final class Constants {
 		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
 		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_TIME = 0.15;
 		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 20.0;
+
+		public static final double GAIN_SCHEDULE_ERROR_THRESHOLD = 0.5;
 	}
 }

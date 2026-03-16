@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -14,7 +14,8 @@ public class IntakeGrabber extends SubsystemBase {
 	// controller for motor which intakes
 	private final TalonFX Motor;
 
-	private final TorqueCurrentFOC torqueCurrent = new TorqueCurrentFOC(0);
+	private final VoltageOut voltageOut = new VoltageOut(0);
+	// private final TorqueCurrentFOC torqueCurrent = new TorqueCurrentFOC(0);
 	// Motor.setControl(torqueCurrent.withOutput(40.0));
 
 	/**
@@ -97,7 +98,7 @@ public class IntakeGrabber extends SubsystemBase {
 	 */
 	private void startIntake() {
 		// setSpeed(IntakeConstants.INTAKE_START_SPEED);
-		setTorque(IntakeConstants.INTAKE_START_CURRENT);
+		setVoltage(IntakeConstants.INTAKE_START_VOLTAGE);
 	}
 
 	/**
@@ -105,7 +106,7 @@ public class IntakeGrabber extends SubsystemBase {
 	 */
 	private void stopIntake() {
 		// setSpeed(IntakeConstants.INTAKE_STOP_SPEED);
-		setTorque(IntakeConstants.INTAKE_STOP_CURRENT);
+		setVoltage(IntakeConstants.INTAKE_STOP_VOLTAGE);
 	}
 
 	/**
@@ -113,22 +114,19 @@ public class IntakeGrabber extends SubsystemBase {
 	 */
 	private void outtake() {
 		// setSpeed(IntakeConstants.OUTTAKE_SPEED);
-		setTorque(IntakeConstants.OUTTAKE_CURRENT);
+		setVoltage(IntakeConstants.OUTTAKE_VOLTAGE);
 	}
 
 	/**
-	 * Method which makes intake motors spin at a certain speed utilizing
-	 * TorqueCurrentFOC.
+	 * Method which makes intake motors spin at a certain speed
 	 * 
-	 * @param current
+	 * @param voltage
 	 *            [-1,1].
 	 */
 	// private void setSpeed(double speed) {
 	// Motor.set(speed);
 	// }
-	// This isn't a torque. It is a current
-	// okay
-	private void setTorque(double current) {
-		Motor.setControl(torqueCurrent.withOutput(current));
+	private void setVoltage(double voltage) {
+		Motor.setControl(voltageOut.withOutput(voltage));
 	}
 }

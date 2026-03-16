@@ -9,6 +9,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.GainSchedBehaviorValue;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -59,7 +60,7 @@ public class IntakeShoulder extends SubsystemBase {
 
 		// Slot0Configs slot0Configs = new Slot0Configs();
 		// slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
-		motorConfig.Slot0.GravityType = GravityTypeValue.Arm_Cosine; // Use cosine gravity compensation
+		motorConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static; // Use cosine gravity compensation
 		motorConfig.Slot0.kG = IntakeConstants.INTAKE_KG; // Gravity gain
 		motorConfig.Slot0.kS = IntakeConstants.INTAKE_KS; // Add ____ V output to overcome static friction
 		motorConfig.Slot0.kV = IntakeConstants.INTAKE_KV; // A velocity target of 1 rps results in ____ V output
@@ -69,6 +70,9 @@ public class IntakeShoulder extends SubsystemBase {
 		motorConfig.Slot0.kD = IntakeConstants.INTAKE_KD; // A velocity error of 1 rps results in ____ V output
 		motorConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 		// motorConfigurator.apply(slot0Configs);
+
+		motorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
+		motorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = IntakeConstants.GAIN_SCHEDULE_ERROR_THRESHOLD;
 
 		// MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
 		// motionMagicConfigs.MotionMagicCruiseVelocity =
