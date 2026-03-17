@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.443596097728244,
-        "y": -0.30724133600419723
+        "x": 8.05628771907287,
+        "y": -0.7321361772438029
       },
       "isLocked": false,
       "linkedName": "Right Intook Neutral"
@@ -20,8 +20,8 @@
         "y": 0.66595625
       },
       "prevControl": {
-        "x": 1.926595192174725,
-        "y": 0.6659562499999999
+        "x": 1.0260248639109528,
+        "y": 1.0220202118331194
       },
       "nextControl": null,
       "isLocked": false,
@@ -30,8 +30,8 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.6272189349112425,
-      "rotationDegrees": 90.0
+      "waypointRelativePos": 0.4087061668681982,
+      "rotationDegrees": 180.0
     }
   ],
   "constraintZones": [],

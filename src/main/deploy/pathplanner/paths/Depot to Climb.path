@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.234892091667246,
-        "y": 6.141580766912666
+        "x": 1.0541,
+        "y": 4.974338965393659
       },
       "isLocked": false,
       "linkedName": "Inside Depot"
@@ -20,8 +20,8 @@
         "y": 4.6148625
       },
       "prevControl": {
-        "x": 0.9305497736418508,
-        "y": 5.41023641012743
+        "x": 1.0570927601809956,
+        "y": 5.132839366515836
       },
       "nextControl": null,
       "isLocked": false,
