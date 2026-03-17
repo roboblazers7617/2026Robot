@@ -9,6 +9,7 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
@@ -116,11 +117,15 @@ public class Climber extends SubsystemBase {
 		// moveToMeters(0);
 	}
 
-	public Command getRaiseClimbCommand() {
+	public boolean isAtTarget() {
+		return MathUtil.isNear(climberPositionOut.Position, getPositionRotations(), ClimbConstants.TOLERANCE);
+	}
+
+	public Command RaiseClimbCommand() {
 		return runOnce(() -> raiseClimb());
 	}
 
-	public Command getLowerClimbCommand() {
+	public Command LowerClimbCommand() {
 		return runOnce(() -> lowerClimb());
 	}
 

@@ -78,7 +78,7 @@ public final class Constants {
 	}
 
 	public static class ClimbConstants {
-		public final static int CIB_MOTOR_CAN_ID;
+		public final static int CIB_MOTOR_CAN_ID = 50;
 
 		public final static double CIB_KS;
 		public final static double CIB_KV;
@@ -107,12 +107,12 @@ public final class Constants {
 		public static final double MAX_ACCELERATION;
 
 		/**
-		 * Min and Max position in meters.
+		 * Max position in meters.
 		 */
-		public static final double CIB_MAX_POSITION;
+		public static final double CIB_MAX_POSITION = 0.2071581582; // 8.15in to m
 
 		/*
-		 * Max and min rotations of the climb motor
+		 * Max rotations of the climb motor
 		 */
 		public static final double CIB_MAX_ROTATIONS;
 		/**
@@ -123,23 +123,23 @@ public final class Constants {
 		 * Current limit in amps.
 		 */
 		public static final int CURRENT_LIMIT = 40;
+
 		/**
-		 * Tolerance for the target to be considered reached in meters.
+		 * Tolerance for the target to be considered reached in rotations.
 		 */
-		public static final double TOLERANCE = .02;
+		public static final double TOLERANCE = .2;
 		/*
 		 * the gearbox ratio of the climber, if 2:1 should be .5, as every rotation of the motor equates to .5 rotations of the shaft
 		 */
-		public static final double CIB_GEARBOX_RATIO;
+		public static final double CIB_GEARBOX_RATIO = 1.0 / 36.0;
 
 		/*
 		 * current limits
 		 */
-		public static final double CIB_SUPPLY_CURRENT_LIMIT;
-		public static final double CIB_STATOR_CURRENT_LIMIT;
+		public static final double CIB_SUPPLY_CURRENT_LIMIT = 60;
+		public static final double CIB_STATOR_CURRENT_LIMIT = 120;
 
-		public static final double CIB_SUPPLY_CURRENT_LOWER_LIMIT;
-
-		public static final double CIB_SUPPLY_CURRENT_LIMIT_LOWER_TIME;
+		public static final double CIB_SUPPLY_CURRENT_LOWER_LIMIT = 40;
+		public static final double CIB_SUPPLY_CURRENT_LIMIT_LOWER_TIME = .1;
 	}
 }
