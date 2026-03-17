@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.2,
-        "y": 2.8
+        "x": 1.16,
+        "y": 2.7765375
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.2,
-        "y": 3.05
+        "x": 1.16,
+        "y": 3.0265375
       },
       "isLocked": false,
       "linkedName": "Right Climb"
     },
     {
       "anchor": {
-        "x": 1.2,
-        "y": 3.0439999999999996
+        "x": 1.1604752,
+        "y": 3.0051248
       },
       "prevControl": {
-        "x": 1.2,
-        "y": 2.7939999999999996
+        "x": 1.1604752,
+        "y": 2.7551248
       },
       "nextControl": null,
       "isLocked": false,
