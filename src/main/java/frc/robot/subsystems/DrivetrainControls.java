@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
@@ -9,6 +10,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.DrivetrainConstants;
 
 public class DrivetrainControls {
@@ -119,5 +122,16 @@ public class DrivetrainControls {
 	 */
 	public SwerveRequest.FieldCentricFacingAngle setPoseValue() {
 		return drive.withTargetDirection(drivetrain.getState().Pose.getRotation());
+	}
+
+	public SwerveRequest.FieldCentricFacingAngle setPose2() {
+		Optional<Alliance> ally = DriverStation.getAlliance();
+		SwerveRequest.FieldCentricFacingAngle reset;
+		if (ally.get() == Alliance.Red) {
+			reset = drive.withTargetDirection(drivetrain.getState().Pose.getRotation().plus(Rotation2d.kPi));
+		} else {
+			reset = drive.withTargetDirection(drivetrain.getState().Pose.getRotation());
+		}
+		return reset;
 	}
 }
