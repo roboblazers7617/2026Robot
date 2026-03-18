@@ -125,7 +125,7 @@ public class RobotContainer {
 
 		// --- bumpers ---
 		// // switches swerve requests to field centric facing angle
-		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drivetrainControls.setPoseValue()).andThen(drivetrain.applyRequest(() -> drivetrainControls.feildCentricFacingAngleRequest(driverController))));
+		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drivetrainControls.setPose2()).andThen(drivetrain.applyRequest(() -> drivetrainControls.feildCentricFacingAngleRequest(driverController))));
 		// // Sets multiplier to the lower value
 		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
 

@@ -119,11 +119,8 @@ public class DrivetrainControls {
 	 * Updates the Pose 2D
 	 * This is being used when changing from Field Centric request to Field Centric Facing Angle request
 	 * Becuase when changing facing angle will defualt to whatever was it's last value
+	 * gets ally to avoid opposite facing movement when in red mode.
 	 */
-	public SwerveRequest.FieldCentricFacingAngle setPoseValue() {
-		return drive.withTargetDirection(drivetrain.getState().Pose.getRotation());
-	}
-
 	public SwerveRequest.FieldCentricFacingAngle setPose2() {
 		Optional<Alliance> ally = DriverStation.getAlliance();
 		SwerveRequest.FieldCentricFacingAngle reset;
