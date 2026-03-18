@@ -203,7 +203,7 @@ public final class Constants {
 		 * <p>
 		 * This should be set to true for competitions, since we want to spin up the shooter automatically.
 		 */
-		public static final boolean HOME_ON_ENABLE = true;
+		public static final boolean HOME_ON_ENABLE = false;
 
 		// all things used for calculating the turret pose because if i left them as magic number Max would pipe bomb my mailbox
 
