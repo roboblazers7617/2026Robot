@@ -248,11 +248,11 @@ public final class Constants {
 		/**
 		 * The lowest angle the turret can rotate to.
 		 */
-		public static final Angle MINIMUM_ANGLE = Rotations.of(-1.5);
+		public static final Angle MINIMUM_ANGLE = Rotations.of(-1.0);
 		/**
 		 * The highest angle the turret can rotate to.
 		 */
-		public static final Angle MAXIMUM_ANGLE = Rotations.of(1.5);
+		public static final Angle MAXIMUM_ANGLE = Rotations.of(1.0);
 
 		/**
 		 * How close does the Turret have to be to its setpoint to be counted as being there.
