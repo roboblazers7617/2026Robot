@@ -15,11 +15,13 @@ import frc.robot.generated.TunerConstants;
 import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Frequency;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Hertz;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -69,6 +71,28 @@ public final class Constants {
 		 * Log all data above specified level.
 		 */
 		public static final Logged.Importance DEBUG_LEVEL = Logged.Importance.DEBUG;
+	}
+
+	/**
+	 * Constants used to configure status signal outputs from devices.
+	 */
+	public static class SignalConstants {
+		/**
+		 * The update frequency to use for position and velocity updates that are polled in code.
+		 */
+		public static final Frequency POLLED_POSITION_UPDATE_FREQUENCY = Hertz.of(200.0);
+		/**
+		 * The update frequency to use for position and velocity updates that we don't care as much about (aren't used in code).
+		 */
+		public static final Frequency POSITION_UPDATE_FREQUENCY = Hertz.of(50.0);
+		/**
+		 * The update frequency to use for output updates (current output, voltage output, etc).
+		 */
+		public static final Frequency OUTPUT_UPDATE_FREQUENCY = Hertz.of(50.0);
+		/**
+		 * The update frequency to use for optimised signals (signals we aren't using).
+		 */
+		public static final Frequency OPTIMIZED_UPDATE_FREQUENCY = Hertz.of(4.0);
 	}
 
 	/**

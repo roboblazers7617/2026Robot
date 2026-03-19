@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperUptakeConstants;
+import frc.robot.Constants.SignalConstants;
 
 /** This class covers the Hopper/Spindexer motor and the Uptake motor */
 public class HopperUptake extends SubsystemBase {
@@ -95,6 +96,19 @@ public class HopperUptake extends SubsystemBase {
 				break;
 			}
 		}
+
+		// Set up the status signal update frequencies
+		bigSpinny.getVelocity().setUpdateFrequency(SignalConstants.POLLED_POSITION_UPDATE_FREQUENCY);
+		bigSpinny.getTorqueCurrent().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		bigSpinny.getStatorCurrent().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		bigSpinny.getMotorVoltage().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		bigSpinny.optimizeBusUtilization(SignalConstants.OPTIMIZED_UPDATE_FREQUENCY);
+
+		littleSpinny.getVelocity().setUpdateFrequency(SignalConstants.POLLED_POSITION_UPDATE_FREQUENCY);
+		littleSpinny.getTorqueCurrent().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		littleSpinny.getStatorCurrent().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		littleSpinny.getMotorVoltage().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		littleSpinny.optimizeBusUtilization(SignalConstants.OPTIMIZED_UPDATE_FREQUENCY);
 	}
 
 	public boolean isUptakeAtTarget() {
