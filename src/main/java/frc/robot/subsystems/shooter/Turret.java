@@ -199,7 +199,7 @@ public class Turret extends SubsystemBase {
 		}
 
 		// Seed the encoder
-		seedEncoder();
+		// seedEncoder();
 	}
 
 	@Override
