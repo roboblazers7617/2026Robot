@@ -4,6 +4,8 @@ import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.configs.CANdiConfiguration;
+import com.ctre.phoenix6.configs.CANdiConfigurator;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -161,6 +163,21 @@ public class Turret extends SubsystemBase {
 		if (talonFXConfigurator.apply(talonFXConfiguration).isError()) {
 			// If we run into an error, log it and notify on the dashboard
 			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Failed to apply configuration to Turret motor", String.format("Failed to apply configuration to Turret motor (ID %d)! Make sure the CAN bus is operating properly.", TurretConstants.MOTOR_ID), Seconds.zero());
+		}
+
+		CANdiConfiguration candiConfiguration = new CANdiConfiguration();
+
+		candiConfiguration.PWM2
+				.withAbsoluteSensorOffset(TurretConstants.PRIMARY_ENCODER_OFFSET);
+
+		candiConfiguration.PWM1
+				.withAbsoluteSensorOffset(TurretConstants.SECONDARY_ENCODER_OFFSET);
+
+		// Apply the configuration to the encoder
+		CANdiConfigurator candiConfigurator = encoderCandi.getConfigurator();
+		if (candiConfigurator.apply(candiConfiguration).isError()) {
+			// If we run into an error, log it and notify on the dashboard
+			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Failed to apply configuration to Turret candi", String.format("Failed to apply configuration to Turret motor (ID %d)! Make sure the CAN bus is operating properly.", TurretConstants.CANDI_ID), Seconds.zero());
 		}
 
 		// Set up stuff for simulation

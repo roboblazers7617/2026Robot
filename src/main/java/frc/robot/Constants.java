@@ -174,6 +174,15 @@ public final class Constants {
 		public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(TURRET_GEAR_TEETH / PINION_UPPER_TEETH, PINION_UPPER_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
 
 		/**
+		 * The offset from zero of the absolute encoder. This is in mechanism rotations.
+		 */
+		public static final Angle PRIMARY_ENCODER_OFFSET = Rotations.of(0.94);
+		/**
+		 * The offset from zero of the absolute encoder. This is in mechanism rotations.
+		 */
+		public static final Angle SECONDARY_ENCODER_OFFSET = Rotations.of(0.21);
+
+		/**
 		 * The neutral mode for the motor.
 		 */
 		public static final NeutralModeValue MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake;
