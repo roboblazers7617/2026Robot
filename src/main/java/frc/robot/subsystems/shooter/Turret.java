@@ -9,7 +9,6 @@ import com.ctre.phoenix6.configs.CANdiConfigurator;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANdi;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
@@ -71,11 +70,6 @@ public class Turret extends SubsystemBase {
 	 */
 	private final EasyCRT encoder = new EasyCRT(encoderConfig);
 
-	/**
-	 * The control request used for position control.
-	 */
-	private final PositionVoltage positionRequest = new PositionVoltage(0)
-			.withSlot(0);
 	/**
 	 * The control request used for position control with MotionMagic.
 	 */
@@ -229,18 +223,6 @@ public class Turret extends SubsystemBase {
 	}
 
 	/**
-	 * Command to set the turret to a certain position.
-	 *
-	 * @param position
-	 *            Angle to turn to.
-	 * @return
-	 *         Command to run.
-	 */
-	public Command setPositionCommand(Supplier<Angle> position) {
-		return run(() -> setPositionWithWrapping(position.get(), false));
-	}
-
-	/**
 	 * Command to set the turret to a certain position with MotionMagic.
 	 *
 	 * @param position
@@ -248,8 +230,8 @@ public class Turret extends SubsystemBase {
 	 * @return
 	 *         Command to run.
 	 */
-	public Command setPositionMotionMagicCommand(Supplier<Angle> position) {
-		return run(() -> setPositionWithWrapping(position.get(), true));
+	public Command setPositionCommand(Supplier<Angle> position) {
+		return run(() -> setPositionWithWrapping(position.get()));
 	}
 
 	/**
@@ -269,15 +251,10 @@ public class Turret extends SubsystemBase {
 	 *
 	 * @param position
 	 *            Angle to turn to.
-	 * @param motionMagic
-	 *            Should MotionMagic be used?
 	 */
-	private void setPositionDirect(Angle position, boolean motionMagic) {
-		if (motionMagic) {
-			motor.setControl(positionRequestMotionMagic.withPosition(position));
-		} else {
-			motor.setControl(positionRequest.withPosition(position));
-		}
+	private void setPositionDirect(Angle position) {
+		motor.setControl(positionRequestMotionMagic.withPosition(position));
+
 		setpoint = position;
 	}
 
@@ -286,11 +263,9 @@ public class Turret extends SubsystemBase {
 	 *
 	 * @param position
 	 *            Angle to turn to. Wrapped to be within [0-1] rotations (and the shortest path to the target is then taken).
-	 * @param motionMagic
-	 *            Should MotionMagic be used?
 	 */
-	private void setPositionWithWrapping(Angle position, boolean motionMagic) {
-		setPositionDirect(findClosestTargetEquivalent(position), motionMagic);
+	private void setPositionWithWrapping(Angle position) {
+		setPositionDirect(findClosestTargetEquivalent(position));
 	}
 
 	/**
@@ -401,6 +376,6 @@ public class Turret extends SubsystemBase {
 		targetRotations -= 0.5;
 
 		// Command the motor to spin
-		setPositionDirect(Rotations.of(targetRotations), true);
+		setPositionDirect(Rotations.of(targetRotations));
 	}
 }

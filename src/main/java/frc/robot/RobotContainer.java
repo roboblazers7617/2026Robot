@@ -167,7 +167,7 @@ public class RobotContainer {
 	private void configureOperatorControls() {
 		// Set turret to D-pad position
 		operatorController.povCenter()
-				.whileFalse(turret.setPositionMotionMagicCommand(() -> Degrees.of(operatorController.getHID().getPOV())));
+				.whileFalse(turret.setPositionCommand(() -> Degrees.of(operatorController.getHID().getPOV())));
 
 		operatorController.a()
 				.onTrue(turret.unspoolCommand());
