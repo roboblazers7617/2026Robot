@@ -4,9 +4,9 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.config.PIDConstants;
-
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -16,7 +16,20 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularAccelerationUnit;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Velocity;
+import yams.math.SmartMath;
+
+import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -221,5 +234,142 @@ public final class Constants {
 		public static final Angle MINIMUM_HOOD_ANGLE = Degrees.of(1);
 		public static final Angle MAXIMUM_HOOD_ANGLE = Degrees.of(32);
 		public static final double SENSOR_TO_MECHANISM_RATIO = 13.78 / 32; // Number of shaft rotations / degrees traveled
+	}
+
+	/**
+	 * Constants used to configure the turret.
+	 */
+	public static class TurretConstants {
+		/**
+		 * The CAN ID for the turret motor.
+		 */
+		public static final int MOTOR_ID = 20;
+		/**
+		 * The CAN ID for the encoder CANdi.
+		 */
+		public static final int CANDI_ID = 20;
+
+		/**
+		 * The number of teeth on the main turret gear.
+		 */
+		public static final double TURRET_GEAR_TEETH = 200.0;
+		/**
+		 * The number of teeth on the pinion gear, interfacing with the main turret gear.
+		 */
+		public static final double PINION_UPPER_TEETH = 20.0;
+		/**
+		 * The number of teeth on the lower pinion gear. This is 1:1 with the upper pinion gear.
+		 */
+		public static final double PINION_LOWER_TEETH = 24.0;
+		/**
+		 * The number of teeth on the gear on the turret motor and primary encoder.
+		 */
+		public static final double MOTOR_GEAR_TEETH = 48.0;
+		/**
+		 * The number of teeth on the secondary encoder's gear.
+		 */
+		public static final double SECONDARY_ENCODER_GEAR_TEETH = 21.0;
+		/**
+		 * The ratio of motor turns to mechanism rotations.
+		 */
+		public static final double MOTOR_GEAR_RATIO = SmartMath.gearBox(TURRET_GEAR_TEETH / PINION_UPPER_TEETH, PINION_LOWER_TEETH / MOTOR_GEAR_TEETH);
+		/**
+		 * The number of primary encoder rotations per motor rotation.
+		 */
+		public static final double MOTOR_TO_PRIMARY_ENCODER_RATIO = 1.0;
+		/**
+		 * The number of encoder rotations per mechanism rotation for the primary encoder.
+		 */
+		public static final double PRIMARY_ENCODER_RATIO = MOTOR_GEAR_RATIO;
+		/**
+		 * The number of encoder rotations per mechanism rotation for the secondary encoder.
+		 */
+		public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(TURRET_GEAR_TEETH / PINION_UPPER_TEETH, PINION_UPPER_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
+
+		/**
+		 * The offset from zero of the absolute encoder. This is in mechanism rotations.
+		 */
+		public static final Angle PRIMARY_ENCODER_OFFSET = Rotations.of(0.94);
+		/**
+		 * The offset from zero of the absolute encoder. This is in mechanism rotations.
+		 */
+		public static final Angle SECONDARY_ENCODER_OFFSET = Rotations.of(0.21);
+
+		/**
+		 * The neutral mode for the motor.
+		 */
+		public static final NeutralModeValue MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake;
+		/**
+		 * The direction of the motor.
+		 */
+		public static final InvertedValue MOTOR_INVERTED = InvertedValue.Clockwise_Positive;
+
+		/**
+		 * The higher current limit for the motor. Helps get the motor started before switching to the {@link #MOTOR_CURRENT_LOWER_LIMIT}.
+		 */
+		public static final Current MOTOR_CURRENT_HIGHER_LIMIT = Amps.of(60.0);
+		/**
+		 * The lower current limit for the motor.
+		 */
+		public static final Current MOTOR_CURRENT_LOWER_LIMIT = Amps.of(40.0);
+		/**
+		 * The time to supply the {@link #MOTOR_CURRENT_HIGHER_LIMIT} for before switching to the {@link #MOTOR_CURRENT_LOWER_LIMIT}.
+		 */
+		public static final Time MOTOR_CURRENT_LOWER_TIME = Milliseconds.of(100);
+		/**
+		 * The stator current limit of the motor. This limits the current to the windings, which should help prevent burnout.
+		 */
+		public static final Current MOTOR_STATOR_CURRENT_LIMIT = Amps.of(60.0);
+
+		/**
+		 * The PID kP for the turret closed loop controller.
+		 */
+		public static final double TURRET_KP = 18.0;
+		/**
+		 * The PID kI for the turret closed loop controller.
+		 */
+		public static final double TURRET_KI = 0.0;
+		/**
+		 * The PID kD for the turret closed loop controller.
+		 */
+		public static final double TURRET_KD = 1.25;
+		/**
+		 * The PID kS for the turret closed loop controller.
+		 */
+		public static final double TURRET_KS = 0.42;
+		/**
+		 * The PID kV for the turret closed loop controller.
+		 */
+		public static final double TURRET_KV = 3.0;
+		/**
+		 * The PID kA for the turret closed loop controller.
+		 */
+		public static final double TURRET_KA = 0.04;
+		/**
+		 * The peak/cruising velocity of the motion.
+		 */
+		public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(125.0).div(MOTOR_GEAR_RATIO).times(0.8);
+		/**
+		 * The acceleration and deceleration rates during the beginning and end of motion.
+		 */
+		public static final AngularAcceleration ACCELERATION = CRUISE_VELOCITY.times(2.0).per(Second);
+		/**
+		 * Jerk (derivative of acceleration).
+		 */
+		public static final Velocity<AngularAccelerationUnit> JERK = ACCELERATION.times(10.0).per(Second);
+
+		/**
+		 * The lowest angle the turret can rotate to.
+		 */
+		public static final Angle MINIMUM_ANGLE = Rotations.of(-1.0);
+		/**
+		 * The highest angle the turret can rotate to.
+		 */
+		public static final Angle MAXIMUM_ANGLE = Rotations.of(1.0);
+
+		/**
+		 * How close does the Turret have to be to its setpoint to be counted as being there.
+		 */
+		public static final Measure<AngleUnit> SETPOINT_THRESHOLD = Degrees.of(3.0);
 	}
 }

@@ -13,6 +13,7 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.HopperUptake;
+import frc.robot.subsystems.shooter.Turret;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.LoggingConstants;
@@ -34,6 +35,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
+import static edu.wpi.first.units.Units.Degrees;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -79,6 +82,9 @@ public class RobotContainer {
 	private final Hood hoodSubsystem;
 
 	private final NetworkTable networkTableInst = (NetworkTableInstance.getDefault().getTable("/RoboBlazers"));
+
+	// Subsystems
+	private final Turret turret = new Turret();
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -179,6 +185,13 @@ public class RobotContainer {
 				.whileTrue(hoodSubsystem.moveToPositionCommand(() -> Units.Degrees.of(5)));
 		operatorController.leftTrigger()
 				.whileTrue(hoodSubsystem.moveToPositionCommand(() -> Units.Degrees.of(30)));
+
+		// Set turret to D-pad position
+		operatorController.povCenter()
+				.whileFalse(turret.setPositionCommand(() -> Degrees.of(operatorController.getHID().getPOV())));
+
+		operatorController.a()
+				.onTrue(turret.unspoolCommand());
 	}
 
 	/**
