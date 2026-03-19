@@ -97,9 +97,19 @@ public final class Constants {
 
 	public static class DrivetrainConstants {
 		/**
+		 * Swerve request field centric facing angle constants
+		 */
+		public static final double HEADING_kP = 5.0;
+		public static final double HEADING_ki = 0.0;
+		public static final double HEADING_kd = 0.1;
+		/**
+		 * Swerve request general constants (for both )
+		 */
+		public static final double DRIVE_DEADBAND = 0.1;
+		public static final double ROTATIONAL_DEADBAND = 0.1;
+		/**
 		 * Speed Multipliers
 		 */
-
 		public static final double MAX_SPEED_MULTIPLIER = 0.5;
 		public static final double NORMAL_SPEED_MULTIPLIER = 0.35;
 		public static final double SLOW_SPEED_MULTIPLIER = 0.25;

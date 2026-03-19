@@ -13,20 +13,18 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.HopperUptake;
-import frc.robot.subsystems.DrivetrainControls;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.networktables.NetworkTable;
@@ -62,7 +60,7 @@ public class RobotContainer {
 
 	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
+	public final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
 	private final HopperUptake hopperUptake = new HopperUptake();
 	/**
@@ -136,59 +134,31 @@ public class RobotContainer {
 	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller buttons.
 	 */
 	private void configureDriverControls() {
-		// Note that X is defined as forward according to WPILib convention,
-		// and Y is defined as to the left according to WPILib convention.
-		drivetrain.setDefaultCommand(
-				// Drivetrain will execute this command periodically
-				drivetrain.applyRequest(() -> {
-					return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
-							.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
-				}));
-		drivetrain.applyRequest(() -> {
-			return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
-					.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
-		});
+		// Drivetrain will execute this command periodically
+		// // Applies the default field centric command
+		drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> drivetrainControls.fieldCentricRequest(driverController)));
 
 		// Idle while the robot is disabled. This ensures the configured
 		// neutral mode is applied to the drive motors while disabled.
 		final var idle = new SwerveRequest.Idle();
 		RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-		// start and stop
+		// --- start and stop ---
+		// // resets gyro
 		driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-		// letter buttons
+
+		// --- letter buttons ---
+		// // moves swerves into x formation
 		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
-		// bumpers
-		// TODO: (Caleb) Please put in some comments to describe this logic
-		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
-			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
-				drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
-			}
-			// TODO: (Caleb) Can you pleas comment what this return is doing?
-			return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
-		})));
+
+		// --- bumpers ---
+		// // switches swerve requests to field centric facing angle
+		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drivetrainControls.setPose2()).andThen(drivetrain.applyRequest(() -> drivetrainControls.feildCentricFacingAngleRequest(driverController))));
+		// // Sets multiplier to the lower value
 		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
-		// triggers
-		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
-		// start and stop
-		driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-		// letter buttons
-		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
-		// bumpers
-		// TODO: (Caleb) Please put in some comments to describe this logic
-		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
-			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
-				drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
-			}
-			// TODO: (Caleb) Can you pleas comment what this return is doing?
-			return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
-		})));
-		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
-		// triggers
+
+		// --- triggers ---
+		// // Sets multiplier to the higher value
 		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
 
 		drivetrain.registerTelemetry(logger::telemeterize);
