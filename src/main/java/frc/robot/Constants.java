@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.AngularVelocity;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -79,19 +82,18 @@ public final class Constants {
 
 	public static class ClimbConstants {
 		public final static int CIB_MOTOR_CAN_ID = 50;
-		public final static double CIB_KS = .265;
-		public final static double CIB_KV = 6;
+
+		public final static double CIB_KS = 0;
+		public final static double CIB_KV = 0;
 		public final static double CIB_KG = 0;
 		public final static double CIB_KA = 0;
 
-		public final static double CIB_KP = 1.7;
+		public final static double CIB_KP = 0;
 		public final static double CIB_KI = 0;
 		public final static double CIB_KD = 0;
 
-		/**
-		 * the speed of the motor when zeroing the encoder, from 0 to -1
-		 */
-		public final static double ENCODER_ZERO_SPEED = -.25;
+		public final static double UP_SPEED = .25;
+		public final static double DOWN_SPEED = -UP_SPEED;
 		/**
 		 * kMinOutput as a percentage.
 		 */
@@ -100,14 +102,6 @@ public final class Constants {
 		 * kMaxOutput as a percentage.
 		 */
 		public static final double KMAX_OUTPUT = 1.0;
-		/**
-		 * Maximum velocity in m/s.
-		 */
-		public static final double MAX_VELOCITY;
-		/**
-		 * Maximum acceleration in m/s^2.
-		 */
-		public static final double MAX_ACCELERATION;
 
 		/**
 		 * Max position in meters.
@@ -117,7 +111,7 @@ public final class Constants {
 		/*
 		 * Max rotations of the climb motor
 		 */
-		public static final double CIB_MAX_ROTATIONS;
+		public static final double CIB_MAX_ROTATIONS = 109;
 		/**
 		 * Zero offset, meters.
 		 */
@@ -140,9 +134,18 @@ public final class Constants {
 		 * current limits
 		 */
 		public static final double CIB_SUPPLY_CURRENT_LIMIT = 60;
-		public static final double CIB_STATOR_CURRENT_LIMIT = 120;
+		public static final double CIB_STATOR_CURRENT_LIMIT = 90;
 
 		public static final double CIB_SUPPLY_CURRENT_LOWER_LIMIT = 40;
 		public static final double CIB_SUPPLY_CURRENT_LIMIT_LOWER_TIME = .1;
+
+		/**
+		 * Maximum velocity in m/s.
+		 */
+		public static final double MAX_VELOCITY = (100.0 / CIB_GEARBOX_RATIO) * .8;
+		/**
+		 * Maximum acceleration in m/s^2.
+		 */
+		public static final double MAX_ACCELERATION = 4 * MAX_VELOCITY;
 	}
 }

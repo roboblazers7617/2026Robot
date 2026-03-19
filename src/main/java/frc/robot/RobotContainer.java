@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
@@ -50,6 +51,7 @@ public class RobotContainer {
 
 	private final Telemetry logger = new Telemetry(MaxSpeed);
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+	public final Climber climb = new Climber();
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
 	 */
@@ -128,6 +130,8 @@ public class RobotContainer {
 		driverController.start().and(driverController.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
 		driverController.start().and(driverController.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
 
+		operatorController.povUp().whileTrue(climb.moveUpManuallyCommand());
+		operatorController.povDown().whileTrue(climb.moveDownManuallyCommand());
 		// Reset the field-centric heading on left bumper press.
 		driverController.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
