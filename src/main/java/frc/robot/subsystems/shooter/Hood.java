@@ -25,6 +25,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HoodConstants;
+import frc.robot.Constants.SignalConstants;
 
 @Logged
 public class Hood extends SubsystemBase {
@@ -70,9 +71,20 @@ public class Hood extends SubsystemBase {
 				break;
 		}
 
-		hoodMotor.setPosition(hoodEncoder.getAbsolutePosition().getValueAsDouble());
+		// Set up the status signal update frequencies
+		hoodMotor.getPosition().setUpdateFrequency(SignalConstants.POLLED_POSITION_UPDATE_FREQUENCY);
+		hoodMotor.getTorqueCurrent().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		hoodMotor.getStatorCurrent().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		hoodMotor.getMotorVoltage().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		hoodMotor.optimizeBusUtilization(SignalConstants.OPTIMIZED_UPDATE_FREQUENCY);
 
-		requestedAngle = Units.Rotations.of(hoodMotor.getPosition().getValueAsDouble());
+		hoodEncoder.getAbsolutePosition().setUpdateFrequency(SignalConstants.POSITION_UPDATE_FREQUENCY);
+		hoodEncoder.optimizeBusUtilization(SignalConstants.OPTIMIZED_UPDATE_FREQUENCY);
+
+		// Zero the rotor encoder
+		hoodMotor.setPosition(hoodEncoder.getAbsolutePosition(true).getValueAsDouble());
+
+		requestedAngle = Units.Rotations.of(hoodMotor.getPosition(true).getValueAsDouble());
 	}
 
 	@Override

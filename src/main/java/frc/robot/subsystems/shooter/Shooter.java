@@ -26,6 +26,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.SignalConstants;
 
 @Logged
 public class Shooter extends SubsystemBase {
@@ -72,6 +73,19 @@ public class Shooter extends SubsystemBase {
 			if (status.isOK())
 				break;
 		}
+
+		// Set up the status signal update frequencies
+		leaderMotor.getVelocity().setUpdateFrequency(SignalConstants.POLLED_POSITION_UPDATE_FREQUENCY);
+		leaderMotor.getTorqueCurrent().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		leaderMotor.getStatorCurrent().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		leaderMotor.getMotorVoltage().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		leaderMotor.optimizeBusUtilization(SignalConstants.OPTIMIZED_UPDATE_FREQUENCY);
+
+		followermotor.getVelocity().setUpdateFrequency(SignalConstants.POLLED_POSITION_UPDATE_FREQUENCY);
+		followermotor.getTorqueCurrent().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		followermotor.getStatorCurrent().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		followermotor.getMotorVoltage().setUpdateFrequency(SignalConstants.OUTPUT_UPDATE_FREQUENCY);
+		followermotor.optimizeBusUtilization(SignalConstants.OPTIMIZED_UPDATE_FREQUENCY);
 	}
 
 	@Override
