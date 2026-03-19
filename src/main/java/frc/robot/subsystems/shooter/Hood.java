@@ -82,9 +82,9 @@ public class Hood extends SubsystemBase {
 		hoodEncoder.optimizeBusUtilization(SignalConstants.OPTIMIZED_UPDATE_FREQUENCY);
 
 		// Zero the rotor encoder
-		hoodMotor.setPosition(hoodEncoder.getAbsolutePosition().getValueAsDouble());
+		hoodMotor.setPosition(hoodEncoder.getAbsolutePosition(true).getValueAsDouble());
 
-		requestedAngle = Units.Rotations.of(hoodMotor.getPosition().getValueAsDouble());
+		requestedAngle = Units.Rotations.of(hoodMotor.getPosition(true).getValueAsDouble());
 	}
 
 	@Override
