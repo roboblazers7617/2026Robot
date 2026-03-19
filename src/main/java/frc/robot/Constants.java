@@ -79,16 +79,19 @@ public final class Constants {
 
 	public static class ClimbConstants {
 		public final static int CIB_MOTOR_CAN_ID = 50;
+		public final static double CIB_KS = .265;
+		public final static double CIB_KV = 6;
+		public final static double CIB_KG = 0;
+		public final static double CIB_KA = 0;
 
-		public final static double CIB_KS;
-		public final static double CIB_KV;
-		public final static double CIB_KG;
-		public final static double CIB_KA;
+		public final static double CIB_KP = 1.7;
+		public final static double CIB_KI = 0;
+		public final static double CIB_KD = 0;
 
-		public final static double CIB_KP;
-		public final static double CIB_KI;
-		public final static double CIB_KD;
-
+		/**
+		 * the speed of the motor when zeroing the encoder, from 0 to -1
+		 */
+		public final static double ENCODER_ZERO_SPEED = -.25;
 		/**
 		 * kMinOutput as a percentage.
 		 */
