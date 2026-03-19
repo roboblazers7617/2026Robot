@@ -1,12 +1,12 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Rotations;
 
 import com.ctre.phoenix6.StatusCode;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.GravityTypeValue;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -14,8 +14,8 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
 
@@ -70,6 +70,16 @@ public class Climber extends SubsystemBase {
 	 */
 	private void moveToMeters(double position) {
 		climberMotor.setControl(climberPositionOut.withPosition(metersToRotations(position)));
+	}
+
+	/**
+	 * moves the climb down until it faces too much resistance, then we are at the bottom, yay
+	 */
+	public Command zeroEncoderCommand() {
+		return runOnce(() -> climberMotor.setControl(dutyCycleOut.withOutput(ClimbConstants.ENCODER_ZERO_SPEED)))
+				.andThen(Commands.waitUntil(() -> (climberMotor.getStatorCurrent().getValue().compareTo(Amps.of(20)) > 0)))
+				.andThen(() -> climberMotor.setPosition(Rotations.zero()))
+				.andThen(() -> climberMotor.setControl(climberPositionOut.withPosition(Rotations.zero())));
 	}
 
 	private void goSpeed(Double speed) {

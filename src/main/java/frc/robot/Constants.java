@@ -4,12 +4,9 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.units.measure.AngularVelocity;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -83,17 +80,23 @@ public final class Constants {
 	public static class ClimbConstants {
 		public final static int CIB_MOTOR_CAN_ID = 50;
 
-		public final static double CIB_KS = 0;
-		public final static double CIB_KV = 0;
+		public final static double CIB_KS = .265;
+		public final static double CIB_KV = 6;
 		public final static double CIB_KG = 0;
 		public final static double CIB_KA = 0;
 
-		public final static double CIB_KP = 0;
+		public final static double CIB_KP = 1.7;
 		public final static double CIB_KI = 0;
 		public final static double CIB_KD = 0;
 
 		public final static double UP_SPEED = .25;
 		public final static double DOWN_SPEED = -UP_SPEED;
+
+		/**
+		 * the speed of the motor when zeroing the encoder, from 0 to -1
+		 */
+		public final static double ENCODER_ZERO_SPEED = -.25;
+
 		/**
 		 * kMinOutput as a percentage.
 		 */
@@ -111,7 +114,7 @@ public final class Constants {
 		/*
 		 * Max rotations of the climb motor
 		 */
-		public static final double CIB_MAX_ROTATIONS = 109;
+		public static final double CIB_MAX_ROTATIONS = 108;
 		/**
 		 * Zero offset, meters.
 		 */
