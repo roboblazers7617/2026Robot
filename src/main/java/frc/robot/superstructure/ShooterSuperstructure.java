@@ -439,6 +439,19 @@ public class ShooterSuperstructure {
 	}
 
 	/**
+	 * Command to start shooting. This will wait until we enter the {@link ShooterState#SHOOTING_STAGE_2_READY_TO_SHOOT} state to start shooting.
+	 * <p>
+	 * Exits when exiting the {@link ShooterState#SHOOTING_STAGE_3_SHOOTING} state.
+	 *
+	 * @return
+	 *         Command to run.
+	 */
+	public Command startShootingWhenReadyCommand() {
+		return Commands.waitUntil(readyToShootTrigger())
+				.andThen(startShootingCommand());
+	}
+
+	/**
 	 * Sets the shooter state to the specified state. This requires that you are in {@link ShooterState#MANUAL_CONTROL}.
 	 * <p>
 	 * This assumes that we are not tracking a target, since that is done internally.

@@ -268,8 +268,7 @@ public class RobotContainer {
 		// Wait until ready to shoot, then shoot in current mode
 		// Home on release
 		operatorController.leftTrigger()
-				.whileTrue(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger())
-						.andThen(shooterSuperstructure.startShootingCommand()))
+				.whileTrue(shooterSuperstructure.startShootingWhenReadyCommand())
 				.onFalse(shooterSuperstructure.homeCommand());
 
 		// Wait until ready to shoot, then shoot in current mode while pulling in intake
@@ -286,8 +285,7 @@ public class RobotContainer {
 		// Home and set back to shoot from anywhere on release
 		operatorController.rightTrigger()
 				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot", ShootingConstants.STATIC_SHOOT_VALUES))
-						.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
-						.andThen(shooterSuperstructure.startShootingCommand()))
+						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
 				.onFalse(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain))
 						.andThen(shooterSuperstructure.homeCommand()));
 
