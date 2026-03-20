@@ -81,15 +81,23 @@ public class ShooterSuperstructure {
 		 */
 		SHOOTING_STAGE_2_READY_TO_SHOOT,
 		/**
-		 * Currently tracking and shooting at a target. Spindexer is spindexing.
+		 * Various stages related to active shooting (at this point, control is completely automatic).
 		 * <p>
 		 * Once the hopper is out of balls (defined as when the hopper beam break hasn't detected a ball for {@link ShootingConstants#SHOOTING_TIMEOUT}), this will automatically transition back to {@link #HOME} state.
 		 */
 		SHOOTING_STAGE_3_SHOOTING,
 		/**
-		 * We were {@link #SHOOTING_STAGE_3_SHOOTING shooting}, but for whatever reason we had to stop to wait on a mechanism to ready (maybe the turret reached a limit and had to wrap around).
+		 * Waiting for the hood and uptake to ready, since we only spin those while actively shooting. This is a substate of {@link #SHOOTING_STAGE_3_SHOOTING}.
+		 */
+		SHOOTING_WAITING,
+		/**
+		 * Currently tracking and shooting at a target. Spindexer is spindexing.
+		 */
+		SHOOTING_RUNNING,
+		/**
+		 * We were {@link #SHOOTING_RUNNING shooting}, but for whatever reason we had to stop to wait on a mechanism to ready (maybe the turret reached a limit and had to wrap around).
 		 * <p>
-		 * Once we're ready again, we'll immediately transition back to {@link #SHOOTING_STAGE_3_SHOOTING}.
+		 * Once we're ready again, we'll immediately transition back to {@link #SHOOTING_RUNNING}.
 		 */
 		SHOOTING_PAUSED,
 	}
@@ -201,14 +209,17 @@ public class ShooterSuperstructure {
 
 		stateMachineConfig.configure(ShooterState.SHOOTING_STAGE_2_READY_TO_SHOOT)
 				.substateOf(ShooterState.SHOOTING)
-				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING_STAGE_3_SHOOTING);
+				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING_WAITING);
 
 		stateMachineConfig.configure(ShooterState.SHOOTING_STAGE_3_SHOOTING)
 				.substateOf(ShooterState.SHOOTING)
-				.permit(ShooterTrigger.PAUSE_SHOOTING, ShooterState.SHOOTING_PAUSED)
 				// Spin up uptake while shooting
 				.onEntry(hopperUptake::startUptakeForward)
-				.onExit(hopperUptake::stopUptake)
+				.onExit(hopperUptake::stopUptake);
+
+		stateMachineConfig.configure(ShooterState.SHOOTING_RUNNING)
+				.substateOf(ShooterState.SHOOTING_STAGE_3_SHOOTING)
+				.permit(ShooterTrigger.PAUSE_SHOOTING, ShooterState.SHOOTING_PAUSED)
 				// Run hopper while shooting
 				.onEntry(hopperUptake::startHopperForward)
 				.onExit(hopperUptake::stopHopper)
@@ -220,9 +231,13 @@ public class ShooterSuperstructure {
 					shooterTimeout.reset();
 				});
 
+		stateMachineConfig.configure(ShooterState.SHOOTING_WAITING)
+				.substateOf(ShooterState.SHOOTING_STAGE_3_SHOOTING)
+				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING_RUNNING);
+
 		stateMachineConfig.configure(ShooterState.SHOOTING_PAUSED)
-				.substateOf(ShooterState.SHOOTING)
-				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING_STAGE_3_SHOOTING);
+				.substateOf(ShooterState.SHOOTING_STAGE_3_SHOOTING)
+				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING_RUNNING);
 
 		stateMachine = new StateMachine<>(ShooterState.OFF, stateMachineConfig);
 
@@ -299,6 +314,10 @@ public class ShooterSuperstructure {
 				break;
 
 			case SHOOTING_STAGE_3_SHOOTING:
+				// We don't really have to worry about the shooting substate itself since we are always in substates of it.
+				break;
+
+			case SHOOTING_RUNNING:
 				// Tracking the target and shooting
 
 				// Shooter timeout
@@ -326,6 +345,25 @@ public class ShooterSuperstructure {
 					// If we don't have a target anymore, home the shooter
 					stateMachine.fire(ShooterTrigger.HOME);
 				}
+				break;
+
+			case SHOOTING_WAITING:
+				// Was shooting, but needed to pause for subsystems to catch up
+
+				if (targetShooterValues.isPresent()) {
+					// Keep tracking the target if we still have a target
+					setValues(targetShooterValues.get(), true);
+				} else {
+					// If we don't have a target anymore, home the shooter
+					stateMachine.fire(ShooterTrigger.HOME);
+				}
+
+				if (subsystemsAtTargets()) {
+					// Ready to start shooting again, so let's do that
+					stateMachine.fire(ShooterTrigger.START_SHOOTING);
+					break;
+				}
+
 				break;
 
 			case SHOOTING_PAUSED:
@@ -504,8 +542,14 @@ public class ShooterSuperstructure {
 	 */
 	private void setValues(ShooterValues values, boolean tracking) {
 		flywheel.startFlywheel(values.getFlywheelSpeed());
-		hood.moveToPosition(values.getHoodAngle());
 		turret.setPosition(values.getTurretAngle());
+
+		// This is a bit of a jank way to do this but I'll do something better later if I have time
+		if (stateMachine.isInState(ShooterState.SHOOTING_STAGE_3_SHOOTING)) {
+			hood.moveToPosition(values.getHoodAngle());
+		} else {
+			hood.moveToPosition(HoodConstants.HOME_ANGLE);
+		}
 	}
 
 	/**
