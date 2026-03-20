@@ -626,6 +626,6 @@ public final class Constants {
 		/**
 		 * How close does the Turret have to be to its setpoint to be counted as being there.
 		 */
-		public static final Measure<AngleUnit> SETPOINT_THRESHOLD = Degrees.of(3.0);
+		public static final Measure<AngleUnit> SETPOINT_THRESHOLD = Degrees.of(6.0);
 	}
 }
