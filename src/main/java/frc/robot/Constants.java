@@ -35,11 +35,14 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 /**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
+ * The Constants class provides a convenient place for teams to hold robot-wide
+ * numerical or boolean
+ * constants. This class should not be used for any other purpose. All constants
+ * should be declared
  * globally (i.e. public static). Do not put anything functional in this class.
  * <p>
- * It is advised to statically import this class (or one of its inner classes) wherever the
+ * It is advised to statically import this class (or one of its inner classes)
+ * wherever the
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
@@ -69,13 +72,16 @@ public final class Constants {
 	/**
 	 * Constants used to configure logging.
 	 * <p>
-	 * During a competition debug mode should be false to reduce network and CPU usage. All data will still be logged it just won't be accessible until after the match.
+	 * During a competition debug mode should be false to reduce network and CPU
+	 * usage. All data will still be logged it just won't be accessible until after
+	 * the match.
 	 * <p>
 	 * During testing debug mode should be true to allow for real-time data viewing.
 	 */
 	public static class LoggingConstants {
 		/**
-		 * Send logging data to NetworkTables. Data is written to storage when set to false.
+		 * Send logging data to NetworkTables. Data is written to storage when set to
+		 * false.
 		 */
 		public static final boolean DEBUG_MODE = true;
 		/**
@@ -105,7 +111,76 @@ public final class Constants {
 		/**
 		 * AprilTag Field Layout for the current game.
 		 */
-		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout
+				.loadField(AprilTagFields.k2026RebuiltAndymark);
+	}
+
+	/**
+	 * This is MY intake constant class which I balcantara made btw I don't know
+	 * what it does YET (it contains constants for my dogwater code for intake)
+	 */
+	public static class IntakeConstants {
+		public static final int SHOULDER_CAN_ID = 40;
+		public static final int GRABBER_CAN_ID = 41;
+		public static final int SHOULDER_ENCODER_CAN_ID = 40;
+
+		/**
+		 * The current limit for the motor.
+		 */
+		public static final double GRABBER_SUPPLY_CURRENT_LIMIT = 30.0;
+		// public static final double INTAKE_START_SPEED = 0.2; //ts is old (as are the
+		// following three)
+		public static final double INTAKE_START_VOLTAGE = 4.5;
+		// public static final double INTAKE_STOP_SPEED = 0.0;
+		public static final double INTAKE_STOP_VOLTAGE = 0.0;
+		// public static final double OUTTAKE_SPEED = -0.2;
+		public static final double OUTTAKE_VOLTAGE = -2;
+
+		// intake in-out position constants
+		// public static final Angle SHOULDER_STOWED_ANGLE = Degrees.of(90);
+		// public static final Angle SHOULDER_STOWED_ANGLE = Rotations.of(0);
+		public static final double SHOULDER_MINIMUM_DISTANCE = 0;
+		// public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
+		// public static final Angle SHOULDER_LOWERED_ANGLE = Rotations.of(0);
+		public static final double SHOULDER_MAXIMUM_DISTANCE = 36.0;
+		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
+		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
+		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;
+
+		public static final double INTAKE_KG = 0.1;
+		public static final double INTAKE_KS = 0.34;
+		public static final double INTAKE_KV = 0.16;
+		public static final double INTAKE_KA = 0;
+		public static final double INTAKE_KP = 0.2;
+		public static final double INTAKE_KI = 0;
+		public static final double INTAKE_KD = 0;
+		// public static final double INTAKE_MM_CRUISE_VELOCITY = 80; // depracated
+		// public static final double INTAKE_MM_ACCELERATION = 160; // depracated
+		// public static final double INTAKE_MM_JERK = 1600; // depracated
+
+		// new (?) system for gear ratios
+		public static final double GEARBOX_RATIO = 96.0 / 5.0; // to be replaced by talonfx (?)
+		// config things
+		public static final double MAXIMUM_VELOCITY = 20.0;
+		public static final double ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
+
+		// talonfx ratio stuff
+		// public static final double ROTOR_TO_SENSOR_RATIO = 0; // depracated (?)
+		public static final double SENSOR_TO_MECHANISM_RATIO = 1.0; // number of shaft rotations divided by
+																	// distance traveled by intake
+
+		public static final Angle AGITATE_RAISED_ANGLE = Degrees.of(70); // depracated
+		public static final Angle AGITATE_LOWERED_ANGLE = Degrees.of(0); // depracated
+		public static final Angle AGITATE_TOLERANCE = Degrees.of(10);
+		public static final double GRABBER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
+		public static final double GRABBER_SUPPLY_CURRENT_LOWER_TIME = 0.1;
+		public static final double GRABBER_STATOR_CURRENT_LIMIT = 40.0;
+		public static final double SHOULDER_SUPPLY_CURRENT_LIMIT = 40.0;
+		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
+		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_TIME = 0.15;
+		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 20.0;
+
+		public static final double GAIN_SCHEDULE_ERROR_THRESHOLD = 0.5;
 	}
 
 	public static class DrivetrainConstants {

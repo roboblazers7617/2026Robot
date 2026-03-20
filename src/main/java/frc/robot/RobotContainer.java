@@ -14,6 +14,8 @@ import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.HopperUptake;
 import frc.robot.subsystems.shooter.Turret;
+import frc.robot.subsystems.intake.IntakeGrabber;
+import frc.robot.subsystems.intake.IntakeShoulder;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.LoggingConstants;
@@ -39,9 +41,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import static edu.wpi.first.units.Units.Degrees;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 @Logged
@@ -66,13 +71,17 @@ public class RobotContainer {
 	public final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
 	private final HopperUptake hopperUptake = new HopperUptake();
+	IntakeGrabber intakeGrabber = new IntakeGrabber();
+	IntakeShoulder intakeShoulder = new IntakeShoulder();
 	/**
-	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
+	 * The Controller used by the Driver of the robot, primarily controlling the
+	 * drivetrain.
 	 */
 	@NotLogged
 	private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 	/**
-	 * The Controller used by the Operator of the robot, primarily controlling the superstructure.
+	 * The Controller used by the Operator of the robot, primarily controlling the
+	 * superstructure.
 	 */
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
@@ -137,7 +146,8 @@ public class RobotContainer {
 	private void configureNamedCommands() {}
 
 	/**
-	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller buttons.
+	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller
+	 * buttons.
 	 */
 	private void configureDriverControls() {
 		// Drivetrain will execute this command periodically
@@ -171,7 +181,8 @@ public class RobotContainer {
 	}
 
 	/**
-	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
+	 * Configures {@link Triggers} to bind Commands to the Operator Controller
+	 * buttons.
 	 */
 	private void configureOperatorControls() {
 		operatorController.a()
@@ -192,6 +203,31 @@ public class RobotContainer {
 
 		operatorController.a()
 				.onTrue(turret.unspoolCommand());
+
+		/**
+		 * code for demo controls
+		 */
+		// Press A to START and LOWER intake
+		operatorController.a()
+				// .onTrue(intakeGrabber.startIntakeCommand()); // from original 4 bind
+				.onTrue(intakeGrabber.startIntakeCommand())
+				.onTrue(intakeShoulder.lowerIntakeCommand());
+		// Press B to STOP and RAISE intake
+		operatorController.b()
+				// .onTrue(intakeGrabber.stopIntakeCommand()); // original 4 bind
+				.onTrue(intakeShoulder.raiseIntakeCommand())
+				.onTrue(intakeGrabber.stopIntakeCommand());
+		// Press X to RAISE shoulder (old)
+		// operatorController.x()
+		// .onTrue(intakeShoulder.raiseIntakeCommand()); // original 4 bind
+		// Press Y to lower shoulder (old)
+		// operatorController.y()
+		// .onTrue(intakeShoulder.lowerIntakeCommand()); // original 4 bind
+		operatorController.x()
+				.whileTrue(intakeGrabber.outtakeCommand());
+		// operatorController.y()
+		// .onTrue(intakeShoulder.lowerIntakeCommand())
+		// .whileTrue(intakeShoulder.agitateCommand());
 	}
 
 	/**
