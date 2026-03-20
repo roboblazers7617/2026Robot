@@ -192,6 +192,8 @@ public class Turret extends SubsystemBase {
 			SmartDashboard.putData("TurretMechanism", turretMechanism);
 		}
 
+		motor.setPosition(0.0);
+
 		// Seed the encoder
 		// seedEncoder();
 	}
