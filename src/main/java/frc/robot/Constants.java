@@ -25,6 +25,14 @@ import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Velocity;
 import yams.math.SmartMath;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Milliseconds;
@@ -446,5 +454,17 @@ public final class Constants {
 		 * How close does the Turret have to be to its setpoint to be counted as being there.
 		 */
 		public static final Measure<AngleUnit> SETPOINT_THRESHOLD = Degrees.of(3.0);
+	}
+
+	public static class VisionConstants {
+		public static final Boolean isGoPro = true;
+		public static final String TURRET_CAM_NAME = "CamFront";
+		// transform numbers are placeholders as of now
+		public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.1524, -0.3484626, 0.2666238), new Rotation3d(0, 0.0872665, -0.5 * Math.PI));
+		public static final String EBOARD_CAM_NAME = "CamSide";
+		public static final Transform3d ROBOT_TO_EBOARD_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.2434336, 0.3439922, 0.5274056), new Rotation3d(0, 0.0872665, 0.5 * Math.PI));
+		public static final String XTRA_CAM_NAME = "CamX3"; // replace the String in the Constant of the camera you want to swap out with the extra cam name
+		public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
+		public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);
 	}
 }

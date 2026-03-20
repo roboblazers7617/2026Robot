@@ -9,6 +9,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.DrivetrainControls;
+import frc.robot.subsystems.Vision;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
@@ -69,10 +70,12 @@ public class RobotContainer {
 	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 	public final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
+	private final Vision vision = new Vision(drivetrain);
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
 	private final HopperUptake hopperUptake = new HopperUptake();
 	IntakeGrabber intakeGrabber = new IntakeGrabber();
 	IntakeShoulder intakeShoulder = new IntakeShoulder();
+
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the
 	 * drivetrain.
