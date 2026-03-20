@@ -512,25 +512,17 @@ public class ShooterSuperstructure {
 	 * Homes the various components of the turret.
 	 */
 	private void home() {
-		// TODO: Update this once subsystems are in place
 		flywheel.startFlywheel(ShooterConstants.IDLE_SPEED);
 		hood.moveToPosition(HoodConstants.HOME_ANGLE);
 		turret.unspool();
-
-		// Temporary debug stuff
-		System.out.println("Homed shooter");
 	}
 
 	/**
 	 * Stops the various components of the turret.
 	 */
 	private void stop() {
-		// TODO: Update this once subsystems are in place
 		flywheel.stopFlywheel();
 		hood.moveToPosition(HoodConstants.HOME_ANGLE);
 		turret.unspool();
-
-		// Temporary debug stuff
-		System.out.println("Stopped shooter");
 	}
 }
