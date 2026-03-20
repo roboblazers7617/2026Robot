@@ -4,9 +4,9 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.config.PIDConstants;
-
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.pathplanner.lib.config.PIDConstants;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -34,23 +34,37 @@ import frc.robot.util.PoseUtil;
 import frc.robot.util.RectangleUtil;
 
 import edu.wpi.first.units.Units;
+
+import edu.wpi.first.units.AngularAccelerationUnit;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Velocity;
+import yams.math.SmartMath;
+
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Inches;
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RPM;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
-import static edu.wpi.first.units.Units.Milliseconds;
-import static edu.wpi.first.units.Units.Seconds;
 
 /**
- * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
- * constants. This class should not be used for any other purpose. All constants should be declared
+ * The Constants class provides a convenient place for teams to hold robot-wide
+ * numerical or boolean
+ * constants. This class should not be used for any other purpose. All constants
+ * should be declared
  * globally (i.e. public static). Do not put anything functional in this class.
  * <p>
- * It is advised to statically import this class (or one of its inner classes) wherever the
+ * It is advised to statically import this class (or one of its inner classes)
+ * wherever the
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
@@ -80,13 +94,16 @@ public final class Constants {
 	/**
 	 * Constants used to configure logging.
 	 * <p>
-	 * During a competition debug mode should be false to reduce network and CPU usage. All data will still be logged it just won't be accessible until after the match.
+	 * During a competition debug mode should be false to reduce network and CPU
+	 * usage. All data will still be logged it just won't be accessible until after
+	 * the match.
 	 * <p>
 	 * During testing debug mode should be true to allow for real-time data viewing.
 	 */
 	public static class LoggingConstants {
 		/**
-		 * Send logging data to NetworkTables. Data is written to storage when set to false.
+		 * Send logging data to NetworkTables. Data is written to storage when set to
+		 * false.
 		 */
 		public static final boolean DEBUG_MODE = true;
 		/**
@@ -162,11 +179,89 @@ public final class Constants {
 		}
 	}
 
+	/**
+	 * This is MY intake constant class which I balcantara made btw I don't know
+	 * what it does YET (it contains constants for my dogwater code for intake)
+	 */
+	public static class IntakeConstants {
+		public static final int SHOULDER_CAN_ID = 40;
+		public static final int GRABBER_CAN_ID = 41;
+		public static final int SHOULDER_ENCODER_CAN_ID = 40;
+
+		/**
+		 * The current limit for the motor.
+		 */
+		public static final double GRABBER_SUPPLY_CURRENT_LIMIT = 30.0;
+		// public static final double INTAKE_START_SPEED = 0.2; //ts is old (as are the
+		// following three)
+		public static final double INTAKE_START_VOLTAGE = 4.5;
+		// public static final double INTAKE_STOP_SPEED = 0.0;
+		public static final double INTAKE_STOP_VOLTAGE = 0.0;
+		// public static final double OUTTAKE_SPEED = -0.2;
+		public static final double OUTTAKE_VOLTAGE = -2;
+
+		// intake in-out position constants
+		// public static final Angle SHOULDER_STOWED_ANGLE = Degrees.of(90);
+		// public static final Angle SHOULDER_STOWED_ANGLE = Rotations.of(0);
+		public static final double SHOULDER_MINIMUM_DISTANCE = 0;
+		// public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
+		// public static final Angle SHOULDER_LOWERED_ANGLE = Rotations.of(0);
+		public static final double SHOULDER_MAXIMUM_DISTANCE = 36.0;
+		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
+		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
+		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;
+
+		public static final double INTAKE_KG = 0.1;
+		public static final double INTAKE_KS = 0.34;
+		public static final double INTAKE_KV = 0.16;
+		public static final double INTAKE_KA = 0;
+		public static final double INTAKE_KP = 0.2;
+		public static final double INTAKE_KI = 0;
+		public static final double INTAKE_KD = 0;
+		// public static final double INTAKE_MM_CRUISE_VELOCITY = 80; // depracated
+		// public static final double INTAKE_MM_ACCELERATION = 160; // depracated
+		// public static final double INTAKE_MM_JERK = 1600; // depracated
+
+		// new (?) system for gear ratios
+		public static final double GEARBOX_RATIO = 96.0 / 5.0; // to be replaced by talonfx (?)
+		// config things
+		public static final double MAXIMUM_VELOCITY = 20.0;
+		public static final double ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
+
+		// talonfx ratio stuff
+		// public static final double ROTOR_TO_SENSOR_RATIO = 0; // depracated (?)
+		public static final double SENSOR_TO_MECHANISM_RATIO = 1.0; // number of shaft rotations divided by
+																	// distance traveled by intake
+
+		public static final Angle AGITATE_RAISED_ANGLE = Degrees.of(70); // depracated
+		public static final Angle AGITATE_LOWERED_ANGLE = Degrees.of(0); // depracated
+		public static final Angle AGITATE_TOLERANCE = Degrees.of(10);
+		public static final double GRABBER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
+		public static final double GRABBER_SUPPLY_CURRENT_LOWER_TIME = 0.1;
+		public static final double GRABBER_STATOR_CURRENT_LIMIT = 40.0;
+		public static final double SHOULDER_SUPPLY_CURRENT_LIMIT = 40.0;
+		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
+		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_TIME = 0.15;
+		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 20.0;
+
+		public static final double GAIN_SCHEDULE_ERROR_THRESHOLD = 0.5;
+	}
+
 	public static class DrivetrainConstants {
+		/**
+		 * Swerve request field centric facing angle constants
+		 */
+		public static final double HEADING_kP = 5.0;
+		public static final double HEADING_ki = 0.0;
+		public static final double HEADING_kd = 0.1;
+		/**
+		 * Swerve request general constants (for both )
+		 */
+		public static final double DRIVE_DEADBAND = 0.1;
+		public static final double ROTATIONAL_DEADBAND = 0.1;
 		/**
 		 * Speed Multipliers
 		 */
-
 		public static final double MAX_SPEED_MULTIPLIER = 0.5;
 		public static final double NORMAL_SPEED_MULTIPLIER = 0.35;
 		public static final double SLOW_SPEED_MULTIPLIER = 0.25;
@@ -272,16 +367,6 @@ public final class Constants {
 		 * The maximum angle to shoot at.
 		 */
 		public static final Angle MAX_SHOOT_ANGLE = Degrees.of(69.5);
-	}
-
-	/**
-	 * Constants used to configure the turret.
-	 */
-	public static class TurretConstants {
-		/**
-		 * The turret's offset from the center of the robot (drivetrain pose).
-		 */
-		public static final Transform3d TURRET_OFFSET = new Transform3d(Inches.of(5.0), Inches.of(5.062), Meters.of(0.3), Rotation3d.kZero);
 	}
 
 	/**
@@ -392,5 +477,147 @@ public final class Constants {
 		public static final Angle MAXIMUM_HOOD_ANGLE = Degrees.of(32);
 		public static final double SENSOR_TO_MECHANISM_RATIO = 13.78 / 32; // Number of shaft rotations / degrees traveled
 		public static final Angle HOME_ANGLE = Degrees.of(5.0);
+	}
+
+	/**
+	 * Constants used to configure the turret.
+	 */
+	public static class TurretConstants {
+		/**
+		 * The CAN ID for the turret motor.
+		 */
+		public static final int MOTOR_ID = 20;
+		/**
+		 * The CAN ID for the encoder CANdi.
+		 */
+		public static final int CANDI_ID = 20;
+
+		/**
+		 * The turret's offset from the center of the robot (drivetrain pose).
+		 */
+		public static final Transform3d TURRET_OFFSET = new Transform3d(Inches.of(5.0), Inches.of(5.062), Meters.of(0.3), Rotation3d.kZero);
+
+		/**
+		 * The number of teeth on the main turret gear.
+		 */
+		public static final double TURRET_GEAR_TEETH = 200.0;
+		/**
+		 * The number of teeth on the pinion gear, interfacing with the main turret gear.
+		 */
+		public static final double PINION_UPPER_TEETH = 20.0;
+		/**
+		 * The number of teeth on the lower pinion gear. This is 1:1 with the upper pinion gear.
+		 */
+		public static final double PINION_LOWER_TEETH = 24.0;
+		/**
+		 * The number of teeth on the gear on the turret motor and primary encoder.
+		 */
+		public static final double MOTOR_GEAR_TEETH = 48.0;
+		/**
+		 * The number of teeth on the secondary encoder's gear.
+		 */
+		public static final double SECONDARY_ENCODER_GEAR_TEETH = 21.0;
+		/**
+		 * The ratio of motor turns to mechanism rotations.
+		 */
+		public static final double MOTOR_GEAR_RATIO = SmartMath.gearBox(TURRET_GEAR_TEETH / PINION_UPPER_TEETH, PINION_LOWER_TEETH / MOTOR_GEAR_TEETH);
+		/**
+		 * The number of primary encoder rotations per motor rotation.
+		 */
+		public static final double MOTOR_TO_PRIMARY_ENCODER_RATIO = 1.0;
+		/**
+		 * The number of encoder rotations per mechanism rotation for the primary encoder.
+		 */
+		public static final double PRIMARY_ENCODER_RATIO = MOTOR_GEAR_RATIO;
+		/**
+		 * The number of encoder rotations per mechanism rotation for the secondary encoder.
+		 */
+		public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(TURRET_GEAR_TEETH / PINION_UPPER_TEETH, PINION_UPPER_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
+
+		/**
+		 * The offset from zero of the absolute encoder. This is in mechanism rotations.
+		 */
+		public static final Angle PRIMARY_ENCODER_OFFSET = Rotations.of(0.94);
+		/**
+		 * The offset from zero of the absolute encoder. This is in mechanism rotations.
+		 */
+		public static final Angle SECONDARY_ENCODER_OFFSET = Rotations.of(0.21);
+
+		/**
+		 * The neutral mode for the motor.
+		 */
+		public static final NeutralModeValue MOTOR_NEUTRAL_MODE = NeutralModeValue.Brake;
+		/**
+		 * The direction of the motor.
+		 */
+		public static final InvertedValue MOTOR_INVERTED = InvertedValue.Clockwise_Positive;
+
+		/**
+		 * The higher current limit for the motor. Helps get the motor started before switching to the {@link #MOTOR_CURRENT_LOWER_LIMIT}.
+		 */
+		public static final Current MOTOR_CURRENT_HIGHER_LIMIT = Amps.of(60.0);
+		/**
+		 * The lower current limit for the motor.
+		 */
+		public static final Current MOTOR_CURRENT_LOWER_LIMIT = Amps.of(40.0);
+		/**
+		 * The time to supply the {@link #MOTOR_CURRENT_HIGHER_LIMIT} for before switching to the {@link #MOTOR_CURRENT_LOWER_LIMIT}.
+		 */
+		public static final Time MOTOR_CURRENT_LOWER_TIME = Milliseconds.of(100);
+		/**
+		 * The stator current limit of the motor. This limits the current to the windings, which should help prevent burnout.
+		 */
+		public static final Current MOTOR_STATOR_CURRENT_LIMIT = Amps.of(60.0);
+
+		/**
+		 * The PID kP for the turret closed loop controller.
+		 */
+		public static final double TURRET_KP = 18.0;
+		/**
+		 * The PID kI for the turret closed loop controller.
+		 */
+		public static final double TURRET_KI = 0.0;
+		/**
+		 * The PID kD for the turret closed loop controller.
+		 */
+		public static final double TURRET_KD = 1.25;
+		/**
+		 * The PID kS for the turret closed loop controller.
+		 */
+		public static final double TURRET_KS = 0.42;
+		/**
+		 * The PID kV for the turret closed loop controller.
+		 */
+		public static final double TURRET_KV = 3.0;
+		/**
+		 * The PID kA for the turret closed loop controller.
+		 */
+		public static final double TURRET_KA = 0.04;
+		/**
+		 * The peak/cruising velocity of the motion.
+		 */
+		public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(125.0).div(MOTOR_GEAR_RATIO).times(0.8);
+		/**
+		 * The acceleration and deceleration rates during the beginning and end of motion.
+		 */
+		public static final AngularAcceleration ACCELERATION = CRUISE_VELOCITY.times(2.0).per(Second);
+		/**
+		 * Jerk (derivative of acceleration).
+		 */
+		public static final Velocity<AngularAccelerationUnit> JERK = ACCELERATION.times(10.0).per(Second);
+
+		/**
+		 * The lowest angle the turret can rotate to.
+		 */
+		public static final Angle MINIMUM_ANGLE = Rotations.of(-1.0);
+		/**
+		 * The highest angle the turret can rotate to.
+		 */
+		public static final Angle MAXIMUM_ANGLE = Rotations.of(1.0);
+
+		/**
+		 * How close does the Turret have to be to its setpoint to be counted as being there.
+		 */
+		public static final Measure<AngleUnit> SETPOINT_THRESHOLD = Degrees.of(3.0);
 	}
 }

@@ -11,6 +11,10 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.DrivetrainControls;
 import frc.robot.subsystems.HopperUptake;
 import frc.robot.subsystems.StubbedTurret;
+import frc.robot.subsystems.shooter.Hood;
+import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.intake.IntakeGrabber;
+import frc.robot.subsystems.intake.IntakeShoulder;
 import frc.robot.superstructure.ShooterSim;
 import frc.robot.superstructure.ShooterValues;
 import frc.robot.superstructure.ShooterSuperstructure;
@@ -20,22 +24,19 @@ import frc.robot.superstructure.sources.ShootingSourceConstant;
 import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SuperstructureConstants;
-import frc.robot.subsystems.shooter.Hood;
-import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Elastic;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -48,9 +49,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 @Logged
@@ -91,13 +95,17 @@ public class RobotContainer {
 	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
 
+	IntakeGrabber intakeGrabber = new IntakeGrabber();
+	IntakeShoulder intakeShoulder = new IntakeShoulder();
 	/**
-	 * The Controller used by the Driver of the robot, primarily controlling the drivetrain.
+	 * The Controller used by the Driver of the robot, primarily controlling the
+	 * drivetrain.
 	 */
 	@NotLogged
 	private final CommandXboxController driverController = new CommandXboxController(OperatorConstants.DRIVER_CONTROLLER_PORT);
 	/**
-	 * The Controller used by the Operator of the robot, primarily controlling the superstructure.
+	 * The Controller used by the Operator of the robot, primarily controlling the
+	 * superstructure.
 	 */
 	@NotLogged
 	private final CommandXboxController operatorController = new CommandXboxController(OperatorConstants.OPERATOR_CONTROLLER_PORT);
@@ -208,69 +216,43 @@ public class RobotContainer {
 	}
 
 	/**
-	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller buttons.
+	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller
+	 * buttons.
 	 */
 	private void configureDriverControls() {
-		// Note that X is defined as forward according to WPILib convention,
-		// and Y is defined as to the left according to WPILib convention.
-		drivetrain.setDefaultCommand(
-				// Drivetrain will execute this command periodically
-				drivetrain.applyRequest(() -> {
-					return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-							.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
-							.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
-				}));
-		drivetrain.applyRequest(() -> {
-			return spin.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier)
-					.withRotationalRate(-driverController.getRightX() * DrivetrainConstants.MAX_ANGULAR_RATE_DEADBAND);// Drive left with negative X (left)
-		});
+		// Drivetrain will execute this command periodically
+		// // Applies the default field centric command
+		drivetrain.setDefaultCommand(drivetrain.applyRequest(() -> drivetrainControls.fieldCentricRequest(driverController)));
 
 		// Idle while the robot is disabled. This ensures the configured
 		// neutral mode is applied to the drive motors while disabled.
 		final var idle = new SwerveRequest.Idle();
 		RobotModeTriggers.disabled().whileTrue(drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-		// start and stop
+		// --- start and stop ---
+		// // resets gyro
 		driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-		// letter buttons
+
+		// --- letter buttons ---
+		// // moves swerves into x formation
 		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
-		// bumpers
-		// TODO: (Caleb) Please put in some comments to describe this logic
-		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
-			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
-				drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
-			}
-			// TODO: (Caleb) Can you pleas comment what this return is doing?
-			return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
-		})));
+
+		// --- bumpers ---
+		// // switches swerve requests to field centric facing angle
+		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drivetrainControls.setPose2()).andThen(drivetrain.applyRequest(() -> drivetrainControls.feildCentricFacingAngleRequest(driverController))));
+		// // Sets multiplier to the lower value
 		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
-		// triggers
-		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
-		// start and stop
-		driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-		// letter buttons
-		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
-		// bumpers
-		// TODO: (Caleb) Please put in some comments to describe this logic
-		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drive.withTargetDirection(drivetrain.getState().Pose.getRotation())).andThen(drivetrain.applyRequest(() -> {
-			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
-				drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
-			}
-			// TODO: (Caleb) Can you pleas comment what this return is doing?
-			return drive.withVelocityX(-driverController.getLeftY() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier) // Drive forward with negative Y (forward)
-					.withVelocityY(-driverController.getLeftX() * DrivetrainConstants.MAX_SPEED_SWERVE * drivetrainControls.speedMultiplier);// Drive left with negative X (left)
-		})));
-		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
-		// triggers
+
+		// --- triggers ---
+		// // Sets multiplier to the higher value
 		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
 
 		drivetrain.registerTelemetry(logger::telemeterize);
 	}
 
 	/**
-	 * Configures {@link Triggers} to bind Commands to the Operator Controller buttons.
+	 * Configures {@link Triggers} to bind Commands to the Operator Controller
+	 * buttons.
 	 */
 	private void configureOperatorControls() {
 		operatorController.leftTrigger()
@@ -285,6 +267,31 @@ public class RobotContainer {
 				.onTrue(shooterSuperstructure.turnOffCommand());
 		operatorController.start()
 				.onTrue(shooterSuperstructure.homeCommand());
+
+		/**
+		 * code for demo controls
+		 */
+		// Press A to START and LOWER intake
+		operatorController.a()
+				// .onTrue(intakeGrabber.startIntakeCommand()); // from original 4 bind
+				.onTrue(intakeGrabber.startIntakeCommand())
+				.onTrue(intakeShoulder.lowerIntakeCommand());
+		// Press B to STOP and RAISE intake
+		operatorController.b()
+				// .onTrue(intakeGrabber.stopIntakeCommand()); // original 4 bind
+				.onTrue(intakeShoulder.raiseIntakeCommand())
+				.onTrue(intakeGrabber.stopIntakeCommand());
+		// Press X to RAISE shoulder (old)
+		// operatorController.x()
+		// .onTrue(intakeShoulder.raiseIntakeCommand()); // original 4 bind
+		// Press Y to lower shoulder (old)
+		// operatorController.y()
+		// .onTrue(intakeShoulder.lowerIntakeCommand()); // original 4 bind
+		operatorController.x()
+				.whileTrue(intakeGrabber.outtakeCommand());
+		// operatorController.y()
+		// .onTrue(intakeShoulder.lowerIntakeCommand())
+		// .whileTrue(intakeShoulder.agitateCommand());
 	}
 
 	/**
