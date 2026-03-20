@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.416,
-        "y": 4.063
+        "x": 0.675,
+        "y": 0.66595625
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5517121292372886,
-        "y": 3.804195246292373
+        "x": 0.9338066529378901,
+        "y": 1.7869710233047038
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Outpost"
     },
     {
       "anchor": {
-        "x": 3.416,
-        "y": 0.829
+        "x": 1.16,
+        "y": 2.7765375
       },
       "prevControl": {
-        "x": 2.416,
-        "y": 0.8290000000000001
+        "x": 0.6747472958618435,
+        "y": 0.6746771190944285
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Right Climb"
     }
   ],
   "rotationTargets": [],
@@ -41,14 +41,14 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 0.0,
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": "Other paths",
+  "folder": "Riley and Lukas",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }

@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.416,
-        "y": 4.063
+        "x": 7.716,
+        "y": 2.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5517121292372886,
-        "y": 3.804195246292373
+        "x": 8.05628771907287,
+        "y": -0.7321361772438029
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Right Intook Neutral"
     },
     {
       "anchor": {
-        "x": 3.416,
-        "y": 0.829
+        "x": 0.675,
+        "y": 0.66595625
       },
       "prevControl": {
-        "x": 2.416,
-        "y": 0.8290000000000001
+        "x": 1.0260248639109528,
+        "y": 1.0220202118331194
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Outpost"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.4087061668681982,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Other paths",
+  "folder": "Riley and Lukas",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

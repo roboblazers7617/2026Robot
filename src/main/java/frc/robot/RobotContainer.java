@@ -143,7 +143,15 @@ public class RobotContainer {
 	/**
 	 * Sets up the {@link NamedCommands} used by the autonomous routine.
 	 */
-	private void configureNamedCommands() {}
+	private void configureNamedCommands() {
+		NamedCommands.registerCommand("Deploy Intake", Commands.print("IM DEPLOYING THE INTAKE"));
+		NamedCommands.registerCommand("Stow Intake", Commands.print("IM STOWING THE INTAKE"));
+
+		NamedCommands.registerCommand("Raise Climb", Commands.print("The Climb will rise"));
+		NamedCommands.registerCommand("Lower Climb", Commands.print("The Climb will fall"));
+
+		NamedCommands.registerCommand("Shoot", Commands.print("FIRE AWAY").andThen(Commands.waitSeconds(5)));
+	}
 
 	/**
 	 * Configures {@link Trigger Triggers} to bind Commands to the Driver Controller

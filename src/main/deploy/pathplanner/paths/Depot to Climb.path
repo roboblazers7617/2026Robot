@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.416,
-        "y": 4.063
+        "x": 1.0541,
+        "y": 5.96503125
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.5517121292372886,
-        "y": 3.804195246292373
+        "x": 1.0541,
+        "y": 4.974338965393659
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Inside Depot"
     },
     {
       "anchor": {
-        "x": 3.416,
-        "y": 0.829
+        "x": 0.9223375,
+        "y": 4.6148625
       },
       "prevControl": {
-        "x": 2.416,
-        "y": 0.8290000000000001
+        "x": 1.0570927601809956,
+        "y": 5.132839366515836
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Left Pre Climb"
     }
   ],
   "rotationTargets": [],
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Other paths",
+  "folder": "Riley and Lukas",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
