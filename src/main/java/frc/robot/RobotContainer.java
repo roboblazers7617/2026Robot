@@ -24,6 +24,7 @@ import frc.robot.superstructure.sources.ShootingSourceConstant;
 import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.SuperstructureConstants;
+import frc.robot.commands.HapticCommand;
 import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.HopperConstants;
@@ -40,6 +41,7 @@ import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.units.Units;
@@ -47,6 +49,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
+import static edu.wpi.first.units.Units.Seconds;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -307,6 +311,11 @@ public class RobotContainer {
 				.onTrue(intakeShoulder.lowerIntakeCommand()
 						.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
 						.andThen(intakeGrabber.outtakeCommand()));
+
+		// Haptics when ready to shoot
+		shooterSuperstructure.readyToShootTrigger()
+				.onTrue(new HapticCommand(operatorController, RumbleType.kLeftRumble, 0.5, Seconds.of(0.25))
+						.onlyIf(RobotModeTriggers.teleop()));
 	}
 
 	/**
