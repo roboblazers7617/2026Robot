@@ -10,8 +10,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.superstructure.sources.ShootingSource;
 
-import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 /**
  * A debug controller for the shooter superstructure. Allows for manually setting shooter speed, hood angle, and turret angle.
@@ -72,7 +72,7 @@ public class ShooterSuperstructureDebug {
 
 		public Optional<ShooterValues> get() {
 			ShooterValues values = new ShooterValues()
-					.setFlywheelSpeed(RPM.of(flywheelSpeedEntry.get()))
+					.setFlywheelSpeed(RotationsPerSecond.of(flywheelSpeedEntry.get()))
 					.setTurretAngle(Degrees.of(turretAngleEntry.get()))
 					.setHoodAngle(Degrees.of(hoodAngleEntry.get()));
 
