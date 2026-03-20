@@ -245,6 +245,8 @@ public final class Constants {
 		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 20.0;
 
 		public static final double GAIN_SCHEDULE_ERROR_THRESHOLD = 0.5;
+
+		public static final double SHOULDER_TOLERANCE = 0.1;
 	}
 
 	public static class DrivetrainConstants {
