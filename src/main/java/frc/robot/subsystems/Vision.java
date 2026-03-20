@@ -128,10 +128,11 @@ public class Vision extends SubsystemBase {
 	}
 
 	/**
-	 * Returns the latest standard deviations of the estimated pose from {@link
-	 * #getEstimatedGlobalPose()}, for use with {@link
-	 * edu.wpi.first.math.estimator.SwerveDrivePoseEstimator SwerveDrivePoseEstimator}. This should
-	 * only be used when there are targets visible.
+	 * Returns the latest standard deviations of the estimated pose from
+	 * {@link #periodic()}, for use with {@link
+	 * edu.wpi.first.math.estimator.SwerveDrivePoseEstimator
+	 * SwerveDrivePoseEstimator}. This should only be used when there are
+	 * targets visible.
 	 */
 	public Matrix<N3, N1> getEstimationStdDevs() {
 		return curStdDevs;
