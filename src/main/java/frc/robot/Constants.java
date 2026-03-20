@@ -86,11 +86,11 @@ public final class Constants {
 
 	public static class VisionConstants {
 		public static final Boolean isGoPro = true;
-		public static final String FRONT_CAM_NAME = "CamFront";
+		public static final String TURRET_CAM_NAME = "CamFront";
 		// transform numbers are placeholders as of now
-		public static final Transform3d ROBOT_TO_FRONT_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.1524, -0.3484626, 0.2666238), new Rotation3d(0, 0.0872665, -0.5 * Math.PI));
-		public static final String SIDE_CAM_NAME = "CamSide";
-		public static final Transform3d ROBOT_TO_SIDE_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.2434336, 0.3439922, 0.5274056), new Rotation3d(0, 0.0872665, 0.5 * Math.PI));
+		public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.1524, -0.3484626, 0.2666238), new Rotation3d(0, 0.0872665, -0.5 * Math.PI));
+		public static final String EBOARD_CAM_NAME = "CamSide";
+		public static final Transform3d ROBOT_TO_EBOARD_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.2434336, 0.3439922, 0.5274056), new Rotation3d(0, 0.0872665, 0.5 * Math.PI));
 		public static final String XTRA_CAM_NAME = "CamX3"; // replace the String in the Constant of the camera you want to swap out with the extra cam name
 		public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8);
 		public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);

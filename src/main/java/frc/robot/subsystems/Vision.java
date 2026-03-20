@@ -31,10 +31,10 @@ public class Vision extends SubsystemBase {
 
 	/** Creates a new Vision. */
 	public Vision(CommandSwerveDrivetrain drivetrain) {
-		frontCamera = new PhotonCamera(VisionConstants.FRONT_CAM_NAME);
-		photonFrontEstimator = new PhotonPoseEstimator(FieldConstants.FIELD_LAYOUT, VisionConstants.ROBOT_TO_FRONT_CAM_TRANSFORM);
-		sideCamera = new PhotonCamera(VisionConstants.SIDE_CAM_NAME);
-		photonSideEstimator = new PhotonPoseEstimator(FieldConstants.FIELD_LAYOUT, VisionConstants.ROBOT_TO_SIDE_CAM_TRANSFORM);
+		frontCamera = new PhotonCamera(VisionConstants.TURRET_CAM_NAME);
+		photonFrontEstimator = new PhotonPoseEstimator(FieldConstants.FIELD_LAYOUT, VisionConstants.ROBOT_TO_TURRET_CAM_TRANSFORM);
+		sideCamera = new PhotonCamera(VisionConstants.EBOARD_CAM_NAME);
+		photonSideEstimator = new PhotonPoseEstimator(FieldConstants.FIELD_LAYOUT, VisionConstants.ROBOT_TO_EBOARD_CAM_TRANSFORM);
 		this.drivetrain = drivetrain;
 	}
 
