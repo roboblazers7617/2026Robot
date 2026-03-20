@@ -212,17 +212,17 @@ public class RobotContainer {
 	 * Sets up the {@link NamedCommands} used by the autonomous routine.
 	 */
 	private void configureNamedCommands() {
-		NamedCommands.registerCommand("home", shooterSuperstructure.homeCommand());
-		NamedCommands.registerCommand("shoot", Commands.waitUntil(shooterSuperstructure.readyToShootTrigger())
-				.andThen(shooterSuperstructure.startShootingCommand()));
-
 		NamedCommands.registerCommand("Deploy Intake", Commands.print("IM DEPLOYING THE INTAKE"));
 		NamedCommands.registerCommand("Stow Intake", Commands.print("IM STOWING THE INTAKE"));
 
 		NamedCommands.registerCommand("Raise Climb", Commands.print("The Climb will rise"));
 		NamedCommands.registerCommand("Lower Climb", Commands.print("The Climb will fall"));
 
-		NamedCommands.registerCommand("Shoot", Commands.print("FIRE AWAY").andThen(Commands.waitSeconds(5)));
+		NamedCommands.registerCommand("Shoot", shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot", ShootingConstants.STATIC_SHOOT_VALUES))
+				.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
+				.andThen(shooterSuperstructure.startShootingCommand())
+				.andThen(Commands.waitSeconds(4.0))
+				.andThen(shooterSuperstructure.homeCommand()));
 	}
 
 	/**
