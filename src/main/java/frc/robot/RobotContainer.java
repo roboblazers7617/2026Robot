@@ -258,9 +258,9 @@ public class RobotContainer {
 		operatorController.leftTrigger()
 				.whileTrue(shooterSuperstructure.startShootingCommand());
 
-		operatorController.a()
+		operatorController.povUp()
 				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Test Position", new ShooterValues(ShooterConstants.FAST_SPEED, Units.Degrees.of(30), Units.Degrees.of(0)))));
-		operatorController.x()
+		operatorController.povDown()
 				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()));
 
 		operatorController.back()
@@ -273,25 +273,19 @@ public class RobotContainer {
 		 */
 		// Press A to START and LOWER intake
 		operatorController.a()
-				// .onTrue(intakeGrabber.startIntakeCommand()); // from original 4 bind
 				.onTrue(intakeGrabber.startIntakeCommand())
 				.onTrue(intakeShoulder.lowerIntakeCommand());
-		// Press B to STOP and RAISE intake
+		// Press B to STOP intake
 		operatorController.b()
-				// .onTrue(intakeGrabber.stopIntakeCommand()); // original 4 bind
-				.onTrue(intakeShoulder.raiseIntakeCommand())
 				.onTrue(intakeGrabber.stopIntakeCommand());
-		// Press X to RAISE shoulder (old)
-		// operatorController.x()
-		// .onTrue(intakeShoulder.raiseIntakeCommand()); // original 4 bind
-		// Press Y to lower shoulder (old)
-		// operatorController.y()
-		// .onTrue(intakeShoulder.lowerIntakeCommand()); // original 4 bind
+		// Press Y to raise shoulder
+		operatorController.y()
+				.onTrue(intakeShoulder.raiseIntakeCommand());
+		// Press X to outtake
 		operatorController.x()
-				.whileTrue(intakeGrabber.outtakeCommand());
-		// operatorController.y()
-		// .onTrue(intakeShoulder.lowerIntakeCommand())
-		// .whileTrue(intakeShoulder.agitateCommand());
+				.onTrue(intakeShoulder.lowerIntakeCommand()
+						.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
+						.andThen(intakeGrabber.outtakeCommand()));
 	}
 
 	/**
