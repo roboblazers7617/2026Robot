@@ -464,7 +464,8 @@ public class ShooterSuperstructure {
 	 *          This is intended for internal use, but is made public for logging purposes.
 	 */
 	public boolean subsystemsNeedPause() {
-		return !turret.isAtTarget();
+		// return !turret.isAtTarget();
+		return false;
 	}
 
 	/**
