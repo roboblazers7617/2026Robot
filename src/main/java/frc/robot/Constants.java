@@ -481,10 +481,10 @@ public final class Constants {
 		public static final boolean SUPPLY_CURRENT_LIMIT_ENABLE = true;
 		public static final double STATOR_CURRENT_LIMIT = 60.0;
 		public static final boolean STATOR_CURRENT_LIMIT_ENABLE = true;
-		public static final Angle MINIMUM_HOOD_ANGLE = Degrees.of(0);
+		public static final Angle MINIMUM_HOOD_ANGLE = Degrees.of(1);
 		public static final Angle MAXIMUM_HOOD_ANGLE = Degrees.of(32);
 		public static final double SENSOR_TO_MECHANISM_RATIO = 13.78 / 32; // Number of shaft rotations / degrees traveled
-		public static final Angle HOME_ANGLE = Degrees.of(5.0);
+		public static final Angle HOME_ANGLE = MINIMUM_HOOD_ANGLE;
 	}
 
 	/**
