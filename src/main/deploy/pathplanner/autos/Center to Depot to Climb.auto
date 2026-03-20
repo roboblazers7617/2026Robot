@@ -1,0 +1,87 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Deploy Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center to Depot"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Intake Depot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Intook Depot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Stow Intake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Raise Climb"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Depot to Climb"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Climb Left"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Lower Climb"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
