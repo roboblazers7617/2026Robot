@@ -21,20 +21,20 @@ import frc.robot.Constants.VisionConstants;
 import java.util.Optional;
 
 public class Vision extends SubsystemBase {
-	private final PhotonCamera frontCamera;
-	private final PhotonPoseEstimator photonFrontEstimator;
-	private final PhotonCamera sideCamera;
-	private final PhotonPoseEstimator photonSideEstimator;
+	private final PhotonCamera turretCamera;
+	private final PhotonPoseEstimator photonTurretEstimator;
+	private final PhotonCamera eBoardCamera;
+	private final PhotonPoseEstimator photonEBoardEstimator;
 	private final CommandSwerveDrivetrain drivetrain;
 
 	private Matrix<N3, N1> curStdDevs;
 
 	/** Creates a new Vision. */
 	public Vision(CommandSwerveDrivetrain drivetrain) {
-		frontCamera = new PhotonCamera(VisionConstants.TURRET_CAM_NAME);
-		photonFrontEstimator = new PhotonPoseEstimator(FieldConstants.FIELD_LAYOUT, VisionConstants.ROBOT_TO_TURRET_CAM_TRANSFORM);
-		sideCamera = new PhotonCamera(VisionConstants.EBOARD_CAM_NAME);
-		photonSideEstimator = new PhotonPoseEstimator(FieldConstants.FIELD_LAYOUT, VisionConstants.ROBOT_TO_EBOARD_CAM_TRANSFORM);
+		turretCamera = new PhotonCamera(VisionConstants.TURRET_CAM_NAME);
+		photonTurretEstimator = new PhotonPoseEstimator(FieldConstants.FIELD_LAYOUT, VisionConstants.ROBOT_TO_TURRET_CAM_TRANSFORM);
+		eBoardCamera = new PhotonCamera(VisionConstants.EBOARD_CAM_NAME);
+		photonEBoardEstimator = new PhotonPoseEstimator(FieldConstants.FIELD_LAYOUT, VisionConstants.ROBOT_TO_EBOARD_CAM_TRANSFORM);
 		this.drivetrain = drivetrain;
 	}
 
@@ -42,16 +42,16 @@ public class Vision extends SubsystemBase {
 	public void periodic() {
 		// This method will be called once per scheduler run
 		// front cam data yoinking
-		Optional<EstimatedRobotPose> frontVisionEst = Optional.empty();
-		for (var result : frontCamera.getAllUnreadResults()) {
-			frontVisionEst = photonFrontEstimator.estimateCoprocMultiTagPose(result);
-			if (frontVisionEst.isEmpty()) {
-				frontVisionEst = photonFrontEstimator.estimateLowestAmbiguityPose(result);
+		Optional<EstimatedRobotPose> turretVisionEst = Optional.empty();
+		for (var result : turretCamera.getAllUnreadResults()) {
+			turretVisionEst = photonTurretEstimator.estimateCoprocMultiTagPose(result);
+			if (turretVisionEst.isEmpty()) {
+				turretVisionEst = photonTurretEstimator.estimateLowestAmbiguityPose(result);
 			}
-			updateEstimationStdDevs(frontVisionEst, result.getTargets(), photonFrontEstimator);
+			updateEstimationStdDevs(turretVisionEst, result.getTargets(), photonTurretEstimator);
 
-			if (frontVisionEst.isPresent()) {
-				var est = frontVisionEst.get();
+			if (turretVisionEst.isPresent()) {
+				var est = turretVisionEst.get();
 				var estStdDevs = getEstimationStdDevs();
 				drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
 				System.out.println("front measurement added");
@@ -59,16 +59,16 @@ public class Vision extends SubsystemBase {
 		}
 
 		// side cam data yoinking
-		Optional<EstimatedRobotPose> sideVisionEst = Optional.empty();
-		for (var result : sideCamera.getAllUnreadResults()) {
-			sideVisionEst = photonSideEstimator.estimateCoprocMultiTagPose(result);
-			if (sideVisionEst.isEmpty()) {
-				sideVisionEst = photonSideEstimator.estimateLowestAmbiguityPose(result);
+		Optional<EstimatedRobotPose> eBoardVisionEst = Optional.empty();
+		for (var result : eBoardCamera.getAllUnreadResults()) {
+			eBoardVisionEst = photonEBoardEstimator.estimateCoprocMultiTagPose(result);
+			if (eBoardVisionEst.isEmpty()) {
+				eBoardVisionEst = photonEBoardEstimator.estimateLowestAmbiguityPose(result);
 			}
-			updateEstimationStdDevs(sideVisionEst, result.getTargets(), photonSideEstimator);
+			updateEstimationStdDevs(eBoardVisionEst, result.getTargets(), photonEBoardEstimator);
 
-			if (sideVisionEst.isPresent()) {
-				var est = sideVisionEst.get();
+			if (eBoardVisionEst.isPresent()) {
+				var est = eBoardVisionEst.get();
 				var estStdDevs = getEstimationStdDevs();
 				drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
 				System.out.println("side measurement added");
