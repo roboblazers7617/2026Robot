@@ -12,6 +12,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
 import frc.robot.generated.TunerConstants;
+import frc.robot.superstructure.ShooterValues;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rectangle2d;
@@ -369,6 +370,11 @@ public final class Constants {
 		 * The maximum angle to shoot at.
 		 */
 		public static final Angle MAX_SHOOT_ANGLE = Degrees.of(69.5);
+
+		/**
+		 * A set of values to shoot from a static position.
+		 */
+		public static final ShooterValues STATIC_SHOOT_VALUES = new ShooterValues(RPM.of(2200), Degrees.of(-13), Degrees.of(0));
 	}
 
 	/**

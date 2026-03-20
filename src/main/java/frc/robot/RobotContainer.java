@@ -16,13 +16,12 @@ import frc.robot.subsystems.shooter.Turret;
 import frc.robot.subsystems.intake.IntakeGrabber;
 import frc.robot.subsystems.intake.IntakeShoulder;
 import frc.robot.superstructure.ShooterSim;
-import frc.robot.superstructure.ShooterValues;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.superstructure.sources.ShootFromAnywhereSource;
 import frc.robot.superstructure.sources.ShootingSourceConstant;
 import frc.robot.superstructure.sources.ShootingSourceIdle;
-import frc.robot.Constants.ShooterConstants;
+import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.commands.HapticCommand;
 import frc.robot.Constants.DashboardConstants;
@@ -44,7 +43,6 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -287,7 +285,7 @@ public class RobotContainer {
 		// Set mode to shoot from fixed position, wait until ready to shoot, then shoot
 		// Home and set back to shoot from anywhere on release
 		operatorController.rightTrigger()
-				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Test Position", new ShooterValues(ShooterConstants.FAST_SPEED, Units.Degrees.of(30), Units.Degrees.of(0))))
+				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot", ShootingConstants.STATIC_SHOOT_VALUES))
 						.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
 						.andThen(shooterSuperstructure.startShootingCommand()))
 				.onFalse(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain))
