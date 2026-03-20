@@ -197,7 +197,7 @@
                   "topic": "/Shooter Superstructure/Debug/Flywheel Speed",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -211,7 +211,7 @@
                   "topic": "/Shooter Superstructure/Debug/Hood Angle",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               },
               {
@@ -225,7 +225,7 @@
                   "topic": "/Shooter Superstructure/Debug/Turret Angle",
                   "period": 0.06,
                   "data_type": "double",
-                  "show_submit_button": false
+                  "show_submit_button": true
                 }
               }
             ]
@@ -235,7 +235,7 @@
             "x": 256.0,
             "y": 0.0,
             "width": 256.0,
-            "height": 384.0,
+            "height": 512.0,
             "type": "List Layout",
             "properties": {
               "label_position": "TOP"
@@ -278,6 +278,20 @@
                 "type": "Command",
                 "properties": {
                   "topic": "/SmartDashboard/Shooter Superstructure/Start Shooting",
+                  "period": 0.06,
+                  "show_type": true,
+                  "maximize_button_space": false
+                }
+              },
+              {
+                "title": "Turn Off",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 256.0,
+                "height": 128.0,
+                "type": "Command",
+                "properties": {
+                  "topic": "/SmartDashboard/Shooter Superstructure/Turn Off",
                   "period": 0.06,
                   "show_type": true,
                   "maximize_button_space": false
