@@ -374,7 +374,15 @@ public final class Constants {
 		/**
 		 * A set of values to shoot from a static position.
 		 */
-		public static final ShooterValues STATIC_SHOOT_VALUES = new ShooterValues(RPM.of(2200), Degrees.of(-13), Degrees.of(0));
+		public static final ShooterValues STATIC_SHOOT_VALUES = new ShooterValues(RPM.of(2200), Degrees.of(0), Degrees.of(-13));
+		/**
+		 * A set of values to shoot from the left by the door.
+		 */
+		public static final ShooterValues STATIC_SHOOT_LEFT_DOOR_VALUES = new ShooterValues(RotationsPerSecond.of(39), Degrees.of(0), Degrees.of(-38));
+		/**
+		 * A set of values to shoot from the center by the tower.
+		 */
+		public static final ShooterValues STATIC_SHOOT_CENTER = new ShooterValues(RotationsPerSecond.of(0), Degrees.of(0), Degrees.of(0));
 	}
 
 	/**

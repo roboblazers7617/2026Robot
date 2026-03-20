@@ -32,12 +32,12 @@ public class ShooterValues {
 	 *
 	 * @param flywheelSpeed
 	 *            The velocity to spin the flywheel up to.
-	 * @param turretAngle
-	 *            The angle to point the turret at.
 	 * @param hoodAngle
 	 *            The angle to set the hood to.
+	 * @param turretAngle
+	 *            The angle to point the turret at.
 	 */
-	public ShooterValues(AngularVelocity flywheelSpeed, Angle turretAngle, Angle hoodAngle) {
+	public ShooterValues(AngularVelocity flywheelSpeed, Angle hoodAngle, Angle turretAngle) {
 		this.flywheelSpeed = flywheelSpeed;
 		this.turretAngle = turretAngle;
 		this.hoodAngle = hoodAngle;
