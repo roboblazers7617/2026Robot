@@ -513,7 +513,7 @@ public class ShooterSuperstructure {
 	 */
 	private void home() {
 		// TODO: Update this once subsystems are in place
-		flywheel.startFlywheel(ShooterConstants.COAST_SPEED);
+		flywheel.startFlywheel(ShooterConstants.IDLE_SPEED);
 		hood.moveToPosition(HoodConstants.HOME_ANGLE);
 		turret.unspool();
 

@@ -445,21 +445,21 @@ public final class Constants {
 		public static final double KD_1 = 0;
 		public static final double KV_1 = 0.126;
 		public static final double KS_1 = 0.45;
-		public static final AngularVelocity RPS = Units.RotationsPerSecond.of(50);
-		public static final AngularVelocity CRUISE_VELOCITY = RPS;
 		public static final double MAXIMUM_VELOCITY = 80.0;
 		public static final double ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
 		public static final boolean ENABLE_STATOR_LIMIT = true;
 		public static final double STATOR_CURRENT_LIMIT = 40;
 		public static final boolean ENABLE_SUPPLY_LIMIT = false;
 		public static final double SUPPLY_CURRENT_LIMIT = 60.0;
-		public static final AngularVelocity FAST_SPEED = CRUISE_VELOCITY;
-		public static final AngularVelocity SLOW_SPEED = CRUISE_VELOCITY.div(3.0);
-		public static final AngularVelocity COAST_SPEED = CRUISE_VELOCITY.div(2.0);
 		public static final AngularVelocity TOLERANCE = Units.RotationsPerSecond.of(3);
 		public static final double SUPPLY_CURRENT_LOWER_LIMIT = 40.0;
 		public static final double SUPPLY_CURRENT_LOWER_TIME = 0.1;
 		public static final boolean SUPPLY_CURRENT_LIMIT_ENABLE = true;
+
+		/**
+		 * The speed for the flywheel while the shooter is homed.
+		 */
+		public static final AngularVelocity IDLE_SPEED = RPM.of(500.0);
 	}
 
 	public static class HoodConstants {
