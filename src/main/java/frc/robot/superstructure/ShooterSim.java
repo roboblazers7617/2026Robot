@@ -14,9 +14,9 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.HopperUptake;
-import frc.robot.subsystems.StubbedTurret;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.Turret;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
@@ -30,7 +30,7 @@ public class ShooterSim {
 	private final CommandSwerveDrivetrain drivetrain;
 	private final Shooter flywheel;
 	private final Hood hood;
-	private final StubbedTurret turret;
+	private final Turret turret;
 	private final HopperUptake hopperUptake;
 
 	/**
@@ -59,7 +59,7 @@ public class ShooterSim {
 			.getStructArrayTopic("MapleSim/Fuel Trajectory (Miss)", Pose3d.struct)
 			.publish();
 
-	public ShooterSim(CommandSwerveDrivetrain drivetrain, Shooter flywheel, Hood hood, StubbedTurret turret, HopperUptake hopperUptake) {
+	public ShooterSim(CommandSwerveDrivetrain drivetrain, Shooter flywheel, Hood hood, Turret turret, HopperUptake hopperUptake) {
 		this.drivetrain = drivetrain;
 		this.flywheel = flywheel;
 		this.hood = hood;

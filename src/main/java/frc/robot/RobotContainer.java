@@ -10,9 +10,9 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.DrivetrainControls;
 import frc.robot.subsystems.HopperUptake;
-import frc.robot.subsystems.StubbedTurret;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.Turret;
 import frc.robot.subsystems.intake.IntakeGrabber;
 import frc.robot.subsystems.intake.IntakeShoulder;
 import frc.robot.superstructure.ShooterSim;
@@ -89,14 +89,14 @@ public class RobotContainer {
 	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
 	private final Shooter shooterSubsystem;
 	private final Hood hoodSubsystem;
-	public final StubbedTurret turret = new StubbedTurret();
+	public final Turret turret = new Turret();
 	private final HopperUptake hopperUptake = new HopperUptake();
+	IntakeGrabber intakeGrabber = new IntakeGrabber();
+	IntakeShoulder intakeShoulder = new IntakeShoulder();
 
 	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
 
-	IntakeGrabber intakeGrabber = new IntakeGrabber();
-	IntakeShoulder intakeShoulder = new IntakeShoulder();
 	/**
 	 * The Controller used by the Driver of the robot, primarily controlling the
 	 * drivetrain.

@@ -19,9 +19,9 @@ import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.subsystems.HopperUptake;
-import frc.robot.subsystems.StubbedTurret;
 import frc.robot.subsystems.shooter.Hood;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.Turret;
 import frc.robot.superstructure.sources.ShootingSource;
 import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.util.AlertUtil;
@@ -37,9 +37,8 @@ import static edu.wpi.first.units.Units.Seconds;
  */
 @Logged
 public class ShooterSuperstructure {
-	// TODO: Implement things here for the various subsystems once those are added
 	@NotLogged
-	private final StubbedTurret turret;
+	private final Turret turret;
 	@NotLogged
 	private final Hood hood;
 	@NotLogged
@@ -162,7 +161,7 @@ public class ShooterSuperstructure {
 	 * @param uptakeBeamBreak
 	 *            The beam break for the uptake.
 	 */
-	public ShooterSuperstructure(Shooter shooter, Hood hood, StubbedTurret turret, HopperUptake hopperUptake, DigitalInput uptakeBeamBreak) {
+	public ShooterSuperstructure(Shooter shooter, Hood hood, Turret turret, HopperUptake hopperUptake, DigitalInput uptakeBeamBreak) {
 		this.flywheel = shooter;
 		this.hood = hood;
 		this.turret = turret;
@@ -503,10 +502,9 @@ public class ShooterSuperstructure {
 	 *            Is the shooter currently tracking a target?
 	 */
 	private void setValues(ShooterValues values, boolean tracking) {
-		// TODO: Update this once subsystems are in place
 		flywheel.startFlywheel(values.getFlywheelSpeed());
 		hood.moveToPosition(values.getHoodAngle());
-		turret.setPosition(values.getTurretAngle(), !tracking);
+		turret.setPosition(values.getTurretAngle());
 	}
 
 	/**

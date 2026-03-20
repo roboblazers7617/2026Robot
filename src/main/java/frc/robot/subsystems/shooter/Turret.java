@@ -231,7 +231,7 @@ public class Turret extends SubsystemBase {
 	 *         Command to run.
 	 */
 	public Command setPositionCommand(Supplier<Angle> position) {
-		return run(() -> setPositionWithWrapping(position.get()));
+		return run(() -> setPosition(position.get()));
 	}
 
 	/**
@@ -264,7 +264,7 @@ public class Turret extends SubsystemBase {
 	 * @param position
 	 *            Angle to turn to. Wrapped to be within [0-1] rotations (and the shortest path to the target is then taken).
 	 */
-	private void setPositionWithWrapping(Angle position) {
+	public void setPosition(Angle position) {
 		setPositionDirect(findClosestTargetEquivalent(position));
 	}
 
