@@ -255,7 +255,7 @@ public class Turret extends SubsystemBase {
 	 *            Angle to turn to.
 	 */
 	private void setPositionDirect(Angle position) {
-		motor.setControl(positionRequestMotionMagic.withPosition(position));
+		motor.setControl(positionRequestMotionMagic.withPosition(position.minus(Radians.of(0.04))));
 
 		setpoint = position;
 	}
