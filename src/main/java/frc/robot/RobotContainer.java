@@ -89,10 +89,10 @@ public class RobotContainer {
 	private final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
 	private final Shooter shooterSubsystem;
 	private final Hood hoodSubsystem;
-	public final Turret turret = new Turret();
+	private final Turret turret = new Turret();
 	private final HopperUptake hopperUptake = new HopperUptake();
-	IntakeGrabber intakeGrabber = new IntakeGrabber();
-	IntakeShoulder intakeShoulder = new IntakeShoulder();
+	private final IntakeGrabber intakeGrabber = new IntakeGrabber();
+	private final IntakeShoulder intakeShoulder = new IntakeShoulder();
 
 	private final Telemetry logger = new Telemetry(DrivetrainConstants.MAX_SPEED_DEADBAND);
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
