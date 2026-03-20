@@ -255,11 +255,32 @@ public class RobotContainer {
 	 * buttons.
 	 */
 	private void configureOperatorControls() {
+		// Wait until ready to shoot, then shoot in current mode
+		// Home on release
 		operatorController.leftTrigger()
-				.whileTrue(shooterSuperstructure.startShootingCommand());
+				.whileTrue(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger())
+						.andThen(shooterSuperstructure.startShootingCommand()))
+				.onFalse(shooterSuperstructure.homeCommand());
 
-		operatorController.povUp()
-				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Test Position", new ShooterValues(ShooterConstants.FAST_SPEED, Units.Degrees.of(30), Units.Degrees.of(0)))));
+		// Wait until ready to shoot, then shoot in current mode while pulling in intake
+		// Home on release
+		operatorController.leftBumper()
+				.whileTrue(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger())
+						.andThen(intakeGrabber.startIntakeCommand())
+						.andThen(intakeShoulder.raiseIntakeCommand())
+						.andThen(shooterSuperstructure.startShootingCommand()))
+				.onFalse(shooterSuperstructure.homeCommand()
+						.andThen(intakeGrabber.stopIntakeCommand()));
+
+		// Set mode to shoot from fixed position, wait until ready to shoot, then shoot
+		// Home and set back to shoot from anywhere on release
+		operatorController.rightTrigger()
+				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Test Position", new ShooterValues(ShooterConstants.FAST_SPEED, Units.Degrees.of(30), Units.Degrees.of(0))))
+						.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
+						.andThen(shooterSuperstructure.startShootingCommand()))
+				.onFalse(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain))
+						.andThen(shooterSuperstructure.homeCommand()));
+
 		operatorController.povDown()
 				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()));
 
