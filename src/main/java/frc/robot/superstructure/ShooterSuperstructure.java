@@ -191,9 +191,6 @@ public class ShooterSuperstructure {
 
 		// ---- Shooting state -----
 		stateMachineConfig.configure(ShooterState.SHOOTING)
-				// Spin up uptake while shooting
-				.onEntry(hopperUptake::startUptakeForward)
-				.onExit(hopperUptake::stopUptake)
 				.permit(ShooterTrigger.TURN_OFF, ShooterState.OFF)
 				.permit(ShooterTrigger.HOME, ShooterState.HOME)
 				.permit(ShooterTrigger.START_MANUAL_CONTROL, ShooterState.MANUAL_CONTROL);
@@ -209,6 +206,9 @@ public class ShooterSuperstructure {
 		stateMachineConfig.configure(ShooterState.SHOOTING_STAGE_3_SHOOTING)
 				.substateOf(ShooterState.SHOOTING)
 				.permit(ShooterTrigger.PAUSE_SHOOTING, ShooterState.SHOOTING_PAUSED)
+				// Spin up uptake while shooting
+				.onEntry(hopperUptake::startUptakeForward)
+				.onExit(hopperUptake::stopUptake)
 				// Run hopper while shooting
 				.onEntry(hopperUptake::startHopperForward)
 				.onExit(hopperUptake::stopHopper)
