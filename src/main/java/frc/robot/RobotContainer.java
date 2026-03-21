@@ -261,6 +261,10 @@ public class RobotContainer {
 		// // Sets multiplier to the higher value
 		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
 
+		driverController.leftTrigger()
+				.whileTrue(hopperUptake.startUptakeUnjamCommand())
+				.onFalse(hopperUptake.startUptakeForwardCommand());
+
 		drivetrain.registerTelemetry(logger::telemeterize);
 	}
 
