@@ -312,6 +312,18 @@ public class RobotContainer {
 				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
 						.andThen(shooterSuperstructure.homeCommand()));
 
+		operatorController.povRight()
+				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot - Right", ShootingConstants.STATIC_SHOOT_RIGHT_DOOR_VALUES))
+						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
+				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
+						.andThen(shooterSuperstructure.homeCommand()));
+
+		operatorController.povUp()
+				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot - Center", ShootingConstants.STATIC_SHOOT_CENTER))
+						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
+				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
+						.andThen(shooterSuperstructure.homeCommand()));
+
 		// Set mode to idle
 		operatorController.povDown()
 				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()));
