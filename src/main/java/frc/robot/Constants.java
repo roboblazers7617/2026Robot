@@ -551,6 +551,16 @@ public final class Constants {
 		public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(TURRET_GEAR_TEETH / PINION_UPPER_TEETH, PINION_UPPER_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
 
 		/**
+		 * the total span of the encoders tracking range, can be found by finding the lcm of the encoder ratios
+		 */
+		public static final double TURRET_SPAN = 4.2;
+
+		/**
+		 * the tolerance for turret encoders to consider values the same, increase if its returning null, as that means there is too much slop in the system
+		 */
+		public static final Angle TURRET_ENCODER_TOLERANCE = Rotations.of(.005);
+
+		/**
 		 * The offset from zero of the absolute encoder. This is in mechanism rotations.
 		 */
 		public static final Angle PRIMARY_ENCODER_OFFSET = Rotations.of(0.94);
