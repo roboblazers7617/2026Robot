@@ -19,7 +19,8 @@ import frc.robot.subsystems.intake.IntakeShoulder;
 import frc.robot.superstructure.ShooterSim;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
-import frc.robot.superstructure.sources.ShootFromAnywhereSource;
+import frc.robot.superstructure.sources.ShootingSource;
+import frc.robot.superstructure.sources.ShootFromAnywhereInterpolatedSource;
 import frc.robot.superstructure.sources.ShootingSourceConstant;
 import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.Constants.ShootingConstants;
@@ -127,6 +128,11 @@ public class RobotContainer {
 	private ShooterSim shooterSim;
 
 	/**
+	 * The source that we use for shoot-from-anywhere.
+	 */
+	private final ShootingSource shootFromAnywhereSource = new ShootFromAnywhereInterpolatedSource(drivetrain);
+
+	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
@@ -161,7 +167,7 @@ public class RobotContainer {
 
 		// Set up a trigger so, when we enable in teleop we go into shoot while move
 		RobotModeTriggers.teleop()
-				.onTrue(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain)));
+				.onTrue(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource));
 
 		// Warmup PathPlanner to avoid Java pauses
 		FollowPathCommand.warmupCommand().schedule();
@@ -297,13 +303,13 @@ public class RobotContainer {
 		operatorController.rightTrigger()
 				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot", ShootingConstants.STATIC_SHOOT_VALUES))
 						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
-				.onFalse(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain))
+				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
 						.andThen(shooterSuperstructure.homeCommand()));
 
 		operatorController.povLeft()
 				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot - Left", ShootingConstants.STATIC_SHOOT_LEFT_DOOR_VALUES))
 						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
-				.onFalse(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain))
+				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
 						.andThen(shooterSuperstructure.homeCommand()));
 
 		// Set mode to idle
