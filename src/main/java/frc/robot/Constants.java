@@ -362,14 +362,33 @@ public final class Constants {
 		 */
 		public static final Time SHOOTING_TIMEOUT = Seconds.of(2.0);
 
+		// TODO fill in once linreg is done
+		/**
+		 * the A in the linreg for x=hood angle y = output angle
+		 */
+		public static final double LINREG_HOOD_ANGLE_A = 0;
+		/**
+		 * the B in the linreg for x=hood angle y = output angle
+		 */
+		public static final double LINREG_HOOD_ANGLE_B = 0;
+
+		/**
+		 * the A in the linreg for x=flywheel speed y = output speed
+		 */
+		public static final double LINREG_FLYWHEEL_A = 0;
+		/**
+		 * the B in the linreg for x=flywheel speed y = output speed
+		 */
+		public static final double LINREG_FLYWHEEL_B = 0;
+
 		/**
 		 * The minimum angle to shoot at.
 		 */
-		public static final Angle MIN_SHOOT_ANGLE = Degrees.of(37);
+		public static final Angle MIN_SHOOT_ANGLE = Degrees.of(38);
 		/**
 		 * The maximum angle to shoot at.
 		 */
-		public static final Angle MAX_SHOOT_ANGLE = Degrees.of(69.5);
+		public static final Angle MAX_SHOOT_ANGLE = Degrees.of(69);
 
 		/**
 		 * A set of values to shoot from a static position.

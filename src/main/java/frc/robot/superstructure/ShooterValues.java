@@ -65,6 +65,7 @@ public class ShooterValues {
 	 *         This object for method chaining.
 	 */
 	public ShooterValues setGamepieceSpeed(LinearVelocity gamepieceSpeed) {
+		// this.flywheelSpeed = (gamepieceSpeed-ShootingConstants.LINREG_FLYWHEEL_B)/ShootingConstants.LINREG_FLYWHEEL_A;
 		this.flywheelSpeed = ShootingConstants.FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.get(gamepieceSpeed);
 		return this;
 	}
@@ -104,6 +105,7 @@ public class ShooterValues {
 	 *         This object for method chaining.
 	 */
 	public ShooterValues setGamepieceTheta(Angle gamepieceTheta) {
+		// this.hoodAngle = (gamepieceTheta-ShootingConstants.LINREG_HOOD_ANGLE_B)/ShootingConstants.LINREG_HOOD_ANGLE_A;
 		this.hoodAngle = ShootingConstants.HOOD_ANGLE_BY_GAMEPIECE_THETA.get(gamepieceTheta);
 		return this;
 	}
