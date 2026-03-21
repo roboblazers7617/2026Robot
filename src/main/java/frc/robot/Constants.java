@@ -362,8 +362,11 @@ public final class Constants {
 
 		static {
 			// Add values to the interpolation table
-			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(0.0), RPM.of(10.0));
-			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(10.0), RPM.of(50.0));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(5.1668), RotationsPerSecond.of(40.0));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(3.6539), RotationsPerSecond.of(35.0));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(2.5465), RotationsPerSecond.of(32.0));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(1.9677), RotationsPerSecond.of(31.0));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(1.0014), RotationsPerSecond.of(26.0));
 		}
 
 		/**
@@ -373,8 +376,11 @@ public final class Constants {
 
 		static {
 			// Add values to the interpolation table
-			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(0.0), Degrees.of(1.0));
-			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(10.0), Degrees.of(32.0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(5.1668), Degrees.of(5.0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(3.6539), Degrees.of(5.0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(2.5465), Degrees.of(3.0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(1.9677), Degrees.of(0.0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(1.0014), Degrees.of(0.0));
 		}
 
 		/**
