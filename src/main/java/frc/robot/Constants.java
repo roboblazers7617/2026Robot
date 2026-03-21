@@ -219,6 +219,7 @@ public final class Constants {
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
 		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;
+		public static final double SHOULDER_STOW_OVER_BUMPER_DISTANCE = 10.0;
 
 		public static final double INTAKE_KG = 0.1;
 		public static final double INTAKE_KS = 0.34;

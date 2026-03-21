@@ -289,6 +289,9 @@ public class RobotContainer {
 				.onFalse(shooterSuperstructure.homeCommand()
 						.andThen(intakeGrabber.stopIntakeCommand()));
 
+		operatorController.rightBumper()
+				.onTrue(intakeShoulder.stowOverBumperCommand());
+
 		// Set mode to shoot from fixed position, wait until ready to shoot, then shoot
 		// Home and set back to shoot from anywhere on release
 		operatorController.rightTrigger()

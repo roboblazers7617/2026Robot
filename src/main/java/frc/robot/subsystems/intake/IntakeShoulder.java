@@ -176,6 +176,15 @@ public class IntakeShoulder extends SubsystemBase {
 	}
 
 	/**
+	 * Command which calls stowOverBumper method.
+	 *
+	 * @return runOnce(() -> stowOverBumper());
+	 */
+	public Command stowOverBumperCommand() {
+		return runOnce(() -> stowOverBumper());
+	}
+
+	/**
 	 * Method which sets motor position to specified stowed angle.
 	 */
 	private void raiseIntake() {
@@ -196,6 +205,13 @@ public class IntakeShoulder extends SubsystemBase {
 	 */
 	private void lowerToDepot() {
 		setPositionPlease(IntakeConstants.SHOULDER_DEPOT_DISTANCE);
+	}
+
+	/**
+	 * Method which sets motor position to specified stow over bumper angle.
+	 */
+	private void stowOverBumper() {
+		setPositionPlease(IntakeConstants.SHOULDER_STOW_OVER_BUMPER_DISTANCE);
 	}
 
 	/**
