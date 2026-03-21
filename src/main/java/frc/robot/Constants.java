@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.LinearVelocityUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -354,6 +355,28 @@ public final class Constants {
 			// Add values to the interpolation table
 			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(37.0), Degrees.of(1.0));
 			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(69.5), Degrees.of(32.0));
+		}
+
+		/**
+		 * An interpolation table used for flywheel speed by distance, for basic shoot-from-anywhere.
+		 */
+		public static final InterpolatingMeasureTreeMap<Distance, DistanceUnit, AngularVelocity, AngularVelocityUnit> FLYWHEEL_VELOCITY_BY_DISTANCE = new InterpolatingMeasureTreeMap<>();
+
+		static {
+			// Add values to the interpolation table
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(0.0), RPM.of(10.0));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(10.0), RPM.of(50.0));
+		}
+
+		/**
+		 * An interpolation table used for hood angle by distance, for basic shoot-from-anywhere.
+		 */
+		public static final InterpolatingMeasureTreeMap<Distance, DistanceUnit, Angle, AngleUnit> HOOD_ANGLE_BY_DISTANCE = new InterpolatingMeasureTreeMap<>();
+
+		static {
+			// Add values to the interpolation table
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(0.0), Degrees.of(1.0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(10.0), Degrees.of(32.0));
 		}
 
 		/**
