@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 3.57628825,
-        "y": 7.45
+        "y": 7.617
       },
       "prevControl": null,
       "nextControl": {
         "x": 6.113728726190477,
-        "y": 7.028892857142858
+        "y": 7.195892857142858
       },
       "isLocked": false,
       "linkedName": "Left Edge Trench"
