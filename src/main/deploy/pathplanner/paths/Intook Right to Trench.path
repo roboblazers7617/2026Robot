@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 7.439647887323944,
-        "y": 0.31438380281690037
+        "y": 0.3143838028168999
       },
       "isLocked": false,
       "linkedName": "Right Intook Neutral"
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

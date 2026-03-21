@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.113728726190477,
-        "y": 7.140792857142857
+        "x": 6.073561253561253,
+        "y": 7.4588603988603985
       },
       "isLocked": false,
       "linkedName": "Left Edge Trench"
@@ -20,8 +20,8 @@
         "y": 6.856549773756461
       },
       "prevControl": {
-        "x": 6.898702380952382,
-        "y": 7.652202380952382
+        "x": 7.120099715099713,
+        "y": 7.76894586894587
       },
       "nextControl": null,
       "isLocked": false,
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
