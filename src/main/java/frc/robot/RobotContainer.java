@@ -159,10 +159,14 @@ public class RobotContainer {
 			shooterSuperstructureDebug = new ShooterSuperstructureDebug(shooterSuperstructure);
 		}
 
+		// Set up a trigger to go into the home state when we enable in auto
+		RobotModeTriggers.autonomous()
+				.onTrue(shooterSuperstructure.homeCommand());
+
 		if (SuperstructureConstants.HOME_ON_ENABLE) {
-			// Set up a trigger to go into the home state when we enable
-			RobotModeTriggers.disabled()
-					.onFalse(shooterSuperstructure.homeCommand());
+			// Set up a trigger to go into the home state when we enable in teleop
+			RobotModeTriggers.teleop()
+					.onTrue(shooterSuperstructure.homeCommand());
 		}
 
 		// Set up a trigger so, when we enable in teleop we go into shoot while move
