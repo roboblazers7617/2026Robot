@@ -173,7 +173,7 @@ public class ShootingCalculator {
 	 *            the angle of the shooter hood, ranging from 37 to 69 degrees
 	 * @return the pose of where the ball leaves the shooter
 	 */
-	private static Pose3d solveTurretPose(Pose3d robotPose, Angle thetaTurret, Angle thetaHood) {
+	public static Pose3d solveTurretPose(Pose3d robotPose, Angle thetaTurret, Angle thetaHood) {
 		// calculate the distance from the center of the turret pivot to where the ball is launched from
 		Distance xHoodOffset = SuperstructureConstants.TURRET_BASE_TO_HOOD_PIVOT.getMeasureX().minus(SuperstructureConstants.HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS.times(Math.sin(thetaHood.in(Radians))));
 		// use this to calculate the offset due to the hood and turret from the center of the turret pivot
@@ -311,7 +311,7 @@ public class ShootingCalculator {
 		AngularVelocity flywheelSpeed = ShootingConstants.FLYWHEEL_VELOCITY_BY_DISTANCE.get(targetDistance);
 
 		// Set the ShooterValues accordingly
-		values.setTurretAngle(targetAngle);
+		values.setTurretAngle(targetAngle.minus(robotPose.getRotation().getMeasureAngle()).unaryMinus());
 		values.setHoodAngle(hoodAngle);
 		values.setFlywheelSpeed(flywheelSpeed);
 
