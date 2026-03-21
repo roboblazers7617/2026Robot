@@ -37,6 +37,7 @@ public class Shooter extends SubsystemBase {
 	private NetworkTable shooterTable;
 	private DoubleEntry shooterSpeedEntry;
 	private AngularVelocity requestedSpeed;
+	private AngularVelocity simVelocity = RadiansPerSecond.zero();
 
 	/** Creates a new Shooter. */
 	public Shooter(NetworkTable table) {
@@ -72,6 +73,20 @@ public class Shooter extends SubsystemBase {
 			if (status.isOK())
 				break;
 		}
+	}
+
+	@Override
+	public void simulationPeriodic() {
+		// Simulate proportional control to the setpoint
+		// This is very basic simulation but it works well enough
+		// Could maybe add some more advanced stuff later if needed
+		double setpointRadiansPerSecond = requestedSpeed.in(RadiansPerSecond);
+		double simVelocityRadiansPerSecond = simVelocity.in(RadiansPerSecond);
+
+		simVelocity = RadiansPerSecond.of(MathUtil.interpolate(simVelocityRadiansPerSecond, setpointRadiansPerSecond, 0.1));
+
+		leaderMotor.getSimState().setRotorVelocity(simVelocity);
+		followermotor.getSimState().setRotorVelocity(simVelocity);
 	}
 
 	@Override

@@ -67,7 +67,7 @@ public class IntakeGrabber extends SubsystemBase {
 
 	/**
 	 * Command which toggles intake on
-	 * 
+	 *
 	 * @return runOnce(() -> startIntake());
 	 */
 	public Command startIntakeCommand() {
@@ -76,7 +76,7 @@ public class IntakeGrabber extends SubsystemBase {
 
 	/**
 	 * Command which toggles intake off
-	 * 
+	 *
 	 * @return runOnce(() -> stopIntake());
 	 */
 	public Command stopIntakeCommand() {
@@ -86,11 +86,11 @@ public class IntakeGrabber extends SubsystemBase {
 	/**
 	 * Command which initiates outtake, to be triggered with held button. Stops
 	 * intake when released.
-	 * 
+	 *
 	 * @return run(() -> outtake()).finallyDo(() -> stopIntake());
 	 */
 	public Command outtakeCommand() {
-		return run(() -> outtake()).finallyDo(() -> stopIntake());
+		return runOnce(() -> outtake());
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class IntakeGrabber extends SubsystemBase {
 
 	/**
 	 * Method which makes intake motors spin at a certain speed
-	 * 
+	 *
 	 * @param voltage
 	 *            [-1,1].
 	 */

@@ -12,6 +12,7 @@ import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -20,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HopperUptakeConstants;
 
 /** This class covers the Hopper/Spindexer motor and the Uptake motor */
+@Logged
 public class HopperUptake extends SubsystemBase {
 
 	// Motors private final TalonFX bigSpinny;
@@ -36,6 +38,12 @@ public class HopperUptake extends SubsystemBase {
 	MotionMagicVelocityVoltage velocity = new MotionMagicVelocityVoltage(0);
 
 	private AngularVelocity setpoint = RadiansPerSecond.zero();
+	private AngularVelocity simVelocity = RadiansPerSecond.zero();
+
+	/**
+	 * Keeps track of whether or not the hopper is running forwards (basically are we shooting). Mostly exists just for sim and logging.
+	 */
+	private boolean isHopperRunningForwards = false;
 
 	public HopperUptake() {
 		bigSpinny = new TalonFX(HopperUptakeConstants.BIG_SPINNY_CAN_ID);
@@ -97,6 +105,19 @@ public class HopperUptake extends SubsystemBase {
 		}
 	}
 
+	@Override
+	public void simulationPeriodic() {
+		// Simulate proportional control to the setpoint
+		// This is very basic simulation but it works well enough
+		// Could maybe add some more advanced stuff later if needed
+		double setpointRadiansPerSecond = setpoint.in(RadiansPerSecond);
+		double simVelocityRadiansPerSecond = simVelocity.in(RadiansPerSecond);
+
+		simVelocity = RadiansPerSecond.of(MathUtil.interpolate(simVelocityRadiansPerSecond, setpointRadiansPerSecond, 0.1));
+
+		bigSpinny.getSimState().setRotorVelocity(simVelocity);
+	}
+
 	public boolean isUptakeAtTarget() {
 		return MathUtil.isNear(setpoint.in(RotationsPerSecond), bigSpinny.getVelocity().getValueAsDouble(), HopperUptakeConstants.TOLERANCE.in(RotationsPerSecond));
 	}
@@ -110,24 +131,27 @@ public class HopperUptake extends SubsystemBase {
 		setpoint = RPS;
 	}
 
-	private void startHopperForward() {
+	public void startHopperForward() {
 		startHopperMotorRPM(HopperUptakeConstants.FORWARD_HOPPER_RPS);
+		isHopperRunningForwards = true;
 	}
 
-	private void startUptakeForward() {
+	public void startUptakeForward() {
 		startUptakeMotorRPM(HopperUptakeConstants.FORWARD_UPTAKE_RPS);
 	}
 
-	private void startHopperUnjam() {
+	public void startHopperUnjam() {
 		startHopperMotorRPM(HopperUptakeConstants.BACKWARD_HOPPER_RPS);
+		isHopperRunningForwards = false;
 	}
 
-	private void startUptakeUnjam() {
+	public void startUptakeUnjam() {
 		startUptakeMotorRPM(HopperUptakeConstants.BACKWARD_UPTAKE_RPS);
 	}
 
 	public void stopHopper() {
 		littleSpinny.stopMotor();
+		isHopperRunningForwards = false;
 	}
 
 	// TODO: I'm wondering if we need separate stopUptake and stopHopper functions as we would always
@@ -167,6 +191,13 @@ public class HopperUptake extends SubsystemBase {
 
 	public Command stopBothMotorsCommand() {
 		return runOnce(() -> stopBothMotors());
+	}
+
+	/**
+	 * Returns true if the hopper is running forwards, false otherwise. This mostly exists for sim.
+	 */
+	public boolean getIsHopperRunningForwards() {
+		return isHopperRunningForwards;
 	}
 
 	@Override

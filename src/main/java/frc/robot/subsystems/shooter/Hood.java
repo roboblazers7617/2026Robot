@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Degrees;
 
 import java.util.function.Supplier;
@@ -35,6 +36,7 @@ public class Hood extends SubsystemBase {
 	private NetworkTable hoodTable;
 	private DoubleEntry hoodPositionEntry;
 	private Angle requestedAngle;
+	private Angle simPosition = Radians.zero();
 
 	public Hood(NetworkTable table) {
 		setupNetworkTable(table);
@@ -79,6 +81,19 @@ public class Hood extends SubsystemBase {
 	public void periodic() {
 		// This method will be called once per scheduler run
 		// SmartDashboard.putBoolean("Hood at position", IsAtPosition());
+	}
+
+	@Override
+	public void simulationPeriodic() {
+		// Simulate proportional control to the setpoint
+		// This is very basic simulation but it works well enough
+		// Could maybe add some more advanced stuff later if needed
+		double setpointRadians = requestedAngle.in(Radians);
+		double simPositionRadians = simPosition.in(Radians);
+
+		simPosition = Radians.of(MathUtil.interpolate(simPositionRadians, setpointRadians, 0.1));
+
+		hoodMotor.getSimState().setRawRotorPosition(simPosition.in(Degrees) * HoodConstants.SENSOR_TO_MECHANISM_RATIO);
 	}
 
 	public boolean isAtPosition() {

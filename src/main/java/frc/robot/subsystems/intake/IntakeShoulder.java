@@ -218,17 +218,11 @@ public class IntakeShoulder extends SubsystemBase {
 	/**
 	 * Method which checks angle of motor using Phoenix and WPILib commands.
 	 *
-	 * @param angle
-	 *            - angle to be chcked as Angle
-	 * @param tolerance
-	 *            - acceptable range as Angle
 	 * @return boolean indicating if motor position is within tolerance to angle
 	 */
-	// private boolean getIsAtTarget(Angle angle, Angle tolerance) {
-	// return motor.getPosition()
-	// .getValue()
-	// .isNear(angle, tolerance);
-	// }
+	public boolean getIsAtTarget() {
+		return MathUtil.isNear(setPointMeters, motor.getPosition().getValueAsDouble(), IntakeConstants.SHOULDER_TOLERANCE);
+	}
 
 	/**
 	 * Runs getIsAtTarget() for specified raised angle (for agitate system)

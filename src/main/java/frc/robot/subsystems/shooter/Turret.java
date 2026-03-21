@@ -193,7 +193,7 @@ public class Turret extends SubsystemBase {
 		}
 
 		// Seed the encoder
-		// seedEncoder();
+		seedEncoder();
 	}
 
 	@Override
@@ -231,7 +231,65 @@ public class Turret extends SubsystemBase {
 	 *         Command to run.
 	 */
 	public Command setPositionCommand(Supplier<Angle> position) {
-		return run(() -> setPositionWithWrapping(position.get()));
+		return run(() -> setPosition(position.get()));
+	}
+
+	/**
+	 * finds the rotation of the turret based on the encoders
+	 * 
+	 * @param e1v
+	 *            the value of the primary encoder, with 0 at turret = 0
+	 * @param e2v
+	 *            the value of the secondary encoder, with 0 at turret = 0
+	 * @return the rotation of the turret, if it could not be determined returns null, values range from [0,TurretConstants.TURRET_SPAN]
+	 */
+	private static Angle findRotationFromEncoders(double e1v, double e2v) {
+		double e1r = TurretConstants.PRIMARY_ENCODER_RATIO;
+		double e2r = TurretConstants.SECONDARY_ENCODER_RATIO;
+
+		double[] possibleR = new double[(int) (TurretConstants.TURRET_SPAN * e1r + 1)];
+
+		for (int i = 0; i < possibleR.length; i++) {
+			possibleR[i] = (i + e1v) / e1r;
+		}
+
+		for (int i = 0; i < TurretConstants.TURRET_SPAN * e2r + 1; i++) {
+			double val = (i + e2v) / e2r;
+			if (isInArrayBinarySearch(possibleR, val, TurretConstants.TURRET_ENCODER_TOLERANCE.in(Rotations))) {
+				val -= TurretConstants.TURRET_SPAN * .5;
+				return Rotations.of(val);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * generic binary search, needed for findRotationsFromEncoders, replace if there is one in a library i don't know about
+	 * 
+	 * @param values
+	 *            the list of values to search
+	 * @param target
+	 *            the target value
+	 * @param tolerance
+	 *            the tolerance of whether a value is the same
+	 * @return
+	 */
+	public static boolean isInArrayBinarySearch(double[] values, double target, double tolerance) {
+		int min = 0;
+		int max = values.length - 1;
+		int cur = (min + max) / 2;
+
+		while (min < max) {
+			if (MathUtil.isNear(target, values[cur], tolerance)) {
+				return true;
+			} else if (values[cur] > target) {
+				max = cur - 1;
+			} else {
+				min = cur + 1;
+			}
+			cur = (min + max) / 2;
+		}
+		return false;
 	}
 
 	/**
@@ -253,7 +311,7 @@ public class Turret extends SubsystemBase {
 	 *            Angle to turn to.
 	 */
 	private void setPositionDirect(Angle position) {
-		motor.setControl(positionRequestMotionMagic.withPosition(position));
+		motor.setControl(positionRequestMotionMagic.withPosition(position.minus(Radians.of(0.04))));
 
 		setpoint = position;
 	}
@@ -264,7 +322,7 @@ public class Turret extends SubsystemBase {
 	 * @param position
 	 *            Angle to turn to. Wrapped to be within [0-1] rotations (and the shortest path to the target is then taken).
 	 */
-	private void setPositionWithWrapping(Angle position) {
+	public void setPosition(Angle position) {
 		setPositionDirect(findClosestTargetEquivalent(position));
 	}
 
@@ -314,14 +372,14 @@ public class Turret extends SubsystemBase {
 	 */
 	private boolean seedEncoder() {
 		// Encoder seeding
-		Optional<Angle> turretPosition = encoder.getAngleOptional();
-		if (turretPosition.isPresent()) {
-			motor.setPosition(turretPosition.get());
+		Angle turretPosition = findRotationFromEncoders(encoderCandi.getPWM2Position(true).getValueAsDouble() - TurretConstants.PRIMARY_ENCODER_OFFSET.in(Rotations), encoderCandi.getPWM1Position(true).getValueAsDouble() - TurretConstants.SECONDARY_ENCODER_OFFSET.in(Rotations));
+		if (turretPosition != null) {
+			motor.setPosition(turretPosition);
+			return true;
 		} else {
 			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Failed to solve turret position!", "Failed to solve the turret's position. This shouldn't happen! Try moving the turret a bit and restarting the robot code to see if it will solve correctly.", Seconds.zero());
+			return false;
 		}
-
-		return turretPosition.isPresent();
 	}
 
 	/**

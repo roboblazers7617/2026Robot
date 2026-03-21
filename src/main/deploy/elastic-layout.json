@@ -68,49 +68,6 @@
               "data_type": "double",
               "show_submit_button": false
             }
-          },
-          {
-            "title": "CoralMode",
-            "x": 640.0,
-            "y": 0.0,
-            "width": 768.0,
-            "height": 512.0,
-            "type": "Boolean Box",
-            "properties": {
-              "topic": "/CoralMode",
-              "period": 0.06,
-              "data_type": "boolean",
-              "true_color": 4294967295,
-              "false_color": 4278255524,
-              "true_icon": "None",
-              "false_icon": "None"
-            }
-          },
-          {
-            "title": "Toggle Elevator Brake Mode",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 384.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/Toggle Elevator Brake Mode",
-              "period": 0.06,
-              "show_type": true
-            }
-          },
-          {
-            "title": "Stop Elevator Command",
-            "x": 384.0,
-            "y": 384.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "Command",
-            "properties": {
-              "topic": "/SmartDashboard/Stop Elevator Command",
-              "period": 0.06,
-              "show_type": true
-            }
           }
         ]
       }
@@ -163,7 +120,8 @@
               "show_trajectories": true,
               "field_rotation": 0.0,
               "robot_color": 4294198070,
-              "trajectory_color": 4294967295
+              "trajectory_color": 4294967295,
+              "show_robot_outside_widget": true
             }
           },
           {
@@ -189,7 +147,8 @@
             "properties": {
               "topic": "/SmartDashboard/Reset pose to selected position",
               "period": 0.06,
-              "show_type": true
+              "show_type": true,
+              "maximize_button_space": false
             }
           },
           {
@@ -213,13 +172,68 @@
       }
     },
     {
-      "name": "Arm",
+      "name": "Shooter",
       "grid_layout": {
         "layouts": [
           {
-            "title": "Leader Elevator Motor",
+            "title": "Debug",
             "x": 0.0,
-            "y": 128.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Flywheel Speed",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Shooter Superstructure/Debug/Flywheel Speed",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Hood Angle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Shooter Superstructure/Debug/Hood Angle",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              },
+              {
+                "title": "Turret Angle",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "Text Display",
+                "properties": {
+                  "topic": "/Shooter Superstructure/Debug/Turret Angle",
+                  "period": 0.06,
+                  "data_type": "double",
+                  "show_submit_button": true
+                }
+              }
+            ]
+          },
+          {
+            "title": "Shooter Superstructure",
+            "x": 256.0,
+            "y": 0.0,
             "width": 256.0,
             "height": 512.0,
             "type": "List Layout",
@@ -228,173 +242,59 @@
             },
             "children": [
               {
-                "title": "Percentage",
-                "x": 384.0,
-                "y": 256.0,
+                "title": "Home",
+                "x": 0.0,
+                "y": 0.0,
                 "width": 256.0,
                 "height": 128.0,
-                "type": "Text Display",
+                "type": "Command",
                 "properties": {
-                  "topic": "Telemetry/robotContainer/elevator/leaderElevatorMotor/Percentage",
+                  "topic": "/SmartDashboard/Shooter Superstructure/Home",
                   "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
+                  "show_type": true,
+                  "maximize_button_space": false
                 }
               },
               {
-                "title": "Has fault",
-                "x": 512.0,
-                "y": 256.0,
-                "width": 128.0,
+                "title": "Start Manual Control",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 256.0,
                 "height": 128.0,
-                "type": "Boolean Box",
+                "type": "Command",
                 "properties": {
-                  "topic": "Telemetry/robotContainer/elevator/leaderElevatorMotor/Has fault",
+                  "topic": "/SmartDashboard/Shooter Superstructure/Start Manual Control",
                   "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
+                  "show_type": true,
+                  "maximize_button_space": false
                 }
               },
               {
-                "title": "Has warning",
-                "x": 384.0,
-                "y": 384.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "Telemetry/robotContainer/elevator/leaderElevatorMotor/Has warning",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              }
-            ]
-          },
-          {
-            "title": "Follower Elevator Motor",
-            "x": 256.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 512.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Percentage",
+                "title": "Start Shooting",
                 "x": 0.0,
                 "y": 0.0,
-                "width": 128.0,
+                "width": 256.0,
                 "height": 128.0,
-                "type": "Text Display",
+                "type": "Command",
                 "properties": {
-                  "topic": "Telemetry/robotContainer/elevator/followerElevatorMotor/Percentage",
+                  "topic": "/SmartDashboard/Shooter Superstructure/Start Shooting",
                   "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
+                  "show_type": true,
+                  "maximize_button_space": false
                 }
               },
               {
-                "title": "Has fault",
+                "title": "Turn Off",
                 "x": 0.0,
                 "y": 0.0,
-                "width": 128.0,
+                "width": 256.0,
                 "height": 128.0,
-                "type": "Boolean Box",
+                "type": "Command",
                 "properties": {
-                  "topic": "Telemetry/robotContainer/elevator/followerElevatorMotor/Has fault",
+                  "topic": "/SmartDashboard/Shooter Superstructure/Turn Off",
                   "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "Has warning",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "Telemetry/robotContainer/elevator/followerElevatorMotor/Has warning",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              }
-            ]
-          },
-          {
-            "title": "Wrist Motor",
-            "x": 512.0,
-            "y": 128.0,
-            "width": 256.0,
-            "height": 512.0,
-            "type": "List Layout",
-            "properties": {
-              "label_position": "TOP"
-            },
-            "children": [
-              {
-                "title": "Percentage",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Text Display",
-                "properties": {
-                  "topic": "Telemetry/robotContainer/elevator/wristMotor/Percentage",
-                  "period": 0.06,
-                  "data_type": "double",
-                  "show_submit_button": false
-                }
-              },
-              {
-                "title": "Has fault",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "Telemetry/robotContainer/elevator/wristMotor/Has fault",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
-                }
-              },
-              {
-                "title": "Has warning",
-                "x": 0.0,
-                "y": 0.0,
-                "width": 128.0,
-                "height": 128.0,
-                "type": "Boolean Box",
-                "properties": {
-                  "topic": "Telemetry/robotContainer/elevator/wristMotor/Has warning",
-                  "period": 0.06,
-                  "data_type": "boolean",
-                  "true_color": 4283215696,
-                  "false_color": 4294198070,
-                  "true_icon": "None",
-                  "false_icon": "None"
+                  "show_type": true,
+                  "maximize_button_space": false
                 }
               }
             ]
@@ -402,39 +302,62 @@
         ],
         "containers": [
           {
-            "title": "elevatorTarget",
-            "x": 0.0,
+            "title": "getState",
+            "x": 512.0,
             "y": 0.0,
-            "width": 512.0,
+            "width": 384.0,
             "height": 128.0,
-            "type": "Number Bar",
+            "type": "Text Display",
             "properties": {
-              "topic": "Telemetry/robotContainer/elevator/elevatorTarget",
+              "topic": "Telemetry/robotContainer/shooterSuperstructure/getState",
               "period": 0.06,
-              "data_type": "double",
-              "min_value": 0.0,
-              "max_value": 1.0,
-              "divisions": 5,
-              "inverted": false,
-              "orientation": "horizontal"
+              "data_type": "string",
+              "show_submit_button": false
             }
           },
           {
-            "title": "wristTarget",
+            "title": "subsystemsAtTargets",
             "x": 512.0,
-            "y": 0.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "Telemetry/robotContainer/shooterSuperstructure/subsystemsAtTargets",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Start Debug Control",
+            "x": 0.0,
+            "y": 256.0,
             "width": 256.0,
             "height": 128.0,
-            "type": "Number Bar",
+            "type": "Command",
             "properties": {
-              "topic": "Telemetry/robotContainer/elevator/wristTarget",
+              "topic": "/SmartDashboard/Shooter Superstructure/Debug/Start Debug Control",
               "period": 0.06,
-              "data_type": "double",
-              "min_value": 0.0,
-              "max_value": 90.0,
-              "divisions": 3,
-              "inverted": false,
-              "orientation": "horizontal"
+              "show_type": true,
+              "maximize_button_space": false
+            }
+          },
+          {
+            "title": "getSourceName",
+            "x": 640.0,
+            "y": 128.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Text Display",
+            "properties": {
+              "topic": "Telemetry/robotContainer/shooterSuperstructure/getSourceName",
+              "period": 0.06,
+              "data_type": "string",
+              "show_submit_button": false
             }
           }
         ]

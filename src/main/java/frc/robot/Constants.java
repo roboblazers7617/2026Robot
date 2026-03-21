@@ -12,16 +12,34 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.epilogue.Logged;
 import frc.robot.generated.TunerConstants;
-import edu.wpi.first.units.Units;
+import frc.robot.superstructure.ShooterValues;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rectangle2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.LinearVelocityUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Time;
+import frc.robot.util.BiAlliancePose3d;
+import frc.robot.util.InterpolatingMeasureTreeMap;
+import frc.robot.util.PoseUtil;
+import frc.robot.util.RectangleUtil;
 
-import edu.wpi.first.units.AngleUnit;
+import edu.wpi.first.units.Units;
+
 import edu.wpi.first.units.AngularAccelerationUnit;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.Current;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.units.measure.Velocity;
 import yams.math.SmartMath;
 
@@ -35,12 +53,17 @@ import edu.wpi.first.math.numbers.N3;
 
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -119,8 +142,50 @@ public final class Constants {
 		/**
 		 * AprilTag Field Layout for the current game.
 		 */
-		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout
-				.loadField(AprilTagFields.k2026RebuiltAndymark);
+		public static final AprilTagFieldLayout FIELD_LAYOUT = AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
+		/**
+		 * A pose at the center of the field.
+		 */
+		public static final Pose2d FIELD_CENTER = new Pose2d(FIELD_LAYOUT.getFieldLength() / 2, FIELD_LAYOUT.getFieldWidth() / 2, Rotation2d.kZero);
+		/**
+		 * A rectangle encompassing the neutral (center) zone of the field.
+		 */
+		public static final Rectangle2d NEUTRAL_RECTANGLE = new Rectangle2d(FIELD_CENTER, Inches.of(287.0), Meters.of(FIELD_LAYOUT.getFieldWidth()));
+
+		/**
+		 * Zones and poses to shoot from and to.
+		 */
+		public static class ShootingZones {
+			/**
+			 * A rectangle encompassing the shooting zone for the top half (towards negative Y) of the neutral rectangle (when looking at the field diagram).
+			 */
+			public static final Rectangle2d NEUTRAL_ZONE_TOP = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(0, -FIELD_LAYOUT.getFieldWidth() / 3.0, Rotation2d.kZero)), NEUTRAL_RECTANGLE.getXWidth(), NEUTRAL_RECTANGLE.getYWidth() / 3.0);
+			/**
+			 * A rectangle encompassing the shooting zone for the bottom half (towards positive Y) of the neutral rectangle (when looking at the field diagram).
+			 */
+			public static final Rectangle2d NEUTRAL_ZONE_BOTTOM = RectangleUtil.flipRectangleY(NEUTRAL_ZONE_TOP);
+			/**
+			 * The pose to shoot at for the {@link #NEUTRAL_ZONE_TOP top of the neutral rectangle} (when looking at the field diagram).
+			 */
+			public static final BiAlliancePose3d SHUTTLE_TOP_POSE = BiAlliancePose3d.fromBluePose(new Pose3d(Meters.of(3.0), Meters.of(2.0), Meters.zero(), Rotation3d.kZero), BiAlliancePose3d.InvertY.KEEP_Y);
+			/**
+			 * The pose to shoot at for the {@link #NEUTRAL_ZONE_BOTTOM bottom of the neutral rectangle} (when looking at the field diagram).
+			 */
+			public static final BiAlliancePose3d SHUTTLE_BOTTOM_POSE = BiAlliancePose3d.fromBluePose(PoseUtil.flipPoseY(SHUTTLE_TOP_POSE.getBluePose()), BiAlliancePose3d.InvertY.KEEP_Y);
+
+			/**
+			 * A rectangle encompassing the shooting zone for the hub on the red alliance.
+			 */
+			public static final Rectangle2d HUB_ZONE_RED = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(Inches.of(234.555).plus(Meters.of(0.1)), Meters.zero(), Rotation2d.kZero)), Inches.of(182.11), Meters.of(5.0));
+			/**
+			 * A rectangle encompassing the shooting zone for the hub on the blue alliance.
+			 */
+			public static final Rectangle2d HUB_ZONE_BLUE = RectangleUtil.flipRectangleX(HUB_ZONE_RED);
+			/**
+			 * The pose to shoot at for the {@link #HUB_ZONE_RED} and {@link #HUB_ZONE_BLUE}.
+			 */
+			public static final BiAlliancePose3d HUB_POSE = BiAlliancePose3d.fromRedPose(new Pose3d(FIELD_CENTER).transformBy(new Transform3d(Inches.of(143.50), Meters.zero(), Inches.of(72.0), Rotation3d.kZero)), BiAlliancePose3d.InvertY.KEEP_Y);
+		}
 	}
 
 	/**
@@ -189,6 +254,8 @@ public final class Constants {
 		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 20.0;
 
 		public static final double GAIN_SCHEDULE_ERROR_THRESHOLD = 0.5;
+
+		public static final double SHOULDER_TOLERANCE = 0.1;
 	}
 
 	public static class DrivetrainConstants {
@@ -215,6 +282,141 @@ public final class Constants {
 		public static final double MAX_SPEED_DEADBAND = 0.35 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
 		// will set spinny mode turn speed
 		public static final double MAX_ANGULAR_RATE_DEADBAND = 0.5 * RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+	}
+
+	/**
+	 * Constants that configure the superstructure.
+	 */
+	public static class SuperstructureConstants {
+		/**
+		 * The table name for the shooter superstructure.
+		 */
+		public static final String SHOOTER_SUPERSTRUCTURE_TABLE_NAME = "Shooter Superstructure";
+		/**
+		 * The table name for the intake superstructure.
+		 */
+		public static final String INTAKE_SUPERSTRUCTURE_TABLE_NAME = "Intake Superstructure";
+		/**
+		 * The interval to run the {@link RobotContainer#superstructurePeriodic()} at.
+		 */
+		public static final Time PERIODIC_INTERVAL = Milliseconds.of(10);
+		/**
+		 * The number of times to recalculate the shooting position for shoot-while-move. More iterations should give more accurate shoot-while-move outputs.
+		 */
+		public static final int SHOOTING_CALCULATOR_ITERATIONS = 3;
+		/**
+		 * Should we automatically enter the {@link frc.robot.superstructure.ShooterSuperstructure.ShooterState#HOME} state on enable?
+		 * <p>
+		 * This should be set to true for competitions, since we want to spin up the shooter automatically.
+		 */
+		public static final boolean HOME_ON_ENABLE = false;
+
+		// all things used for calculating the turret pose because if i left them as magic number Max would pipe bomb my mailbox
+
+		/**
+		 * the distance from the pivot of the hood to the halfway point between the edges of the flywheels, AKA where the ball will be launched from
+		 */
+		public static final Distance HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS = Meters.of(0.114351816);
+
+		/**
+		 * the transform from the center of the robot on the floor to the center of the pivot on the top of the shooter base plate, in meters
+		 */
+		public static final Transform3d ROBOT_TO_TURRET_BASE_TRANSFORM = new Transform3d(-0.1333479934, -0.1285875, 0.377121547, new Rotation3d());
+		/**
+		 * the transform from the center of the pivot on top of the shooter base plate to the center of the hood pivot axis in meters
+		 */
+		public static final Transform3d TURRET_BASE_TO_HOOD_PIVOT = new Transform3d(0.126746, 0, 0.0635, new Rotation3d());
+	}
+
+	/**
+	 * Constants that control the shooting behavior.
+	 */
+	public static class ShootingConstants {
+		// TODO: Update all of these constants
+		/**
+		 * An interpolation table used for flywheel speed by gamepiece velocity.
+		 */
+		public static final InterpolatingMeasureTreeMap<LinearVelocity, LinearVelocityUnit, AngularVelocity, AngularVelocityUnit> FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY = new InterpolatingMeasureTreeMap<>();
+
+		static {
+			// Add values to the interpolation table
+			FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.put(MetersPerSecond.of(0.0), RPM.of(10.0));
+			FLYWHEEL_VELOCITY_BY_GAMEPIECE_VELOCITY.put(MetersPerSecond.of(10.0), RPM.of(50.0));
+		}
+
+		/**
+		 * An interpolation table used for hood angle by gamepiece velocity.
+		 */
+		public static final InterpolatingMeasureTreeMap<Angle, AngleUnit, Angle, AngleUnit> HOOD_ANGLE_BY_GAMEPIECE_THETA = new InterpolatingMeasureTreeMap<>();
+
+		static {
+			// Add values to the interpolation table
+			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(37.0), Degrees.of(1.0));
+			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(69.5), Degrees.of(32.0));
+		}
+
+		/**
+		 * The angle to shoot the gamepiece at.
+		 */
+		public static final Angle GAMEPIECE_THETA = Degrees.of(80.0);
+
+		/**
+		 * The acceleration due to gravity imposed on the gamepiece.
+		 */
+		public static final LinearAcceleration GAMEPIECE_G = MetersPerSecondPerSecond.of(-9.81);
+
+		/**
+		 * How long to wait after no balls are detected to stop shooting.
+		 */
+		public static final Time SHOOTING_TIMEOUT = Seconds.of(2.0);
+
+		// TODO fill in once linreg is done
+		/**
+		 * the A in the linreg for x=hood angle y = output angle
+		 */
+		public static final double LINREG_HOOD_ANGLE_A = 0;
+		/**
+		 * the B in the linreg for x=hood angle y = output angle
+		 */
+		public static final double LINREG_HOOD_ANGLE_B = 0;
+
+		/**
+		 * the A in the linreg for x=flywheel speed y = output speed
+		 */
+		public static final double LINREG_FLYWHEEL_A = 0;
+		/**
+		 * the B in the linreg for x=flywheel speed y = output speed
+		 */
+		public static final double LINREG_FLYWHEEL_B = 0;
+
+		/**
+		 * The minimum angle to shoot at.
+		 */
+		public static final Angle MIN_SHOOT_ANGLE = Degrees.of(38);
+		/**
+		 * The maximum angle to shoot at.
+		 */
+		public static final Angle MAX_SHOOT_ANGLE = Degrees.of(69);
+
+		/**
+		 * A set of values to shoot from a static position.
+		 */
+		public static final ShooterValues STATIC_SHOOT_VALUES = new ShooterValues(RPM.of(2200), Degrees.of(0), Degrees.of(-13));
+		/**
+		 * A set of values to shoot from the left by the door.
+		 */
+		public static final ShooterValues STATIC_SHOOT_LEFT_DOOR_VALUES = new ShooterValues(RotationsPerSecond.of(39), Degrees.of(0), Degrees.of(-38));
+		/**
+		 * A set of values to shoot from the center by the tower.
+		 */
+		public static final ShooterValues STATIC_SHOOT_CENTER = new ShooterValues(RotationsPerSecond.of(0), Degrees.of(0), Degrees.of(0));
+	}
+
+	/**
+	 * Constants used to configure the hopper.
+	 */
+	public static class HopperConstants {
+		public static final int BEAM_BREAK_DIO_PIN = 0;
 	}
 
 	public static class HopperUptakeConstants {
@@ -258,7 +460,7 @@ public final class Constants {
 		// Speed Values in RPM
 		public static final AngularVelocity TOLERANCE = RotationsPerSecond.of(5);
 		// // Forward
-		public static final AngularVelocity FORWARD_HOPPER_RPS = RotationsPerSecond.of(10.0);
+		public static final AngularVelocity FORWARD_HOPPER_RPS = RotationsPerSecond.of(5.0);
 		public static final AngularVelocity FORWARD_UPTAKE_RPS = RotationsPerSecond.of(35.0);
 		// // Backward
 		public static final AngularVelocity BACKWARD_HOPPER_RPS = RotationsPerSecond.of(-10.0);
@@ -278,21 +480,21 @@ public final class Constants {
 		public static final double KD_1 = 0;
 		public static final double KV_1 = 0.126;
 		public static final double KS_1 = 0.45;
-		public static final AngularVelocity RPS = Units.RotationsPerSecond.of(50);
-		public static final AngularVelocity CRUISE_VELOCITY = RPS;
 		public static final double MAXIMUM_VELOCITY = 80.0;
 		public static final double ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
 		public static final boolean ENABLE_STATOR_LIMIT = true;
 		public static final double STATOR_CURRENT_LIMIT = 40;
 		public static final boolean ENABLE_SUPPLY_LIMIT = false;
 		public static final double SUPPLY_CURRENT_LIMIT = 60.0;
-		public static final AngularVelocity FAST_SPEED = CRUISE_VELOCITY;
-		public static final AngularVelocity SLOW_SPEED = CRUISE_VELOCITY.div(3.0);
-		public static final AngularVelocity COAST_SPEED = CRUISE_VELOCITY.div(2.0);
 		public static final AngularVelocity TOLERANCE = Units.RotationsPerSecond.of(3);
 		public static final double SUPPLY_CURRENT_LOWER_LIMIT = 40.0;
 		public static final double SUPPLY_CURRENT_LOWER_TIME = 0.1;
 		public static final boolean SUPPLY_CURRENT_LIMIT_ENABLE = true;
+
+		/**
+		 * The speed for the flywheel while the shooter is homed.
+		 */
+		public static final AngularVelocity IDLE_SPEED = RPM.of(500.0);
 	}
 
 	public static class HoodConstants {
@@ -317,6 +519,7 @@ public final class Constants {
 		public static final Angle MINIMUM_HOOD_ANGLE = Degrees.of(1);
 		public static final Angle MAXIMUM_HOOD_ANGLE = Degrees.of(32);
 		public static final double SENSOR_TO_MECHANISM_RATIO = 13.78 / 32; // Number of shaft rotations / degrees traveled
+		public static final Angle HOME_ANGLE = MINIMUM_HOOD_ANGLE;
 	}
 
 	/**
@@ -331,6 +534,11 @@ public final class Constants {
 		 * The CAN ID for the encoder CANdi.
 		 */
 		public static final int CANDI_ID = 20;
+
+		/**
+		 * The turret's offset from the center of the robot (drivetrain pose).
+		 */
+		public static final Transform3d TURRET_OFFSET = new Transform3d(Inches.of(5.0), Inches.of(5.062), Meters.of(0.3), Rotation3d.kZero);
 
 		/**
 		 * The number of teeth on the main turret gear.
@@ -363,11 +571,23 @@ public final class Constants {
 		/**
 		 * The number of encoder rotations per mechanism rotation for the primary encoder.
 		 */
-		public static final double PRIMARY_ENCODER_RATIO = MOTOR_GEAR_RATIO;
+		// public static final double PRIMARY_ENCODER_RATIO = MOTOR_GEAR_RATIO;
+		public static final double PRIMARY_ENCODER_RATIO = 5 / 1;
 		/**
 		 * The number of encoder rotations per mechanism rotation for the secondary encoder.
 		 */
-		public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(TURRET_GEAR_TEETH / PINION_UPPER_TEETH, PINION_UPPER_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
+		// public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(TURRET_GEAR_TEETH / PINION_UPPER_TEETH, PINION_UPPER_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
+		public static final double SECONDARY_ENCODER_RATIO = 200 / 21;
+
+		/**
+		 * the total span of the encoders tracking range, can be found by finding the lcm of the encoder ratios
+		 */
+		public static final double TURRET_SPAN = 4.2;
+
+		/**
+		 * the tolerance for turret encoders to consider values the same, increase if its returning null, as that means there is too much slop in the system
+		 */
+		public static final Angle TURRET_ENCODER_TOLERANCE = Rotations.of(.005);
 
 		/**
 		 * The offset from zero of the absolute encoder. This is in mechanism rotations.
@@ -453,7 +673,7 @@ public final class Constants {
 		/**
 		 * How close does the Turret have to be to its setpoint to be counted as being there.
 		 */
-		public static final Measure<AngleUnit> SETPOINT_THRESHOLD = Degrees.of(3.0);
+		public static final Measure<AngleUnit> SETPOINT_THRESHOLD = Degrees.of(6.0);
 	}
 
 	public static class VisionConstants {

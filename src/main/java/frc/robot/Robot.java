@@ -10,6 +10,8 @@ import edu.wpi.first.epilogue.logging.NTEpilogueBackend;
 import edu.wpi.first.net.WebServer;
 import edu.wpi.first.networktables.NetworkTableInstance;
 
+import org.ironmaple.simulation.SimulatedArena;
+
 import com.ctre.phoenix6.HootEpilogueBackend;
 import com.ctre.phoenix6.SignalLogger;
 
@@ -22,6 +24,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.LoggingConstants;
+import frc.robot.Constants.SuperstructureConstants;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -73,6 +76,9 @@ public class Robot extends TimedRobot {
 		// Instantiate our RobotContainer. This will perform all our button bindings, and put our
 		// autonomous chooser on the dashboard.
 		robotContainer = new RobotContainer();
+
+		// Set up the superstructure periodic
+		addPeriodic(robotContainer::superstructurePeriodic, SuperstructureConstants.PERIODIC_INTERVAL);
 	}
 
 	/**
@@ -156,11 +162,17 @@ public class Robot extends TimedRobot {
 	 * This function is called once when the robot is first started up.
 	 */
 	@Override
-	public void simulationInit() {}
+	public void simulationInit() {
+		robotContainer.simulationInit();
+	}
 
 	/**
 	 * This function is called periodically whilst in simulation.
 	 */
 	@Override
-	public void simulationPeriodic() {}
+	public void simulationPeriodic() {
+		robotContainer.simulationPeriodic();
+
+		SimulatedArena.getInstance().simulationPeriodic();
+	}
 }
