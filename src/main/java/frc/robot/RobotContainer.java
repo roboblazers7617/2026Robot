@@ -232,6 +232,8 @@ public class RobotContainer {
 		NamedCommands.registerCommand("Raise Climb", Commands.print("The Climb will rise"));
 		NamedCommands.registerCommand("Lower Climb", Commands.print("The Climb will fall"));
 
+		NamedCommands.registerCommand("Protect Intake", intakeShoulder.stowOverBumperCommand());
+
 		NamedCommands.registerCommand("Shoot", shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot", ShootingConstants.STATIC_SHOOT_VALUES))
 				.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
 				.andThen(shooterSuperstructure.startShootingCommand())
