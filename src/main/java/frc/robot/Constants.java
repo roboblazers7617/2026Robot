@@ -203,6 +203,7 @@ public final class Constants {
 		// public static final double INTAKE_START_SPEED = 0.2; //ts is old (as are the
 		// following three)
 		public static final double INTAKE_START_VOLTAGE = 4.5;
+		public static final double INTAKE_START_SLOW_VOLTAGE = 2.0;
 		// public static final double INTAKE_STOP_SPEED = 0.0;
 		public static final double INTAKE_STOP_VOLTAGE = 0.0;
 		// public static final double OUTTAKE_SPEED = -0.2;
@@ -256,6 +257,7 @@ public final class Constants {
 		public static final double GAIN_SCHEDULE_ERROR_THRESHOLD = 0.5;
 
 		public static final double SHOULDER_TOLERANCE = 0.1;
+		public static final double NUDGE_SPEED = 0.3;
 	}
 
 	public static class DrivetrainConstants {
