@@ -303,7 +303,6 @@ public class ShootingCalculator {
 
 		// Solve the angle, translation, and distance to the target
 		Angle targetAngle = solveTargetAngle(turretPose.toPose2d(), targetPose.toPose2d());
-		Translation2d gamepieceTranslation = solveGamepieceTranslation(turretPose, targetPose);
 		Distance targetDistance = solveGamepieceTranslation(turretPose, targetPose).getMeasureX();
 
 		distancePublisher.set(targetDistance.in(Meters));
