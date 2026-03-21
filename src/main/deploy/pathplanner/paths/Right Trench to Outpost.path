@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 3.573035714285715,
-        "y": 0.4609880952380956
+        "y": 0.49910000000000004
       },
       "prevControl": null,
       "nextControl": {
         "x": 2.834302682611507,
-        "y": 0.5841102671837961
+        "y": 0.6222221719457006
       },
       "isLocked": false,
       "linkedName": "Right Edge Trench"
