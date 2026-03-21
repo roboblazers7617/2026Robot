@@ -212,8 +212,11 @@ public class RobotContainer {
 	 * Sets up the {@link NamedCommands} used by the autonomous routine.
 	 */
 	private void configureNamedCommands() {
-		NamedCommands.registerCommand("Deploy Intake", Commands.print("IM DEPLOYING THE INTAKE"));
-		NamedCommands.registerCommand("Stow Intake", Commands.print("IM STOWING THE INTAKE"));
+		NamedCommands.registerCommand("Deploy Intake", intakeShoulder.lowerIntakeCommand()
+				.andThen(intakeGrabber.startIntakeCommand()));
+		NamedCommands.registerCommand("Stow Intake", intakeShoulder.raiseIntakeCommand()
+				.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
+				.andThen(intakeGrabber.stopIntakeCommand()));
 
 		NamedCommands.registerCommand("Raise Climb", Commands.print("The Climb will rise"));
 		NamedCommands.registerCommand("Lower Climb", Commands.print("The Climb will fall"));
