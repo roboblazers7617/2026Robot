@@ -374,11 +374,11 @@ public class Turret extends SubsystemBase {
 		Angle turretPosition = findRotationFromEncoders(encoderCandi.getPWM1Position(true).getValueAsDouble(), encoderCandi.getPWM2Position(true).getValueAsDouble());
 		if (turretPosition != null) {
 			motor.setPosition(turretPosition);
+			return true;
 		} else {
 			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Failed to solve turret position!", "Failed to solve the turret's position. This shouldn't happen! Try moving the turret a bit and restarting the robot code to see if it will solve correctly.", Seconds.zero());
+			return false;
 		}
-
-		return turretPosition.isPresent();
 	}
 
 	/**
