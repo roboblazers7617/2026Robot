@@ -53,8 +53,14 @@ public class Vision extends SubsystemBase {
 			if (turretVisionEst.isPresent()) {
 				var est = turretVisionEst.get();
 				var estStdDevs = getEstimationStdDevs();
-				drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-				System.out.println("front measurement added");
+				for (int tgt = 0; tgt < result.getTargets().size(); tgt++) {
+					if (result.getTargets().get((tgt)).getPoseAmbiguity() <= 0.2) {
+						drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+						System.out.println("turret measurement");
+					} else {
+						System.out.println("turret rejected");
+					}
+				}
 			}
 		}
 
@@ -70,8 +76,14 @@ public class Vision extends SubsystemBase {
 			if (eBoardVisionEst.isPresent()) {
 				var est = eBoardVisionEst.get();
 				var estStdDevs = getEstimationStdDevs();
-				drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
-				System.out.println("side measurement added");
+				for (int tgt = 0; tgt < result.getTargets().size(); tgt++) {
+					if (result.getTargets().get((tgt)).getPoseAmbiguity() <= 0.2) {
+						drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+						System.out.println("eboard measurement");
+					} else {
+						System.out.println("eboard rejected");
+					}
+				}
 			}
 		}
 	}
