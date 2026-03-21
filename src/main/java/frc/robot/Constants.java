@@ -175,7 +175,7 @@ public final class Constants {
 			/**
 			 * A rectangle encompassing the shooting zone for the hub on the red alliance.
 			 */
-			public static final Rectangle2d HUB_ZONE_RED = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(Inches.of(234.555).plus(Meters.of(0.1)), Meters.zero(), Rotation2d.kZero)), Inches.of(182.11), Meters.of(5.0));
+			public static final Rectangle2d HUB_ZONE_RED = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(Inches.of(234.555).plus(Meters.of(0.1)), Meters.zero(), Rotation2d.kZero)), Inches.of(182.11), Inches.of(317.7));
 			/**
 			 * A rectangle encompassing the shooting zone for the hub on the blue alliance.
 			 */
