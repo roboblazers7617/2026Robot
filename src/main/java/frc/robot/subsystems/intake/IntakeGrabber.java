@@ -75,6 +75,15 @@ public class IntakeGrabber extends SubsystemBase {
 	}
 
 	/**
+	 * Command which toggles intake on at a slow speed
+	 *
+	 * @return runOnce(() -> startIntakeSlow());
+	 */
+	public Command startIntakeSlowCommand() {
+		return runOnce(() -> startIntakeSlow());
+	}
+
+	/**
 	 * Command which toggles intake off
 	 *
 	 * @return runOnce(() -> stopIntake());
@@ -102,9 +111,17 @@ public class IntakeGrabber extends SubsystemBase {
 	}
 
 	/**
+	 * Method which starts the intake with a TorqueCurrentFOC method at a slower speed.
+	 */
+	private void startIntakeSlow() {
+		// setSpeed(IntakeConstants.INTAKE_START_SPEED);
+		setVoltage(IntakeConstants.INTAKE_START_SLOW_VOLTAGE);
+	}
+
+	/**
 	 * Method which stops the intake with a TorqueCurrentFOC method.
 	 */
-	private void stopIntake() {
+	public void stopIntake() {
 		// setSpeed(IntakeConstants.INTAKE_STOP_SPEED);
 		setVoltage(IntakeConstants.INTAKE_STOP_VOLTAGE);
 	}

@@ -339,24 +339,32 @@ public class RobotContainer {
 		operatorController.start()
 				.onTrue(shooterSuperstructure.homeCommand());
 
-		/**
-		 * code for demo controls
-		 */
-		// Press A to START and LOWER intake
+		// Press A to START and LOWER INTAKE
 		operatorController.a()
 				.onTrue(intakeGrabber.startIntakeCommand())
 				.onTrue(intakeShoulder.lowerIntakeCommand());
-		// Press B to STOP intake
+		// Press B to STOP INTAKE
 		operatorController.b()
 				.onTrue(intakeGrabber.stopIntakeCommand());
-		// Press Y to raise shoulder
-		operatorController.y()
-				.onTrue(intakeShoulder.raiseIntakeCommand());
-		// Press X to outtake
+		// Press X to START INTAKE SLOWLY
 		operatorController.x()
-				.onTrue(intakeShoulder.lowerIntakeCommand()
+				.onTrue(intakeGrabber.startIntakeSlowCommand());
+		// Press Y to STOW and then STOP INTAKE
+		operatorController.y()
+				.onTrue(intakeShoulder.raiseIntakeCommand()
 						.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
-						.andThen(intakeGrabber.outtakeCommand()));
+						.finallyDo(intakeGrabber::stopIntake));
+
+		// Manual control on joystick
+		intakeShoulder.setDefaultCommand(intakeShoulder.nudgeIntakeCommand(() -> {
+			double controllerValue = -operatorController.getRightY();
+
+			if (Math.abs(controllerValue) > OperatorConstants.DEADBAND) {
+				return controllerValue;
+			} else {
+				return 0.0;
+			}
+		}));
 
 		// Haptics when ready to shoot
 		shooterSuperstructure.readyToShootTrigger()
