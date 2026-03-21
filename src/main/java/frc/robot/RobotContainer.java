@@ -19,7 +19,8 @@ import frc.robot.subsystems.intake.IntakeShoulder;
 import frc.robot.superstructure.ShooterSim;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
-import frc.robot.superstructure.sources.ShootFromAnywhereSource;
+import frc.robot.superstructure.sources.ShootingSource;
+import frc.robot.superstructure.sources.ShootFromAnywhereInterpolatedSource;
 import frc.robot.superstructure.sources.ShootingSourceConstant;
 import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.Constants.ShootingConstants;
@@ -93,8 +94,8 @@ public class RobotContainer {
 	public final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
 	private final Vision vision = new Vision(drivetrain);
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
-	private final Shooter shooterSubsystem;
-	private final Hood hoodSubsystem;
+	private final Shooter shooter;
+	private final Hood hood;
 	private final Turret turret = new Turret();
 	private final HopperUptake hopperUptake = new HopperUptake();
 	private final IntakeGrabber intakeGrabber = new IntakeGrabber();
@@ -127,6 +128,11 @@ public class RobotContainer {
 	private ShooterSim shooterSim;
 
 	/**
+	 * The source that we use for shoot-from-anywhere.
+	 */
+	private final ShootingSource shootFromAnywhereSource = new ShootFromAnywhereInterpolatedSource(drivetrain);
+
+	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
 	public RobotContainer() {
@@ -138,11 +144,11 @@ public class RobotContainer {
 		// SmartDashboard.putData("Auto Mode", autoChooser);
 		//
 		// Set up subsystems
-		shooterSubsystem = new Shooter(networkTableInst.getSubTable("Shooter"));
-		hoodSubsystem = new Hood(networkTableInst.getSubTable("Hood"));
+		shooter = new Shooter(networkTableInst.getSubTable("Shooter"));
+		hood = new Hood(networkTableInst.getSubTable("Hood"));
 
 		// Set up superstructure
-		shooterSuperstructure = new ShooterSuperstructure(shooterSubsystem, hoodSubsystem, turret, hopperUptake, uptakeBeamBreak);
+		shooterSuperstructure = new ShooterSuperstructure(shooter, hood, turret, hopperUptake, uptakeBeamBreak);
 
 		// Configure the trigger bindings
 		configureNamedCommands();
@@ -153,15 +159,19 @@ public class RobotContainer {
 			shooterSuperstructureDebug = new ShooterSuperstructureDebug(shooterSuperstructure);
 		}
 
+		// Set up a trigger to go into the home state when we enable in auto
+		RobotModeTriggers.autonomous()
+				.onTrue(shooterSuperstructure.homeCommand());
+
 		if (SuperstructureConstants.HOME_ON_ENABLE) {
-			// Set up a trigger to go into the home state when we enable
-			RobotModeTriggers.disabled()
-					.onFalse(shooterSuperstructure.homeCommand());
+			// Set up a trigger to go into the home state when we enable in teleop
+			RobotModeTriggers.teleop()
+					.onTrue(shooterSuperstructure.homeCommand());
 		}
 
 		// Set up a trigger so, when we enable in teleop we go into shoot while move
 		RobotModeTriggers.teleop()
-				.onTrue(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain)));
+				.onTrue(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource));
 
 		// Warmup PathPlanner to avoid Java pauses
 		FollowPathCommand.warmupCommand().schedule();
@@ -191,7 +201,7 @@ public class RobotContainer {
 	 * This function is called once when the robot is first started up whilst in simulation.
 	 */
 	public void simulationInit() {
-		shooterSim = new ShooterSim(drivetrain, shooterSubsystem, hoodSubsystem, turret, hopperUptake);
+		shooterSim = new ShooterSim(drivetrain, shooter, hood, turret, hopperUptake);
 	}
 
 	/**
@@ -221,6 +231,8 @@ public class RobotContainer {
 
 		NamedCommands.registerCommand("Raise Climb", Commands.print("The Climb will rise"));
 		NamedCommands.registerCommand("Lower Climb", Commands.print("The Climb will fall"));
+
+		NamedCommands.registerCommand("Protect Intake", intakeShoulder.stowOverBumperCommand());
 
 		NamedCommands.registerCommand("Shoot", shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot", ShootingConstants.STATIC_SHOOT_VALUES))
 				.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
@@ -261,6 +273,10 @@ public class RobotContainer {
 		// // Sets multiplier to the higher value
 		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
 
+		driverController.leftTrigger()
+				.whileTrue(hopperUptake.startUptakeUnjamCommand())
+				.onFalse(hopperUptake.startUptakeForwardCommand());
+
 		drivetrain.registerTelemetry(logger::telemeterize);
 	}
 
@@ -285,18 +301,33 @@ public class RobotContainer {
 				.onFalse(shooterSuperstructure.homeCommand()
 						.andThen(intakeGrabber.stopIntakeCommand()));
 
+		operatorController.rightBumper()
+				.onTrue(intakeShoulder.stowOverBumperCommand());
+
 		// Set mode to shoot from fixed position, wait until ready to shoot, then shoot
 		// Home and set back to shoot from anywhere on release
 		operatorController.rightTrigger()
 				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot", ShootingConstants.STATIC_SHOOT_VALUES))
 						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
-				.onFalse(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain))
+				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
 						.andThen(shooterSuperstructure.homeCommand()));
 
 		operatorController.povLeft()
 				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot - Left", ShootingConstants.STATIC_SHOOT_LEFT_DOOR_VALUES))
 						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
-				.onFalse(shooterSuperstructure.setSourceCommand(new ShootFromAnywhereSource(drivetrain))
+				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
+						.andThen(shooterSuperstructure.homeCommand()));
+
+		operatorController.povRight()
+				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot - Right", ShootingConstants.STATIC_SHOOT_RIGHT_DOOR_VALUES))
+						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
+				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
+						.andThen(shooterSuperstructure.homeCommand()));
+
+		operatorController.povUp()
+				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot - Center", ShootingConstants.STATIC_SHOOT_CENTER))
+						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
+				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
 						.andThen(shooterSuperstructure.homeCommand()));
 
 		// Set mode to idle
@@ -308,24 +339,32 @@ public class RobotContainer {
 		operatorController.start()
 				.onTrue(shooterSuperstructure.homeCommand());
 
-		/**
-		 * code for demo controls
-		 */
-		// Press A to START and LOWER intake
+		// Press A to START and LOWER INTAKE
 		operatorController.a()
 				.onTrue(intakeGrabber.startIntakeCommand())
 				.onTrue(intakeShoulder.lowerIntakeCommand());
-		// Press B to STOP intake
+		// Press B to STOP INTAKE
 		operatorController.b()
 				.onTrue(intakeGrabber.stopIntakeCommand());
-		// Press Y to raise shoulder
-		operatorController.y()
-				.onTrue(intakeShoulder.raiseIntakeCommand());
-		// Press X to outtake
+		// Press X to START INTAKE SLOWLY
 		operatorController.x()
-				.onTrue(intakeShoulder.lowerIntakeCommand()
+				.onTrue(intakeGrabber.startIntakeSlowCommand());
+		// Press Y to STOW and then STOP INTAKE
+		operatorController.y()
+				.onTrue(intakeShoulder.raiseIntakeCommand()
 						.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
-						.andThen(intakeGrabber.outtakeCommand()));
+						.finallyDo(intakeGrabber::stopIntake));
+
+		// Manual control on joystick
+		intakeShoulder.setDefaultCommand(intakeShoulder.nudgeIntakeCommand(() -> {
+			double controllerValue = -operatorController.getRightY();
+
+			if (Math.abs(controllerValue) > OperatorConstants.DEADBAND) {
+				return controllerValue;
+			} else {
+				return 0.0;
+			}
+		}));
 
 		// Haptics when ready to shoot
 		shooterSuperstructure.readyToShootTrigger()

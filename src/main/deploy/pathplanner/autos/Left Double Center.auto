@@ -21,7 +21,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 1.2
+                        "waitTime": 0.0
                       }
                     },
                     {
@@ -43,9 +43,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Intook Left to Trench"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Intook Left to Trench"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Protect Intake"
+                }
+              }
+            ]
           }
         },
         {

@@ -22,6 +22,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.units.AngleUnit;
 import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.LinearVelocityUnit;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -45,8 +46,6 @@ import yams.math.SmartMath;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
@@ -176,7 +175,7 @@ public final class Constants {
 			/**
 			 * A rectangle encompassing the shooting zone for the hub on the red alliance.
 			 */
-			public static final Rectangle2d HUB_ZONE_RED = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(Inches.of(234.555).plus(Meters.of(0.1)), Meters.zero(), Rotation2d.kZero)), Inches.of(182.11), Meters.of(5.0));
+			public static final Rectangle2d HUB_ZONE_RED = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(Inches.of(234.555).plus(Meters.of(0.1)), Meters.zero(), Rotation2d.kZero)), Inches.of(182.11), Inches.of(317.7));
 			/**
 			 * A rectangle encompassing the shooting zone for the hub on the blue alliance.
 			 */
@@ -204,6 +203,7 @@ public final class Constants {
 		// public static final double INTAKE_START_SPEED = 0.2; //ts is old (as are the
 		// following three)
 		public static final double INTAKE_START_VOLTAGE = 4.5;
+		public static final double INTAKE_START_SLOW_VOLTAGE = 2.0;
 		// public static final double INTAKE_STOP_SPEED = 0.0;
 		public static final double INTAKE_STOP_VOLTAGE = 0.0;
 		// public static final double OUTTAKE_SPEED = -0.2;
@@ -219,6 +219,7 @@ public final class Constants {
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
 		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;
+		public static final double SHOULDER_STOW_OVER_BUMPER_DISTANCE = 10.0;
 
 		public static final double INTAKE_KG = 0.1;
 		public static final double INTAKE_KS = 0.34;
@@ -256,6 +257,7 @@ public final class Constants {
 		public static final double GAIN_SCHEDULE_ERROR_THRESHOLD = 0.5;
 
 		public static final double SHOULDER_TOLERANCE = 0.1;
+		public static final double NUDGE_SPEED = 0.3;
 	}
 
 	public static class DrivetrainConstants {
@@ -309,7 +311,7 @@ public final class Constants {
 		 * <p>
 		 * This should be set to true for competitions, since we want to spin up the shooter automatically.
 		 */
-		public static final boolean HOME_ON_ENABLE = false;
+		public static final boolean HOME_ON_ENABLE = true;
 
 		// all things used for calculating the turret pose because if i left them as magic number Max would pipe bomb my mailbox
 
@@ -353,6 +355,34 @@ public final class Constants {
 			// Add values to the interpolation table
 			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(37.0), Degrees.of(1.0));
 			HOOD_ANGLE_BY_GAMEPIECE_THETA.put(Degrees.of(69.5), Degrees.of(32.0));
+		}
+
+		/**
+		 * An interpolation table used for flywheel speed by distance, for basic shoot-from-anywhere.
+		 */
+		public static final InterpolatingMeasureTreeMap<Distance, DistanceUnit, AngularVelocity, AngularVelocityUnit> FLYWHEEL_VELOCITY_BY_DISTANCE = new InterpolatingMeasureTreeMap<>();
+
+		static {
+			// Add values to the interpolation table
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(5.1668), RotationsPerSecond.of(40.0));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(3.6539), RotationsPerSecond.of(35.0));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(2.5465), RotationsPerSecond.of(32.0));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(1.9677), RotationsPerSecond.of(31.0));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(1.0014), RotationsPerSecond.of(26.0));
+		}
+
+		/**
+		 * An interpolation table used for hood angle by distance, for basic shoot-from-anywhere.
+		 */
+		public static final InterpolatingMeasureTreeMap<Distance, DistanceUnit, Angle, AngleUnit> HOOD_ANGLE_BY_DISTANCE = new InterpolatingMeasureTreeMap<>();
+
+		static {
+			// Add values to the interpolation table
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(5.1668), Degrees.of(5.0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(3.6539), Degrees.of(5.0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(2.5465), Degrees.of(3.0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(1.9677), Degrees.of(0.0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(1.0014), Degrees.of(0.0));
 		}
 
 		/**
@@ -407,9 +437,13 @@ public final class Constants {
 		 */
 		public static final ShooterValues STATIC_SHOOT_LEFT_DOOR_VALUES = new ShooterValues(RotationsPerSecond.of(39), Degrees.of(0), Degrees.of(-38));
 		/**
+		 * A set of values to shoot from the right by the door.
+		 */
+		public static final ShooterValues STATIC_SHOOT_RIGHT_DOOR_VALUES = new ShooterValues(RotationsPerSecond.of(38), Degrees.of(5), Degrees.of(37));
+		/**
 		 * A set of values to shoot from the center by the tower.
 		 */
-		public static final ShooterValues STATIC_SHOOT_CENTER = new ShooterValues(RotationsPerSecond.of(0), Degrees.of(0), Degrees.of(0));
+		public static final ShooterValues STATIC_SHOOT_CENTER = new ShooterValues(RotationsPerSecond.of(33), Degrees.of(5), Degrees.of(0));
 	}
 
 	/**
@@ -460,8 +494,8 @@ public final class Constants {
 		// Speed Values in RPM
 		public static final AngularVelocity TOLERANCE = RotationsPerSecond.of(5);
 		// // Forward
-		public static final AngularVelocity FORWARD_HOPPER_RPS = RotationsPerSecond.of(5.0);
-		public static final AngularVelocity FORWARD_UPTAKE_RPS = RotationsPerSecond.of(35.0);
+		public static final AngularVelocity FORWARD_HOPPER_RPS = RotationsPerSecond.of(15.0);
+		public static final AngularVelocity FORWARD_UPTAKE_RPS = RotationsPerSecond.of(50.0);
 		// // Backward
 		public static final AngularVelocity BACKWARD_HOPPER_RPS = RotationsPerSecond.of(-10.0);
 		public static final AngularVelocity BACKWARD_UPTAKE_RPS = RotationsPerSecond.of(-15.0);
@@ -680,11 +714,11 @@ public final class Constants {
 		public static final Boolean isGoPro = true;
 		public static final String TURRET_CAM_NAME = "CamFront";
 		// transform numbers are placeholders as of now
-		public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.1524, -0.3484626, 0.2666238), new Rotation3d(0, 0.0872665, -0.5 * Math.PI));
+		public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.1397, -0.3479292, 0.2666238), new Rotation3d(0, 0.174533, -0.5 * Math.PI));
 		public static final String EBOARD_CAM_NAME = "CamSide";
-		public static final Transform3d ROBOT_TO_EBOARD_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.2434336, 0.3439922, 0.5274056), new Rotation3d(0, 0.0872665, 0.5 * Math.PI));
+		public static final Transform3d ROBOT_TO_EBOARD_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.2960878, 0.3098546, 0.5274056), new Rotation3d(0, 0.174533, Math.PI));
 		public static final String XTRA_CAM_NAME = "CamX3"; // replace the String in the Constant of the camera you want to swap out with the extra cam name
-		public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(2.5, 2.5, 5); // 4, 4, 8
+		public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8); // 4, 4, 8
 		public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);
 	}
 }

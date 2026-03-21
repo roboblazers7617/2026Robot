@@ -189,6 +189,10 @@ public class HopperUptake extends SubsystemBase {
 		return runOnce(() -> startMotorsUnjam());
 	}
 
+	public Command startUptakeUnjamCommand() {
+		return runOnce(() -> startUptakeUnjam());
+	}
+
 	public Command stopBothMotorsCommand() {
 		return runOnce(() -> stopBothMotors());
 	}

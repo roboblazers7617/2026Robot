@@ -17,6 +17,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
@@ -28,6 +29,7 @@ import frc.robot.Constants.SuperstructureConstants;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Microseconds;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
@@ -63,6 +65,9 @@ public class ShootingCalculator {
 			.publish();
 	private static DoublePublisher gamepieceSpeedPublisher = NetworkTableInstance.getDefault()
 			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Gamepiece Speed")
+			.publish();
+	private static DoublePublisher distancePublisher = NetworkTableInstance.getDefault()
+			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Interpolation/Distance")
 			.publish();
 
 	/**
@@ -168,7 +173,7 @@ public class ShootingCalculator {
 	 *            the angle of the shooter hood, ranging from 37 to 69 degrees
 	 * @return the pose of where the ball leaves the shooter
 	 */
-	private static Pose3d solveTurretPose(Pose3d robotPose, Angle thetaTurret, Angle thetaHood) {
+	public static Pose3d solveTurretPose(Pose3d robotPose, Angle thetaTurret, Angle thetaHood) {
 		// calculate the distance from the center of the turret pivot to where the ball is launched from
 		Distance xHoodOffset = SuperstructureConstants.TURRET_BASE_TO_HOOD_PIVOT.getMeasureX().minus(SuperstructureConstants.HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS.times(Math.sin(thetaHood.in(Radians))));
 		// use this to calculate the offset due to the hood and turret from the center of the turret pivot
@@ -278,6 +283,39 @@ public class ShootingCalculator {
 		// calculate quadratic formula to solve kinematics deltaY = Yinitial + Vyt + at^2
 		double t = (-b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
 		return Seconds.of(t);
+	}
+
+	/**
+	 * Solves shooter values for a given robot pose and target using interpolation.
+	 *
+	 * @param robotPose
+	 *            The pose of the robot.
+	 * @param targetPose
+	 *            The pose of the target to point at.
+	 * @return
+	 *         The resulting values to apply.
+	 */
+	public static ShooterValues solveInterpolated(Pose3d robotPose, Pose3d targetPose) {
+		ShooterValues values = new ShooterValues();
+
+		// Figure out where the turret is since it isn't centered on the robot
+		Pose3d turretPose = solveTurretPose(robotPose, values.getTurretAngle(), values.getHoodAngle());
+
+		// Solve the angle, translation, and distance to the target
+		Angle targetAngle = solveTargetAngle(turretPose.toPose2d(), targetPose.toPose2d());
+		Distance targetDistance = solveGamepieceTranslation(turretPose, targetPose).getMeasureX();
+
+		distancePublisher.set(targetDistance.in(Meters));
+
+		Angle hoodAngle = ShootingConstants.HOOD_ANGLE_BY_DISTANCE.get(targetDistance);
+		AngularVelocity flywheelSpeed = ShootingConstants.FLYWHEEL_VELOCITY_BY_DISTANCE.get(targetDistance);
+
+		// Set the ShooterValues accordingly
+		values.setTurretAngle(targetAngle.minus(robotPose.getRotation().getMeasureAngle()).unaryMinus());
+		values.setHoodAngle(hoodAngle);
+		values.setFlywheelSpeed(flywheelSpeed);
+
+		return values;
 	}
 
 	/**

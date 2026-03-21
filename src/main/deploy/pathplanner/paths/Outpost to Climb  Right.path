@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 0.9338066529378901,
-        "y": 1.7869710233047038
+        "y": 1.786971023304704
       },
       "isLocked": false,
       "linkedName": "Outpost"
@@ -33,8 +33,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxVelocity": 2.0,
+    "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,

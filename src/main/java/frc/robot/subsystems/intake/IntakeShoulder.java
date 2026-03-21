@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -176,6 +178,15 @@ public class IntakeShoulder extends SubsystemBase {
 	}
 
 	/**
+	 * Command which calls stowOverBumper method.
+	 *
+	 * @return runOnce(() -> stowOverBumper());
+	 */
+	public Command stowOverBumperCommand() {
+		return runOnce(() -> stowOverBumper());
+	}
+
+	/**
 	 * Method which sets motor position to specified stowed angle.
 	 */
 	private void raiseIntake() {
@@ -196,6 +207,13 @@ public class IntakeShoulder extends SubsystemBase {
 	 */
 	private void lowerToDepot() {
 		setPositionPlease(IntakeConstants.SHOULDER_DEPOT_DISTANCE);
+	}
+
+	/**
+	 * Method which sets motor position to specified stow over bumper angle.
+	 */
+	private void stowOverBumper() {
+		setPositionPlease(IntakeConstants.SHOULDER_STOW_OVER_BUMPER_DISTANCE);
 	}
 
 	/**
@@ -222,6 +240,20 @@ public class IntakeShoulder extends SubsystemBase {
 	 */
 	public boolean getIsAtTarget() {
 		return MathUtil.isNear(setPointMeters, motor.getPosition().getValueAsDouble(), IntakeConstants.SHOULDER_TOLERANCE);
+	}
+
+	/**
+	 * Nudges the intake setpoint by a certain amount.
+	 *
+	 * @param nudgeAmount
+	 *            The amount to nudge by.
+	 * @return
+	 *         Command to run.
+	 */
+	public Command nudgeIntakeCommand(Supplier<Double> nudgeAmount) {
+		return runOnce(() -> {
+			setPositionPlease(setPointMeters += nudgeAmount.get() * IntakeConstants.NUDGE_SPEED);
+		});
 	}
 
 	/**
