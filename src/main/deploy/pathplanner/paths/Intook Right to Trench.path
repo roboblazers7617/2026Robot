@@ -9,7 +9,7 @@
       "prevControl": null,
       "nextControl": {
         "x": 7.439647887323944,
-        "y": 0.3143838028169008
+        "y": 0.31438380281690037
       },
       "isLocked": false,
       "linkedName": "Right Intook Neutral"
@@ -17,11 +17,11 @@
     {
       "anchor": {
         "x": 3.573035714285715,
-        "y": 0.4609880952380956
+        "y": 0.49910000000000004
       },
       "prevControl": {
         "x": 7.597049798792757,
-        "y": 0.4929247149564049
+        "y": 0.5310366197183094
       },
       "nextControl": null,
       "isLocked": false,
