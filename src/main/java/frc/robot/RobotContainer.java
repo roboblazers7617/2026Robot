@@ -93,8 +93,8 @@ public class RobotContainer {
 	public final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
 	private final Vision vision = new Vision(drivetrain);
 	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
-	private final Shooter shooterSubsystem;
-	private final Hood hoodSubsystem;
+	private final Shooter shooter;
+	private final Hood hood;
 	private final Turret turret = new Turret();
 	private final HopperUptake hopperUptake = new HopperUptake();
 	private final IntakeGrabber intakeGrabber = new IntakeGrabber();
@@ -138,11 +138,11 @@ public class RobotContainer {
 		// SmartDashboard.putData("Auto Mode", autoChooser);
 		//
 		// Set up subsystems
-		shooterSubsystem = new Shooter(networkTableInst.getSubTable("Shooter"));
-		hoodSubsystem = new Hood(networkTableInst.getSubTable("Hood"));
+		shooter = new Shooter(networkTableInst.getSubTable("Shooter"));
+		hood = new Hood(networkTableInst.getSubTable("Hood"));
 
 		// Set up superstructure
-		shooterSuperstructure = new ShooterSuperstructure(shooterSubsystem, hoodSubsystem, turret, hopperUptake, uptakeBeamBreak);
+		shooterSuperstructure = new ShooterSuperstructure(shooter, hood, turret, hopperUptake, uptakeBeamBreak);
 
 		// Configure the trigger bindings
 		configureNamedCommands();
@@ -191,7 +191,7 @@ public class RobotContainer {
 	 * This function is called once when the robot is first started up whilst in simulation.
 	 */
 	public void simulationInit() {
-		shooterSim = new ShooterSim(drivetrain, shooterSubsystem, hoodSubsystem, turret, hopperUptake);
+		shooterSim = new ShooterSim(drivetrain, shooter, hood, turret, hopperUptake);
 	}
 
 	/**
