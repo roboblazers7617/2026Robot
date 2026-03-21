@@ -563,11 +563,13 @@ public final class Constants {
 		/**
 		 * The number of encoder rotations per mechanism rotation for the primary encoder.
 		 */
-		public static final double PRIMARY_ENCODER_RATIO = MOTOR_GEAR_RATIO;
+		// public static final double PRIMARY_ENCODER_RATIO = MOTOR_GEAR_RATIO;
+		public static final double PRIMARY_ENCODER_RATIO = 5 / 1;
 		/**
 		 * The number of encoder rotations per mechanism rotation for the secondary encoder.
 		 */
-		public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(TURRET_GEAR_TEETH / PINION_UPPER_TEETH, PINION_UPPER_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
+		// public static final double SECONDARY_ENCODER_RATIO = SmartMath.gearBox(TURRET_GEAR_TEETH / PINION_UPPER_TEETH, PINION_UPPER_TEETH / SECONDARY_ENCODER_GEAR_TEETH);
+		public static final double SECONDARY_ENCODER_RATIO = 200 / 21;
 
 		/**
 		 * the total span of the encoders tracking range, can be found by finding the lcm of the encoder ratios

@@ -244,8 +244,8 @@ public class Turret extends SubsystemBase {
 	 * @return the rotation of the turret, if it could not be determined returns null, values range from [0,TurretConstants.TURRET_SPAN]
 	 */
 	private static Angle findRotationFromEncoders(double e1v, double e2v) {
-		double e1r = 200 / 21;
-		double e2r = 5 / 1;
+		double e1r = TurretConstants.PRIMARY_ENCODER_RATIO;
+		double e2r = TurretConstants.SECONDARY_ENCODER_RATIO;
 
 		double[] possibleR = new double[(int) (TurretConstants.TURRET_SPAN * e1r + 1)];
 
@@ -256,6 +256,7 @@ public class Turret extends SubsystemBase {
 		for (int i = 0; i < TurretConstants.TURRET_SPAN * e2r + 1; i++) {
 			double val = (i + e2v) / e2r;
 			if (isInArrayBinarySearch(possibleR, val, TurretConstants.TURRET_ENCODER_TOLERANCE.in(Rotations))) {
+				val -= TurretConstants.TURRET_SPAN * .5;
 				return Rotations.of(val);
 			}
 		}
@@ -371,7 +372,7 @@ public class Turret extends SubsystemBase {
 	 */
 	private boolean seedEncoder() {
 		// Encoder seeding
-		Angle turretPosition = findRotationFromEncoders(encoderCandi.getPWM1Position(true).getValueAsDouble(), encoderCandi.getPWM2Position(true).getValueAsDouble());
+		Angle turretPosition = findRotationFromEncoders(encoderCandi.getPWM2Position(true).getValueAsDouble() - TurretConstants.PRIMARY_ENCODER_OFFSET.in(Rotations), encoderCandi.getPWM1Position(true).getValueAsDouble() - TurretConstants.SECONDARY_ENCODER_OFFSET.in(Rotations));
 		if (turretPosition != null) {
 			motor.setPosition(turretPosition);
 			return true;
