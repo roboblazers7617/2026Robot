@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.MotorMonitor;
 import frc.robot.util.AlertUtil;
 
 import static edu.wpi.first.units.Units.Radians;
@@ -159,6 +160,9 @@ public class Turret extends SubsystemBase {
 			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Failed to apply configuration to Turret motor", String.format("Failed to apply configuration to Turret motor (ID %d)! Make sure the CAN bus is operating properly.", TurretConstants.MOTOR_ID), Seconds.zero());
 		}
 
+		// Set up temperature monitoring for the motor
+		MotorMonitor.addMotor(motor);
+
 		CANdiConfiguration candiConfiguration = new CANdiConfiguration();
 
 		candiConfiguration.PWM2
@@ -238,7 +242,7 @@ public class Turret extends SubsystemBase {
 
 	/**
 	 * finds the rotation of the turret based on the encoders
-	 * 
+	 *
 	 * @param e1v
 	 *            the value of the primary encoder, with 0 at turret = 0
 	 * @param e2v
@@ -267,7 +271,7 @@ public class Turret extends SubsystemBase {
 
 	/**
 	 * generic binary search, needed for findRotationsFromEncoders, replace if there is one in a library i don't know about
-	 * 
+	 *
 	 * @param values
 	 *            the list of values to search
 	 * @param target
