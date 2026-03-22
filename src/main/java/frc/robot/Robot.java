@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 
@@ -76,6 +77,9 @@ public class Robot extends TimedRobot {
 		// Instantiate our RobotContainer. This will perform all our button bindings, and put our
 		// autonomous chooser on the dashboard.
 		robotContainer = new RobotContainer();
+
+		// Set up the motor temperature warning periodic
+		addPeriodic(MotorMonitor::update, DashboardConstants.MOTOR_WARNING_INTERVAL);
 
 		// Set up the superstructure periodic
 		addPeriodic(robotContainer::superstructurePeriodic, SuperstructureConstants.PERIODIC_INTERVAL);
