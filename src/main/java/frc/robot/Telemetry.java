@@ -145,4 +145,12 @@ public class Telemetry {
 		autoFieldPreview.setRobotPose(state.Pose);
 		teleopFieldPreview.setRobotPose(state.Pose);
 	}
+
+	/**
+	 * Sets the selected pose to display for the reset pose dropdown in {@link RebuiltDashboard}.
+	 */
+	public void setSelectedZeroingPose(Pose2d pose) {
+		autoFieldPreview.getObject("Selected Pose")
+				.setPose(pose);
+	}
 }
