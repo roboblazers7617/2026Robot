@@ -93,17 +93,17 @@ public class ShootingCalculator {
 		// This stage is mainly just to calculate how long the ball will be in the air for
 
 		// Solve the angle and translation to the target
-		Angle targetAngle = solveTargetAngle(exitPose.toPose2d(), targetPose.toPose2d());
 		Translation2d gamepieceTranslation = solveGamepieceTranslation(exitPose, targetPose);
 
 		// Solve initial shooter values
+		Angle turretAngle = solveTurretAngle(exitPose.toPose2d(), targetPose.toPose2d());
 		Angle gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
 		LinearVelocity gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 
 		// ----- RE-CALCUlATION (WITH VELOCITY) -----
 		for (int i = 0; i < SuperstructureConstants.SHOOTING_CALCULATOR_ITERATIONS; i++) {
 			// Recalculate the exit pose of the ball
-			exitPose = solveExitPose(robotPose, targetAngle, gamepieceTheta);
+			exitPose = solveExitPose(robotPose, turretAngle, gamepieceTheta);
 
 			// Figure out how long the gamepiece will be in the air for
 			Time time = calculateTimeTillScore(gamepieceTranslation, gamepieceTheta, gamepieceSpeed);
@@ -118,19 +118,19 @@ public class ShootingCalculator {
 			SignalLogger.writeStruct(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct, modifiedTurretedPose);
 
 			// Solve again, hood angle stays the same
-			targetAngle = solveTargetAngle(modifiedTurretedPose.toPose2d(), targetPose.toPose2d());
+			turretAngle = solveTurretAngle(modifiedTurretedPose.toPose2d(), targetPose.toPose2d());
 			gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose);
 			gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
 			gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 		}
 
-		modifiedTargetPosePublisher.set(exitPose.plus(new Transform3d(gamepieceTranslation.getX() * Math.cos(targetAngle.in(Radians)), gamepieceTranslation.getX() * Math.sin(targetAngle.in(Radians)), gamepieceTranslation.getY(), new Rotation3d())));
+		modifiedTargetPosePublisher.set(exitPose.plus(new Transform3d(gamepieceTranslation.getX() * Math.cos(turretAngle.in(Radians)), gamepieceTranslation.getX() * Math.sin(turretAngle.in(Radians)), gamepieceTranslation.getY(), new Rotation3d())));
 		modifiedTranslationPublisher.set(gamepieceTranslation);
 		gamepieceThetaPublisher.set(gamepieceTheta.in(Radians));
 		gamepieceSpeedPublisher.set(gamepieceSpeed.in(MetersPerSecond));
 
 		// Set the ShooterValues accordingly
-		values.setTurretAngle(targetAngle);
+		values.setTurretAngle(turretAngle);
 		values.setGamepieceTheta(gamepieceTheta);
 		values.setGamepieceSpeed(gamepieceSpeed);
 
@@ -157,17 +157,18 @@ public class ShootingCalculator {
 		// Figure out where the turret is since it isn't centered on the robot
 		Pose3d turretPose = robotPose.plus(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM);
 
-		// Solve the angle and distance to the target
-		Angle targetAngle = solveTargetAngle(turretPose.toPose2d(), targetPose.toPose2d());
+		// Solve the distance to the target
 		Distance targetDistance = solveGamepieceTranslation(turretPose, targetPose).getMeasureX();
 
 		distancePublisher.set(targetDistance.in(Meters));
 
+		// Calculate the mechanism values
+		Angle turretAngle = solveTurretAngle(turretPose.toPose2d(), targetPose.toPose2d());
 		Angle hoodAngle = ShootingConstants.HOOD_ANGLE_BY_DISTANCE.get(targetDistance);
 		AngularVelocity flywheelSpeed = ShootingConstants.FLYWHEEL_VELOCITY_BY_DISTANCE.get(targetDistance);
 
 		// Set the ShooterValues accordingly
-		values.setTurretAngle(targetAngle.minus(robotPose.getRotation().getMeasureZ()));
+		values.setTurretAngle(turretAngle);
 		values.setHoodAngle(hoodAngle);
 		values.setFlywheelSpeed(flywheelSpeed);
 
@@ -249,20 +250,21 @@ public class ShootingCalculator {
 	}
 
 	/**
-	 * Solves the angle between the turret and the target. This will be used to figure out the angle to point the turret at, as well as to transform the translation.
+	 * Solves the angle between the turret and the target. This will be used to figure out the angle to point the turret at.
 	 *
 	 * @param turretPose
-	 *            The pose of the turret.
+	 *            The pose of the turret, including robot rotation.
 	 * @param targetPose
 	 *            The pose of the target to point at.
 	 * @return
-	 *         The resulting Angle between the turret and the target. This does not take robot or target rotation into account.
+	 *         The resulting robot-relative Angle between the turret and the target.
 	 */
-	private static Angle solveTargetAngle(Pose2d turretPose, Pose2d targetPose) {
+	private static Angle solveTurretAngle(Pose2d turretPose, Pose2d targetPose) {
 		return targetPose.getTranslation()
 				.minus(turretPose.getTranslation())
 				.getAngle()
-				.getMeasure();
+				.getMeasure()
+				.minus(turretPose.getRotation().getMeasure());
 	}
 
 	/**
