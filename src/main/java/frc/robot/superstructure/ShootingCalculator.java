@@ -257,13 +257,12 @@ public class ShootingCalculator {
 	 * @param targetPose
 	 *            The pose of the target to point at.
 	 * @return
-	 *         The resulting Angle between the turret and the target.
+	 *         The resulting Angle between the turret and the target. This does not take robot or target rotation into account.
 	 */
 	private static Angle solveTargetAngle(Pose2d turretPose, Pose2d targetPose) {
-		return turretPose.getTranslation()
-				.minus(targetPose.getTranslation())
+		return targetPose.getTranslation()
+				.minus(turretPose.getTranslation())
 				.getAngle()
-				.rotateBy(Rotation2d.k180deg)
 				.getMeasure();
 	}
 
