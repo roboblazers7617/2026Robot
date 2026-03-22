@@ -1,7 +1,10 @@
 package frc.robot;
 
+import java.util.List;
+
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.pathplanner.lib.util.PathPlannerLogging;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -14,6 +17,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -25,7 +29,7 @@ public class Telemetry {
 
 	/**
 	 * Construct a telemetry object, with the specified max speed of the robot
-	 * 
+	 *
 	 * @param maxSpeed
 	 *            Maximum speed in meters per second
 	 */
@@ -37,6 +41,27 @@ public class Telemetry {
 		for (int i = 0; i < 4; ++i) {
 			SmartDashboard.putData("Module " + i, m_moduleMechanisms[i]);
 		}
+
+		// Set up the fields
+		autoFieldPreview = new Field2d();
+		teleopFieldPreview = new Field2d();
+
+		// Show PathPlanner info on the fields
+		PathPlannerLogging.setLogActivePathCallback((List<Pose2d> activePath) -> {
+			autoFieldPreview.getObject("PathPlanner Path")
+					.setPoses(activePath);
+		});
+		PathPlannerLogging.setLogCurrentPoseCallback((Pose2d currentPose) -> {
+			autoFieldPreview.getObject("PathPlanner Current Pose")
+					.setPose(currentPose);
+		});
+		PathPlannerLogging.setLogTargetPoseCallback((Pose2d targetPose) -> {
+			autoFieldPreview.getObject("PathPlanner Target")
+					.setPose(targetPose);
+		});
+
+		SmartDashboard.putData("Auto Field Preview", autoFieldPreview);
+		SmartDashboard.putData("Teleop Field Preview", teleopFieldPreview);
 	}
 
 	/* What to publish over networktables for telemetry */
@@ -73,6 +98,15 @@ public class Telemetry {
 
 	private final double[] m_poseArray = new double[3];
 
+	/**
+	 * Field2d used to preview and monitor auto paths.
+	 */
+	private final Field2d autoFieldPreview;
+	/**
+	 * Field2d used to monitor the robot state in teleop.
+	 */
+	private final Field2d teleopFieldPreview;
+
 	/** Accept the swerve drive state and telemeterize it to SmartDashboard and SignalLogger. */
 	public void telemeterize(SwerveDriveState state) {
 		/* Telemeterize the swerve drive state */
@@ -106,5 +140,17 @@ public class Telemetry {
 			m_moduleDirections[i].setAngle(state.ModuleStates[i].angle);
 			m_moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
 		}
+
+		// Display the robot pose on the dashboard.
+		autoFieldPreview.setRobotPose(state.Pose);
+		teleopFieldPreview.setRobotPose(state.Pose);
+	}
+
+	/**
+	 * Sets the selected pose to display for the reset pose dropdown in {@link RebuiltDashboard}.
+	 */
+	public void setSelectedZeroingPose(Pose2d pose) {
+		autoFieldPreview.getObject("Selected Pose")
+				.setPose(pose);
 	}
 }

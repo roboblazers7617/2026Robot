@@ -30,11 +30,12 @@ public class RebuiltDashboard {
 
 	/**
 	 * Constructor for dashboard
-	 * 
+	 *
 	 * @param commandSwerveDrivetrain
 	 * @param robotContainer
+	 * @param logger
 	 */
-	public RebuiltDashboard(CommandSwerveDrivetrain commandSwerveDrivetrain, RobotContainer robotContainer) {
+	public RebuiltDashboard(CommandSwerveDrivetrain commandSwerveDrivetrain, RobotContainer robotContainer, Telemetry logger) {
 		// attaches object variables to class variables
 		this.commandSwerveDrivetrain = commandSwerveDrivetrain;
 		this.robotContainer = robotContainer;
@@ -60,6 +61,8 @@ public class RebuiltDashboard {
 		pose.setDefaultOption("center edge on blue side", new Pose2d(.5, 4, new Rotation2d(0)));
 		pose.addOption("position 2", new Pose2d(0, 0, new Rotation2d(45)));
 		pose.addOption("center edge on red side", new Pose2d(17, 4, new Rotation2d(0)));
+
+		pose.onChange(logger::setSelectedZeroingPose);
 
 		isEmpty = NetworkTableInstance.getDefault().getTable("").getBooleanTopic("isEmpty0").publish();
 		isEmpty.set(true);
@@ -90,7 +93,7 @@ public class RebuiltDashboard {
 
 	/**
 	 * A command to reset the pose of the robot.
-	 * 
+	 *
 	 * @return
 	 */
 	private Command resetPoseCommand() {
