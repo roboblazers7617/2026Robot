@@ -76,7 +76,7 @@ public class ShootingCalculator {
 	 * @param targetPose
 	 *            The pose of the target to point at.
 	 * @param robotVelocity
-	 *            The field-relative velocity of the robot.
+	 *            The robot-relative velocity of the robot.
 	 * @return
 	 *         The resulting values to apply.
 	 */
