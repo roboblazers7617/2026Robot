@@ -7,7 +7,6 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -158,7 +157,7 @@ public class ShootingCalculator {
 		// Figure out where the turret is since it isn't centered on the robot
 		Pose3d turretPose = robotPose.plus(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM);
 
-		// Solve the angle, translation, and distance to the target
+		// Solve the angle and distance to the target
 		Angle targetAngle = solveTargetAngle(turretPose.toPose2d(), targetPose.toPose2d());
 		Distance targetDistance = solveGamepieceTranslation(turretPose, targetPose).getMeasureX();
 
@@ -168,7 +167,7 @@ public class ShootingCalculator {
 		AngularVelocity flywheelSpeed = ShootingConstants.FLYWHEEL_VELOCITY_BY_DISTANCE.get(targetDistance);
 
 		// Set the ShooterValues accordingly
-		values.setTurretAngle(targetAngle.minus(robotPose.getRotation().getMeasureAngle()));
+		values.setTurretAngle(targetAngle.minus(robotPose.getRotation().getMeasureZ()));
 		values.setHoodAngle(hoodAngle);
 		values.setFlywheelSpeed(flywheelSpeed);
 
