@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.HopperUptakeConstants;
+import frc.robot.MotorMonitor;
 
 /** This class covers the Hopper/Spindexer motor and the Uptake motor */
 @Logged
@@ -104,6 +105,10 @@ public class HopperUptake extends SubsystemBase {
 				break;
 			}
 		}
+
+		// Set up temperature monitoring for the motors
+		MotorMonitor.addMotor(littleSpinny);
+		MotorMonitor.addMotor(bigSpinny);
 	}
 
 	@Override
