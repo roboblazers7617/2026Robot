@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.MotorMonitor;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
@@ -63,6 +64,9 @@ public class IntakeGrabber extends SubsystemBase {
 				break;
 			}
 		}
+
+		// Set up temperature monitoring for the motor
+		MotorMonitor.addMotor(Motor);
 	}
 
 	/**

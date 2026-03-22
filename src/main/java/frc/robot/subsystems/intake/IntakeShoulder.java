@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.MotorMonitor;
 
 import java.util.function.Supplier;
 
@@ -119,6 +120,9 @@ public class IntakeShoulder extends SubsystemBase {
 		// breath before going anywhere.
 		// TODO: hook up to absolute encoder on actual bot
 		// Motor.setPosition(IntakeConstants.SHOULDER_STOWED_ANGLE);
+
+		// Set up temperature monitoring for the motors
+		MotorMonitor.addMotor(motor);
 	}
 
 	/**

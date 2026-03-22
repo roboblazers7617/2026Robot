@@ -26,6 +26,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HoodConstants;
+import frc.robot.MotorMonitor;
 
 @Logged
 public class Hood extends SubsystemBase {
@@ -75,6 +76,9 @@ public class Hood extends SubsystemBase {
 		hoodMotor.setPosition(hoodEncoder.getAbsolutePosition().getValueAsDouble());
 
 		requestedAngle = Units.Rotations.of(hoodMotor.getPosition().getValueAsDouble());
+
+		// Set up temperature monitoring for the motor
+		MotorMonitor.addMotor(hoodMotor);
 	}
 
 	@Override
