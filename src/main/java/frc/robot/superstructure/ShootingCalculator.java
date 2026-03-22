@@ -311,7 +311,7 @@ public class ShootingCalculator {
 		AngularVelocity flywheelSpeed = ShootingConstants.FLYWHEEL_VELOCITY_BY_DISTANCE.get(targetDistance);
 
 		// Set the ShooterValues accordingly
-		values.setTurretAngle(targetAngle.minus(robotPose.getRotation().getMeasureAngle()).unaryMinus());
+		values.setTurretAngle(targetAngle.minus(robotPose.getRotation().getMeasureAngle()));
 		values.setHoodAngle(hoodAngle);
 		values.setFlywheelSpeed(flywheelSpeed);
 
