@@ -156,7 +156,7 @@ public class ShootingCalculator {
 		ShooterValues values = new ShooterValues();
 
 		// Figure out where the turret is since it isn't centered on the robot
-		Pose3d turretPose = solveExitPose(robotPose, values.getTurretAngle(), values.getHoodAngle());
+		Pose3d turretPose = robotPose.plus(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM);
 
 		// Solve the angle, translation, and distance to the target
 		Angle targetAngle = solveTargetAngle(turretPose.toPose2d(), targetPose.toPose2d());
