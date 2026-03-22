@@ -30,6 +30,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearAcceleration;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Time;
 import frc.robot.util.BiAlliancePose3d;
 import frc.robot.util.InterpolatingMeasureTreeMap;
@@ -57,6 +58,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Milliseconds;
@@ -135,6 +137,19 @@ public final class Constants {
 		 * The name of the tab used in Teleop.
 		 */
 		public static final String TELEOP_TAB_NAME = "Teleoperated";
+
+		/**
+		 * The temperature at which a warning is shown on the dashboard about motor overtemp.
+		 */
+		public static final Temperature MOTOR_WARNING_TEMPERATURE = Celsius.of(60.0);
+		/**
+		 * The temperature the motor has to fall to for another alert to be sent. This adds a bit of hysteresis.
+		 */
+		public static final Temperature MOTOR_WARNING_RESET_TEMPERATURE = MOTOR_WARNING_TEMPERATURE.minus(Celsius.of(2.0));
+		/**
+		 * How long to wait between each update of the motor warning class.
+		 */
+		public static final Time MOTOR_WARNING_INTERVAL = Seconds.of(1.0);
 	}
 
 	/**
