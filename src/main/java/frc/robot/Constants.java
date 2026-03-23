@@ -323,7 +323,7 @@ public final class Constants {
 		/**
 		 * the transform from the center of the robot on the floor to the center of the pivot on the top of the shooter base plate, in meters
 		 */
-		public static final Transform3d ROBOT_TO_TURRET_BASE_TRANSFORM = new Transform3d(-0.1333479934, -0.1285875, 0.377121547, new Rotation3d());
+		public static final Transform3d ROBOT_TO_TURRET_BASE_TRANSFORM = new Transform3d(Inches.of(-5.25), Inches.of(-5.0625), Inches.of(14.847), new Rotation3d());
 		/**
 		 * the transform from the center of the pivot on top of the shooter base plate to the center of the hood pivot axis in meters
 		 */
