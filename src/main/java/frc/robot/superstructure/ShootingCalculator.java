@@ -62,8 +62,15 @@ public class ShootingCalculator {
 	private static DoublePublisher gamepieceSpeedPublisher = NetworkTableInstance.getDefault()
 			.getDoubleTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Gamepiece Speed")
 			.publish();
+
 	private static DoublePublisher distancePublisher = NetworkTableInstance.getDefault()
 			.getDoubleTopic(SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME + "/Distance")
+			.publish();
+	private static StructPublisher<Pose3d> interpolatedTargetPosePublisher = NetworkTableInstance.getDefault()
+			.getStructTopic(SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME + "/Target Pose", Pose3d.struct)
+			.publish();
+	private static StructPublisher<Pose3d> interpolatedTurretPosePublisher = NetworkTableInstance.getDefault()
+			.getStructTopic(SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct)
 			.publish();
 
 	/**
@@ -154,8 +161,12 @@ public class ShootingCalculator {
 	public static ShooterValues solveInterpolated(Pose3d robotPose, Pose3d targetPose) {
 		ShooterValues values = new ShooterValues();
 
+		interpolatedTargetPosePublisher.set(targetPose);
+
 		// Figure out where the turret is since it isn't centered on the robot
 		Pose3d turretPose = robotPose.plus(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM);
+
+		interpolatedTurretPosePublisher.set(turretPose);
 
 		// Solve the distance to the target
 		Distance targetDistance = solveGamepieceTranslation(turretPose, targetPose).getMeasureX();
