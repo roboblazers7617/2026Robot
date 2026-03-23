@@ -257,7 +257,7 @@ public class ShootingCalculator {
 
 		double distance = Math.sqrt(Math.pow(dx, 2.0) + Math.pow(dy, 2.0));
 
-		return new Translation2d(distance - .4, dz + .25);
+		return new Translation2d(distance, dz);
 	}
 
 	/**
