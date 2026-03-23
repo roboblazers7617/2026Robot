@@ -545,7 +545,7 @@ public final class Constants {
 		public static final double RPS = 100.0; // X44 can go 125 Rotations per Second
 		public static final double CRUISE_VELOCITY = RPS;
 		public static final double ACCELERATION = 3.0 * CRUISE_VELOCITY;
-		public static final Angle TOLERANCE = Units.Degrees.of(1.0);
+		public static final Angle TOLERANCE = Units.Degrees.of(2.0);
 		public static final double SUPPLY_CURRENT_LOWER_LIMIT = 30.0;
 		public static final double SUPPLY_CURRENT_LIMIT = 50.0;
 		public static final double SUPPLY_CURRENT_LOWER_TIME = 0.15;
