@@ -27,6 +27,7 @@ import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 
 import static edu.wpi.first.units.Units.Radians;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Microseconds;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Meters;
@@ -283,6 +284,49 @@ public class ShootingCalculator {
 		// calculate quadratic formula to solve kinematics deltaY = Yinitial + Vyt + at^2
 		double t = (-b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
 		return Seconds.of(t);
+	}
+
+	public static ShooterValues solveShootWhileMoveInterpolated(Pose3d robotPose, Pose3d targetPose, ChassisSpeeds robotVelocity) {
+		// these will be useful later, for now don't add the velocity vector of the robot
+		Time time = Seconds.of(0);
+		// we don't need to adjust for turret pose, as this is done during solveInterpolated
+		Pose3d adjustedPose = robotPose;
+
+		// find the values at the initial position
+		ShooterValues curValue = solveInterpolated(adjustedPose, targetPose);
+
+		// iterate through the amount of calculations
+		for (int i = 0; i < SuperstructureConstants.SHOOTING_CALCULATOR_ITERATIONS; i++) {
+			// use a linreg to find the output velocity given by the lerp table
+			LinearVelocity outputVelocity = MetersPerSecond.of(curValue.getFlywheelSpeed().in(RotationsPerSecond) * ShootingConstants.LINREG_FLYWHEEL_A + ShootingConstants.LINREG_FLYWHEEL_B);
+
+			// use this to find the output angle assuming the ball perfectly hits the target
+			Translation2d translationToTarget = solveGamepieceTranslation(robotPose, targetPose);
+
+			// \arccos\left(\frac{\frac{\left(g\cdot d_{x}^{2}\right)}{2v^{2}}}{\sqrt{d_{y}^{2}+d_{x}^{2}}}\right)-\arctan\left(\frac{d_{x}}{d_{y}}\right)
+			double g = ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
+			double dx = translationToTarget.getX();
+			double dy = translationToTarget.getY();
+
+			// calculate each term individualy, tt/mt/bt
+			double topTerm = g * Math.pow(dx, 2);
+			double middleTerm = 2 * Math.pow(outputVelocity.in(MetersPerSecond), 2);
+			double bottomTerm = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+			// calculate the angle
+			Angle outputAngle = Radians.of(Math.acos(topTerm / (middleTerm / bottomTerm)) - Math.atan(dx / dy));
+
+			// use this to find the time till the ball lands
+			time = calculateTimeTillScore(translationToTarget, outputAngle, outputVelocity);
+
+			// add the robots velocity vector times the time
+			Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
+			adjustedPose = robotPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
+
+			curValue = solveInterpolated(adjustedPose, targetPose);
+		}
+
+		return curValue;
 	}
 
 	/**
