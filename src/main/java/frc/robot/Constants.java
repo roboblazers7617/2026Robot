@@ -663,19 +663,19 @@ public final class Constants {
 		/**
 		 * The PID kP for the turret closed loop controller.
 		 */
-		public static final double TURRET_KP = 18.0;
+		public static final double TURRET_KP = 19.0;
 		/**
 		 * The PID kI for the turret closed loop controller.
 		 */
-		public static final double TURRET_KI = 0.0;
+		public static final double TURRET_KI = 5.5;
 		/**
 		 * The PID kD for the turret closed loop controller.
 		 */
-		public static final double TURRET_KD = 1.25;
+		public static final double TURRET_KD = 2.1;
 		/**
 		 * The PID kS for the turret closed loop controller.
 		 */
-		public static final double TURRET_KS = 0.42;
+		public static final double TURRET_KS = 0.0;
 		/**
 		 * The PID kV for the turret closed loop controller.
 		 */
