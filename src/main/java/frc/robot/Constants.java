@@ -431,15 +431,15 @@ public final class Constants {
 		/**
 		 * A set of values to shoot from a static position.
 		 */
-		public static final ShooterValues STATIC_SHOOT_VALUES = new ShooterValues(RPM.of(2200), Degrees.of(0), Degrees.of(-13));
+		public static final ShooterValues STATIC_SHOOT_VALUES = new ShooterValues(RPM.of(2200), Degrees.of(0), Degrees.of(13));
 		/**
 		 * A set of values to shoot from the left by the door.
 		 */
-		public static final ShooterValues STATIC_SHOOT_LEFT_DOOR_VALUES = new ShooterValues(RotationsPerSecond.of(39), Degrees.of(0), Degrees.of(-38));
+		public static final ShooterValues STATIC_SHOOT_LEFT_DOOR_VALUES = new ShooterValues(RotationsPerSecond.of(39), Degrees.of(0), Degrees.of(38));
 		/**
 		 * A set of values to shoot from the right by the door.
 		 */
-		public static final ShooterValues STATIC_SHOOT_RIGHT_DOOR_VALUES = new ShooterValues(RotationsPerSecond.of(38), Degrees.of(5), Degrees.of(37));
+		public static final ShooterValues STATIC_SHOOT_RIGHT_DOOR_VALUES = new ShooterValues(RotationsPerSecond.of(38), Degrees.of(5), Degrees.of(-37));
 		/**
 		 * A set of values to shoot from the center by the tower.
 		 */
@@ -639,7 +639,7 @@ public final class Constants {
 		/**
 		 * The direction of the motor.
 		 */
-		public static final InvertedValue MOTOR_INVERTED = InvertedValue.Clockwise_Positive;
+		public static final InvertedValue MOTOR_INVERTED = InvertedValue.CounterClockwise_Positive;
 
 		/**
 		 * The higher current limit for the motor. Helps get the motor started before switching to the {@link #MOTOR_CURRENT_LOWER_LIMIT}.
