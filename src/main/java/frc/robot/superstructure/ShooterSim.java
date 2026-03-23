@@ -92,7 +92,7 @@ public class ShooterSim {
 						// Specify the field-relative speed of the chassis, adding it to the initial velocity of the projectile
 						robotVelocity,
 						// Turret facing direction
-						new Rotation2d(turret.getPosition()),
+						new Rotation2d(turret.getPosition()).plus(robotPose.getRotation()),
 						// Initial height of the flying note
 						TurretConstants.TURRET_OFFSET.getMeasureZ(),
 						// The launch speed
