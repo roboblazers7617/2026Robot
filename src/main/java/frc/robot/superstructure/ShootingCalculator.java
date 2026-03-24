@@ -7,7 +7,6 @@ import com.ctre.phoenix6.SignalLogger;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,13 +20,11 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.RobotController;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 
 import static edu.wpi.first.units.Units.Radians;
-import static edu.wpi.first.units.Units.Microseconds;
 import static edu.wpi.first.units.Units.Seconds;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -41,33 +38,39 @@ public class ShootingCalculator {
 	 * The NetworkTables table name for the shooting calculator.
 	 */
 	public static String SHOOTING_CALCULATOR_TABLE_NAME = SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Shooting Calculator";
+	public static String SHOOTING_CALCULATOR_MODELED_TABLE_NAME = SHOOTING_CALCULATOR_TABLE_NAME + "/Modeled";
+	public static String SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME = SHOOTING_CALCULATOR_TABLE_NAME + "/Interpolated";
 
-	private static DoublePublisher computeTimePublisher = NetworkTableInstance.getDefault()
-			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Time To Compute")
-			.publish();
 	private static StructPublisher<Pose3d> targetPosePublisher = NetworkTableInstance.getDefault()
-			.getStructTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Target Pose", Pose3d.struct)
+			.getStructTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Target Pose", Pose3d.struct)
 			.publish();
 	private static DoublePublisher timeTillScorePublisher = NetworkTableInstance.getDefault()
-			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Time Till Score")
+			.getDoubleTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Time Till Score")
 			.publish();
 	private static StructPublisher<Pose3d> modifiedTurretPosePublisher = NetworkTableInstance.getDefault()
-			.getStructTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct)
+			.getStructTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct)
 			.publish();
 	private static StructPublisher<Translation2d> modifiedTranslationPublisher = NetworkTableInstance.getDefault()
-			.getStructTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Translation", Translation2d.struct)
+			.getStructTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Modified Translation", Translation2d.struct)
 			.publish();
 	private static StructPublisher<Pose3d> modifiedTargetPosePublisher = NetworkTableInstance.getDefault()
-			.getStructTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Target Pose", Pose3d.struct)
+			.getStructTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Modified Target Pose", Pose3d.struct)
 			.publish();
 	private static DoublePublisher gamepieceThetaPublisher = NetworkTableInstance.getDefault()
-			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Gamepiece Theta")
+			.getDoubleTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Gamepiece Theta")
 			.publish();
 	private static DoublePublisher gamepieceSpeedPublisher = NetworkTableInstance.getDefault()
-			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Gamepiece Speed")
+			.getDoubleTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Gamepiece Speed")
 			.publish();
+
 	private static DoublePublisher distancePublisher = NetworkTableInstance.getDefault()
-			.getDoubleTopic(SHOOTING_CALCULATOR_TABLE_NAME + "/Interpolation/Distance")
+			.getDoubleTopic(SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME + "/Distance")
+			.publish();
+	private static StructPublisher<Pose3d> interpolatedTargetPosePublisher = NetworkTableInstance.getDefault()
+			.getStructTopic(SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME + "/Target Pose", Pose3d.struct)
+			.publish();
+	private static StructPublisher<Pose3d> interpolatedTurretPosePublisher = NetworkTableInstance.getDefault()
+			.getStructTopic(SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct)
 			.publish();
 
 	/**
@@ -80,60 +83,61 @@ public class ShootingCalculator {
 	 * @param targetPose
 	 *            The pose of the target to point at.
 	 * @param robotVelocity
-	 *            The field-relative velocity of the robot.
+	 *            The robot-relative velocity of the robot.
 	 * @return
 	 *         The resulting values to apply.
 	 */
 	public static ShooterValues solve(Pose3d robotPose, Pose3d targetPose, ChassisSpeeds robotVelocity) {
-		long startTime = RobotController.getFPGATime();
-
 		ShooterValues values = new ShooterValues();
 
 		targetPosePublisher.set(targetPose);
-		SignalLogger.writeStruct(SHOOTING_CALCULATOR_TABLE_NAME + "/Target Pose", Pose3d.struct, targetPose);
+		SignalLogger.writeStruct(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Target Pose", Pose3d.struct, targetPose);
 
 		// Figure out where the turret is since it isn't centered on the robot
-		Pose3d turretPose = solveTurretPose(robotPose, values.getTurretAngle(), values.getHoodAngle());
+		Pose3d exitPose = solveExitPose(robotPose, values.getTurretAngle(), values.getHoodAngle());
 
 		// ----- FIRST CALCULATION (NO VELOCITY) -----
 		// This stage is mainly just to calculate how long the ball will be in the air for
 
 		// Solve the angle and translation to the target
-		Angle targetAngle = solveTargetAngle(turretPose.toPose2d(), targetPose.toPose2d());
-		Translation2d gamepieceTranslation = solveGamepieceTranslation(turretPose, targetPose);
+		Translation2d gamepieceTranslation = solveGamepieceTranslation(exitPose, targetPose);
 
 		// Solve initial shooter values
+		Angle turretAngle = solveTurretAngle(exitPose.toPose2d(), targetPose.toPose2d());
 		Angle gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
 		LinearVelocity gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 
 		// ----- RE-CALCUlATION (WITH VELOCITY) -----
 		for (int i = 0; i < SuperstructureConstants.SHOOTING_CALCULATOR_ITERATIONS; i++) {
-			turretPose = solveTurretPose(robotPose, targetAngle, gamepieceTheta);
+			// Recalculate the exit pose of the ball
+			exitPose = solveExitPose(robotPose, turretAngle, gamepieceTheta);
+
 			// Figure out how long the gamepiece will be in the air for
 			Time time = calculateTimeTillScore(gamepieceTranslation, gamepieceTheta, gamepieceSpeed);
 			timeTillScorePublisher.set(time.in(Seconds));
-			SignalLogger.writeValue(SHOOTING_CALCULATOR_TABLE_NAME + "/Time Till Score", time);
+			SignalLogger.writeValue(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Time Till Score", time);
 
 			// Add the velocity vector of the robot
 			// We're effectively trying to figure out where the turret will be at the end of the ball's travel
 			Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
-			Pose3d modifiedTurretedPose = turretPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
+			Pose3d modifiedTurretedPose = exitPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
 			modifiedTurretPosePublisher.set(modifiedTurretedPose);
-			SignalLogger.writeStruct(SHOOTING_CALCULATOR_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct, modifiedTurretedPose);
+			SignalLogger.writeStruct(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct, modifiedTurretedPose);
 
 			// Solve again, hood angle stays the same
-			targetAngle = solveTargetAngle(modifiedTurretedPose.toPose2d(), targetPose.toPose2d());
+			turretAngle = solveTurretAngle(modifiedTurretedPose.toPose2d(), targetPose.toPose2d());
 			gamepieceTranslation = solveGamepieceTranslation(modifiedTurretedPose, targetPose);
 			gamepieceTheta = calculateHoodAngle(gamepieceTranslation);
 			gamepieceSpeed = solveGamepieceSpeed(gamepieceTranslation, gamepieceTheta);
 		}
-		modifiedTargetPosePublisher.set(turretPose.plus(new Transform3d(gamepieceTranslation.getX() * Math.cos(targetAngle.in(Radians)), gamepieceTranslation.getX() * Math.sin(targetAngle.in(Radians)), gamepieceTranslation.getY(), new Rotation3d())));
+
+		modifiedTargetPosePublisher.set(exitPose.plus(new Transform3d(gamepieceTranslation.getX() * Math.cos(turretAngle.in(Radians)), gamepieceTranslation.getX() * Math.sin(turretAngle.in(Radians)), gamepieceTranslation.getY(), new Rotation3d())));
 		modifiedTranslationPublisher.set(gamepieceTranslation);
 		gamepieceThetaPublisher.set(gamepieceTheta.in(Radians));
 		gamepieceSpeedPublisher.set(gamepieceSpeed.in(MetersPerSecond));
 
 		// Set the ShooterValues accordingly
-		values.setTurretAngle(targetAngle);
+		values.setTurretAngle(turretAngle);
 		values.setGamepieceTheta(gamepieceTheta);
 		values.setGamepieceSpeed(gamepieceSpeed);
 
@@ -141,9 +145,44 @@ public class ShootingCalculator {
 		// Theoretically this could be removed in favor of doing the gamepiece -> mechanism calculations backwards but I don't have time for that right now
 		ShooterSim.setValues(gamepieceSpeed, gamepieceTheta);
 
-		Time computeTime = Microseconds.of(RobotController.getFPGATime() - startTime);
-		computeTimePublisher.set(computeTime.in(Seconds));
-		SignalLogger.writeValue(SHOOTING_CALCULATOR_TABLE_NAME + "Time To Compute", computeTime);
+		return values;
+	}
+
+	/**
+	 * Solves shooter values for a given robot pose and target using interpolation.
+	 *
+	 * @param robotPose
+	 *            The pose of the robot.
+	 * @param targetPose
+	 *            The pose of the target to point at.
+	 * @return
+	 *         The resulting values to apply.
+	 */
+	public static ShooterValues solveInterpolated(Pose3d robotPose, Pose3d targetPose) {
+		ShooterValues values = new ShooterValues();
+
+		interpolatedTargetPosePublisher.set(targetPose);
+
+		// Figure out where the turret is since it isn't centered on the robot
+		// The rotational component of this pose should just stay the rotation of the drivetrain
+		Pose3d turretPose = robotPose.plus(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM);
+
+		interpolatedTurretPosePublisher.set(turretPose);
+
+		// Solve the distance to the target
+		Distance targetDistance = solveGamepieceTranslation(turretPose, targetPose).getMeasureX();
+
+		distancePublisher.set(targetDistance.in(Meters));
+
+		// Calculate the mechanism values
+		Angle turretAngle = solveTurretAngle(turretPose.toPose2d(), targetPose.toPose2d());
+		Angle hoodAngle = ShootingConstants.HOOD_ANGLE_BY_DISTANCE.get(targetDistance);
+		AngularVelocity flywheelSpeed = ShootingConstants.FLYWHEEL_VELOCITY_BY_DISTANCE.get(targetDistance);
+
+		// Set the ShooterValues accordingly
+		values.setTurretAngle(turretAngle);
+		values.setHoodAngle(hoodAngle);
+		values.setFlywheelSpeed(flywheelSpeed);
 
 		return values;
 	}
@@ -167,13 +206,18 @@ public class ShootingCalculator {
 	}
 
 	/**
+	 * Gets the pose where the ball will exit the shooter.
+	 *
+	 * @param robotPose
+	 *            the pose of the robot
 	 * @param thetaTurret
 	 *            the angle of the turret, where 0 is facing towards the intake, ccw positive
 	 * @param thetaHood
 	 *            the angle of the shooter hood, ranging from 37 to 69 degrees
-	 * @return the pose of where the ball leaves the shooter
+	 * @return
+	 *         the pose of where the ball leaves the shooter
 	 */
-	public static Pose3d solveTurretPose(Pose3d robotPose, Angle thetaTurret, Angle thetaHood) {
+	public static Pose3d solveExitPose(Pose3d robotPose, Angle thetaTurret, Angle thetaHood) {
 		// calculate the distance from the center of the turret pivot to where the ball is launched from
 		Distance xHoodOffset = SuperstructureConstants.TURRET_BASE_TO_HOOD_PIVOT.getMeasureX().minus(SuperstructureConstants.HOOD_PIVOT_TO_GAMEPIECE_LAUNCH_RADIUS.times(Math.sin(thetaHood.in(Radians))));
 		// use this to calculate the offset due to the hood and turret from the center of the turret pivot
@@ -214,25 +258,32 @@ public class ShootingCalculator {
 
 		double distance = Math.sqrt(Math.pow(dx, 2.0) + Math.pow(dy, 2.0));
 
-		return new Translation2d(distance - .4, dz + .25);
+		return new Translation2d(distance, dz);
 	}
 
 	/**
-	 * Solves the angle between the turret and the target. This will be used to figure out the angle to point the turret at, as well as to transform the translation.
+	 * Solves the angle between the turret and the target. This will be used to
+	 * figure out the angle to point the turret at.
 	 *
 	 * @param turretPose
-	 *            The pose of the turret.
+	 *            The pose of the turret. The translational component of this
+	 *            should be the physical location of the turret, and the
+	 *            rotational component should be the rotation of the
+	 *            drivetrain.
 	 * @param targetPose
 	 *            The pose of the target to point at.
 	 * @return
-	 *         The resulting Angle between the turret and the target.
+	 *         The resulting robot-relative Angle between the turret and the
+	 *         target. This angle should just be directly set to the turret,
+	 *         with no further modification to change between robot-relative
+	 *         and field-relative.
 	 */
-	private static Angle solveTargetAngle(Pose2d turretPose, Pose2d targetPose) {
-		return turretPose.getTranslation()
-				.minus(targetPose.getTranslation())
+	private static Angle solveTurretAngle(Pose2d turretPose, Pose2d targetPose) {
+		return targetPose.getTranslation()
+				.minus(turretPose.getTranslation())
 				.getAngle()
-				.rotateBy(Rotation2d.k180deg)
-				.getMeasure();
+				.getMeasure()
+				.minus(turretPose.getRotation().getMeasure());
 	}
 
 	/**
@@ -283,39 +334,6 @@ public class ShootingCalculator {
 		// calculate quadratic formula to solve kinematics deltaY = Yinitial + Vyt + at^2
 		double t = (-b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
 		return Seconds.of(t);
-	}
-
-	/**
-	 * Solves shooter values for a given robot pose and target using interpolation.
-	 *
-	 * @param robotPose
-	 *            The pose of the robot.
-	 * @param targetPose
-	 *            The pose of the target to point at.
-	 * @return
-	 *         The resulting values to apply.
-	 */
-	public static ShooterValues solveInterpolated(Pose3d robotPose, Pose3d targetPose) {
-		ShooterValues values = new ShooterValues();
-
-		// Figure out where the turret is since it isn't centered on the robot
-		Pose3d turretPose = solveTurretPose(robotPose, values.getTurretAngle(), values.getHoodAngle());
-
-		// Solve the angle, translation, and distance to the target
-		Angle targetAngle = solveTargetAngle(turretPose.toPose2d(), targetPose.toPose2d());
-		Distance targetDistance = solveGamepieceTranslation(turretPose, targetPose).getMeasureX();
-
-		distancePublisher.set(targetDistance.in(Meters));
-
-		Angle hoodAngle = ShootingConstants.HOOD_ANGLE_BY_DISTANCE.get(targetDistance);
-		AngularVelocity flywheelSpeed = ShootingConstants.FLYWHEEL_VELOCITY_BY_DISTANCE.get(targetDistance);
-
-		// Set the ShooterValues accordingly
-		values.setTurretAngle(targetAngle.minus(robotPose.getRotation().getMeasureAngle()).unaryMinus());
-		values.setHoodAngle(hoodAngle);
-		values.setFlywheelSpeed(flywheelSpeed);
-
-		return values;
 	}
 
 	/**

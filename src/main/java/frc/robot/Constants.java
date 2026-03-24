@@ -323,7 +323,7 @@ public final class Constants {
 		/**
 		 * the transform from the center of the robot on the floor to the center of the pivot on the top of the shooter base plate, in meters
 		 */
-		public static final Transform3d ROBOT_TO_TURRET_BASE_TRANSFORM = new Transform3d(-0.1333479934, -0.1285875, 0.377121547, new Rotation3d());
+		public static final Transform3d ROBOT_TO_TURRET_BASE_TRANSFORM = new Transform3d(Inches.of(-5.25), Inches.of(-5.0625), Inches.of(14.847), new Rotation3d());
 		/**
 		 * the transform from the center of the pivot on top of the shooter base plate to the center of the hood pivot axis in meters
 		 */
@@ -364,11 +364,12 @@ public final class Constants {
 
 		static {
 			// Add values to the interpolation table
-			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(5.1668), RotationsPerSecond.of(40.0));
-			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(3.6539), RotationsPerSecond.of(35.0));
-			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(2.5465), RotationsPerSecond.of(32.0));
-			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(1.9677), RotationsPerSecond.of(31.0));
-			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(1.0014), RotationsPerSecond.of(26.0));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(1.9), RotationsPerSecond.of(26.5));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(2.58), RotationsPerSecond.of(30));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(3.29), RotationsPerSecond.of(31.6));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(4.5), RotationsPerSecond.of(34.5));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(5.29), RotationsPerSecond.of(38));
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(6.48), RotationsPerSecond.of(44));
 		}
 
 		/**
@@ -378,11 +379,12 @@ public final class Constants {
 
 		static {
 			// Add values to the interpolation table
-			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(5.1668), Degrees.of(5.0));
-			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(3.6539), Degrees.of(5.0));
-			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(2.5465), Degrees.of(3.0));
-			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(1.9677), Degrees.of(0.0));
-			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(1.0014), Degrees.of(0.0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(1.9), Degrees.of(0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(2.58), Degrees.of(0));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(3.29), Degrees.of(2));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(4.5), Degrees.of(4));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(5.29), Degrees.of(5));
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(6.48), Degrees.of(7));
 		}
 
 		/**
@@ -431,15 +433,15 @@ public final class Constants {
 		/**
 		 * A set of values to shoot from a static position.
 		 */
-		public static final ShooterValues STATIC_SHOOT_VALUES = new ShooterValues(RPM.of(2200), Degrees.of(0), Degrees.of(-13));
+		public static final ShooterValues STATIC_SHOOT_VALUES = new ShooterValues(RPM.of(2200), Degrees.of(0), Degrees.of(13));
 		/**
 		 * A set of values to shoot from the left by the door.
 		 */
-		public static final ShooterValues STATIC_SHOOT_LEFT_DOOR_VALUES = new ShooterValues(RotationsPerSecond.of(39), Degrees.of(0), Degrees.of(-38));
+		public static final ShooterValues STATIC_SHOOT_LEFT_DOOR_VALUES = new ShooterValues(RotationsPerSecond.of(39), Degrees.of(0), Degrees.of(38));
 		/**
 		 * A set of values to shoot from the right by the door.
 		 */
-		public static final ShooterValues STATIC_SHOOT_RIGHT_DOOR_VALUES = new ShooterValues(RotationsPerSecond.of(38), Degrees.of(5), Degrees.of(37));
+		public static final ShooterValues STATIC_SHOOT_RIGHT_DOOR_VALUES = new ShooterValues(RotationsPerSecond.of(38), Degrees.of(5), Degrees.of(-37));
 		/**
 		 * A set of values to shoot from the center by the tower.
 		 */
@@ -543,7 +545,7 @@ public final class Constants {
 		public static final double RPS = 100.0; // X44 can go 125 Rotations per Second
 		public static final double CRUISE_VELOCITY = RPS;
 		public static final double ACCELERATION = 3.0 * CRUISE_VELOCITY;
-		public static final Angle TOLERANCE = Units.Degrees.of(1.0);
+		public static final Angle TOLERANCE = Units.Degrees.of(2.0);
 		public static final double SUPPLY_CURRENT_LOWER_LIMIT = 30.0;
 		public static final double SUPPLY_CURRENT_LIMIT = 50.0;
 		public static final double SUPPLY_CURRENT_LOWER_TIME = 0.15;
@@ -639,7 +641,7 @@ public final class Constants {
 		/**
 		 * The direction of the motor.
 		 */
-		public static final InvertedValue MOTOR_INVERTED = InvertedValue.Clockwise_Positive;
+		public static final InvertedValue MOTOR_INVERTED = InvertedValue.CounterClockwise_Positive;
 
 		/**
 		 * The higher current limit for the motor. Helps get the motor started before switching to the {@link #MOTOR_CURRENT_LOWER_LIMIT}.
@@ -661,19 +663,19 @@ public final class Constants {
 		/**
 		 * The PID kP for the turret closed loop controller.
 		 */
-		public static final double TURRET_KP = 18.0;
+		public static final double TURRET_KP = 19.0;
 		/**
 		 * The PID kI for the turret closed loop controller.
 		 */
-		public static final double TURRET_KI = 0.0;
+		public static final double TURRET_KI = 5.5;
 		/**
 		 * The PID kD for the turret closed loop controller.
 		 */
-		public static final double TURRET_KD = 1.25;
+		public static final double TURRET_KD = 2.1;
 		/**
 		 * The PID kS for the turret closed loop controller.
 		 */
-		public static final double TURRET_KS = 0.42;
+		public static final double TURRET_KS = 0.0;
 		/**
 		 * The PID kV for the turret closed loop controller.
 		 */
