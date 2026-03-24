@@ -13,7 +13,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -43,6 +45,7 @@ public class ShootingCalculator {
 	public static String SHOOTING_CALCULATOR_TABLE_NAME = SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Shooting Calculator";
 	public static String SHOOTING_CALCULATOR_MODELED_TABLE_NAME = SHOOTING_CALCULATOR_TABLE_NAME + "/Modeled";
 	public static String SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME = SHOOTING_CALCULATOR_TABLE_NAME + "/Interpolated";
+	public static String SHOOTING_CALCULATOR_INTERPOLATED_WHILE_MOVE_TABLE_NAME = SHOOTING_CALCULATOR_TABLE_NAME + "/Interpolated While Move";
 
 	private static StructPublisher<Pose3d> targetPosePublisher = NetworkTableInstance.getDefault()
 			.getStructTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Target Pose", Pose3d.struct)
@@ -73,7 +76,14 @@ public class ShootingCalculator {
 			.getStructTopic(SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME + "/Target Pose", Pose3d.struct)
 			.publish();
 	private static StructPublisher<Pose3d> interpolatedTurretPosePublisher = NetworkTableInstance.getDefault()
-			.getStructTopic(SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct)
+			.getStructTopic(SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME + "/Turret Pose", Pose3d.struct)
+			.publish();
+
+	private static StructArrayPublisher<Pose3d> interpolatedWhileMoveTurretPosePublisher = NetworkTableInstance.getDefault()
+			.getStructArrayTopic(SHOOTING_CALCULATOR_INTERPOLATED_WHILE_MOVE_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct)
+			.publish();
+	private static DoubleArrayPublisher interpolatedWhileMoveTimeTillScorePublisher = NetworkTableInstance.getDefault()
+			.getDoubleArrayTopic(SHOOTING_CALCULATOR_INTERPOLATED_WHILE_MOVE_TABLE_NAME + "/Time Till Score")
 			.publish();
 
 	/**
@@ -348,6 +358,10 @@ public class ShootingCalculator {
 		// find the values at the initial position
 		ShooterValues curValue = solveInterpolated(adjustedPose, targetPose);
 
+		// used for logging
+		double[] timeTillScoreArray = new double[SuperstructureConstants.SHOOTING_CALCULATOR_ITERATIONS];
+		Pose3d[] adjustedPoses = new Pose3d[SuperstructureConstants.SHOOTING_CALCULATOR_ITERATIONS];
+
 		// iterate through the amount of calculations
 		for (int i = 0; i < SuperstructureConstants.SHOOTING_CALCULATOR_ITERATIONS; i++) {
 			// use a linreg to find the output velocity given by the lerp table
@@ -371,13 +385,19 @@ public class ShootingCalculator {
 
 			// use this to find the time till the ball lands
 			time = calculateTimeTillScore(translationToTarget, outputAngle, outputVelocity);
+			timeTillScoreArray[i] = time.in(Seconds);
 
 			// add the robots velocity vector times the time
 			Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
 			adjustedPose = robotPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
 
 			curValue = solveInterpolated(adjustedPose, targetPose);
+
+			adjustedPoses[i] = adjustedPose;
 		}
+
+		interpolatedWhileMoveTimeTillScorePublisher.set(timeTillScoreArray);
+		interpolatedWhileMoveTurretPosePublisher.set(adjustedPoses);
 
 		return curValue;
 	}
