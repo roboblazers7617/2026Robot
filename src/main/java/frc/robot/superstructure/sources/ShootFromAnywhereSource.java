@@ -30,7 +30,7 @@ public class ShootFromAnywhereSource extends ShootingSource {
 	@Override
 	public Optional<ShooterValues> get() {
 		Pose2d robotPose = drivetrain.getPose2d();
-		ChassisSpeeds robotVelocity = drivetrain.getRobotRelativeSpeeds();
+		ChassisSpeeds robotVelocity = drivetrain.getFeildRelativeSpeeds();
 
 		// Figure out target values if we have any
 		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(robotPose);
