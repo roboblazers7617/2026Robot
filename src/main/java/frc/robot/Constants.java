@@ -450,11 +450,12 @@ public final class Constants {
 		/**
 		 * the A in the linreg for x=flywheel speed y = output speed
 		 */
-		public static final double LINREG_FLYWHEEL_A = 0.284082;
+		public static final double LINREG_FLYWHEEL_A = 0.187635;
 		/**
 		 * the B in the linreg for x=flywheel speed y = output speed
 		 */
-		public static final double LINREG_FLYWHEEL_B = -3.571469672888952;
+		// currently forcing the intercept to 0, might change later
+		public static final double LINREG_FLYWHEEL_B = 0.0;
 
 		/**
 		 * The minimum angle to shoot at.
