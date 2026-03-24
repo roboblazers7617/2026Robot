@@ -216,7 +216,7 @@ public class Turret extends SubsystemBase {
 
 		simPosition = Radians.of(MathUtil.interpolate(simPositionRadians, setpointRadians, 0.1));
 
-		motor.getSimState().setRawRotorPosition(simPosition.times(-TurretConstants.MOTOR_GEAR_RATIO));
+		motor.getSimState().setRawRotorPosition(simPosition.times(TurretConstants.MOTOR_GEAR_RATIO));
 
 		// Update simulated encoder values
 		CANdiSimState encoderSimState = encoderCandi.getSimState();
@@ -313,7 +313,7 @@ public class Turret extends SubsystemBase {
 	 *            Angle to turn to.
 	 */
 	private void setPositionDirect(Angle position) {
-		motor.setControl(positionRequestMotionMagic.withPosition(position.minus(Radians.of(0.04))));
+		motor.setControl(positionRequestMotionMagic.withPosition(position));
 
 		setpoint = position;
 	}
