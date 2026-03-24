@@ -259,7 +259,8 @@ public class Turret extends SubsystemBase {
 		for (int i = 0; i < TurretConstants.TURRET_SPAN * e2r + 1; i++) {
 			double val = (i + e2v) / e2r;
 			if (isInArrayBinarySearch(possibleR, val, TurretConstants.TURRET_ENCODER_TOLERANCE.in(Rotations))) {
-				val -= TurretConstants.TURRET_SPAN * .5;
+				// if val > 2.1, it should wrap around
+				val = ((val + 2.1) % 4.2) - 2.1;
 				return Rotations.of(val);
 			}
 		}
