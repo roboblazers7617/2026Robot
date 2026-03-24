@@ -379,7 +379,7 @@ public class ShootingCalculator {
 			double bottomTerm = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
 			// calculate the angle
-			Angle outputAngle = Radians.of(Math.acos(topTerm / (middleTerm / bottomTerm)) - Math.atan(dx / dy));
+			Angle outputAngle = Radians.of(Math.acos((topTerm / middleTerm) / bottomTerm) - Math.atan(dx / dy));
 
 			// use this to find the time till the ball lands
 			time = calculateTimeTillScore(translationToTarget, outputAngle, outputVelocity);
