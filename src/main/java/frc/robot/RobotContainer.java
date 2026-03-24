@@ -20,7 +20,7 @@ import frc.robot.superstructure.ShooterSim;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.superstructure.sources.ShootingSource;
-import frc.robot.superstructure.sources.ShootFromAnywhereInterpolatedSource;
+import frc.robot.superstructure.sources.ShootWhileMoveInterpolatedSource;
 import frc.robot.superstructure.sources.ShootingSourceConstant;
 import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.Constants.ShootingConstants;
@@ -130,7 +130,7 @@ public class RobotContainer {
 	/**
 	 * The source that we use for shoot-from-anywhere.
 	 */
-	private final ShootingSource shootFromAnywhereSource = new ShootFromAnywhereInterpolatedSource(drivetrain);
+	private final ShootingSource shootFromAnywhereSource = new ShootWhileMoveInterpolatedSource(drivetrain);
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
