@@ -164,6 +164,7 @@ public class ShootingCalculator {
 		interpolatedTargetPosePublisher.set(targetPose);
 
 		// Figure out where the turret is since it isn't centered on the robot
+		// The rotational component of this pose should just stay the rotation of the drivetrain
 		Pose3d turretPose = robotPose.plus(SuperstructureConstants.ROBOT_TO_TURRET_BASE_TRANSFORM);
 
 		interpolatedTurretPosePublisher.set(turretPose);
@@ -261,14 +262,21 @@ public class ShootingCalculator {
 	}
 
 	/**
-	 * Solves the angle between the turret and the target. This will be used to figure out the angle to point the turret at.
+	 * Solves the angle between the turret and the target. This will be used to
+	 * figure out the angle to point the turret at.
 	 *
 	 * @param turretPose
-	 *            The pose of the turret, including robot rotation.
+	 *            The pose of the turret. The translational component of this
+	 *            should be the physical location of the turret, and the
+	 *            rotational component should be the rotation of the
+	 *            drivetrain.
 	 * @param targetPose
 	 *            The pose of the target to point at.
 	 * @return
-	 *         The resulting robot-relative Angle between the turret and the target.
+	 *         The resulting robot-relative Angle between the turret and the
+	 *         target. This angle should just be directly set to the turret,
+	 *         with no further modification to change between robot-relative
+	 *         and field-relative.
 	 */
 	private static Angle solveTurretAngle(Pose2d turretPose, Pose2d targetPose) {
 		return targetPose.getTranslation()
