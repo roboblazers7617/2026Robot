@@ -121,7 +121,7 @@ public final class Constants {
 		 * Send logging data to NetworkTables. Data is written to storage when set to
 		 * false.
 		 */
-		public static final boolean DEBUG_MODE = true;
+		public static final boolean DEBUG_MODE = false;
 		/**
 		 * Log all data above specified level.
 		 */
