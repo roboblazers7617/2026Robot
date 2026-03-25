@@ -141,7 +141,7 @@ public final class Constants {
 		/**
 		 * The temperature at which a warning is shown on the dashboard about motor overtemp.
 		 */
-		public static final Temperature MOTOR_WARNING_TEMPERATURE = Celsius.of(60.0);
+		public static final Temperature MOTOR_WARNING_TEMPERATURE = Celsius.of(50.0);
 		/**
 		 * The temperature the motor has to fall to for another alert to be sent. This adds a bit of hysteresis.
 		 */
