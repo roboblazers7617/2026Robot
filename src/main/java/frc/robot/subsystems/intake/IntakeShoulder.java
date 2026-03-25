@@ -9,6 +9,7 @@ import frc.robot.Constants.IntakeConstants;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -23,6 +24,7 @@ public class IntakeShoulder extends SubsystemBase {
 	private final TalonFX motor;
 
 	private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0);
+	private final DynamicMotionMagicVoltage slowPositionRequest = new DynamicMotionMagicVoltage(0, IntakeConstants.SLOW_MAXIMUM_VELOCITY, IntakeConstants.SLOW_ACCELERATION);
 
 	private final CANcoder intakeEncoder = new CANcoder(IntakeConstants.SHOULDER_ENCODER_CAN_ID, Constants.CANIVORE_BUS);
 
@@ -141,12 +143,39 @@ public class IntakeShoulder extends SubsystemBase {
 	}
 
 	/**
+	 * Method which takes Angle values (no it does not) and sets Kraken to angle.
+	 * Should compensate
+	 * for gear ratios.
+	 *
+	 * @param positionMeters
+	 */
+	private void setPositionSlowlyPlease(double positionMeters) {
+		positionMeters = MathUtil.clamp(positionMeters, IntakeConstants.SHOULDER_MINIMUM_DISTANCE, IntakeConstants.SHOULDER_MAXIMUM_DISTANCE);
+		setPointMeters = positionMeters;
+		// solution one (post *360) (doesn't work)
+		// motor.setControl(positionRequest.withPosition(position.in(Units.Degrees)));
+		motor.setControl(slowPositionRequest.withPosition(positionMeters)); // max's solution
+
+		// private void setPosition(double position) {
+		// motor.setControl(positionRequest.withPosition(position));
+	}
+
+	/**
 	 * Command which raises shoulder of intake
 	 *
 	 * @return runOnce(() -> raiseIntake());
 	 */
 	public Command raiseIntakeCommand() {
 		return runOnce(() -> raiseIntake());
+	}
+
+	/**
+	 * Command which raises shoulder of intake slowly
+	 *
+	 * @return runOnce(() -> raiseIntakeSlow());
+	 */
+	public Command raiseIntakeSlowCommand() {
+		return runOnce(() -> raiseIntakeSlow());
 	}
 
 	/**
@@ -196,6 +225,14 @@ public class IntakeShoulder extends SubsystemBase {
 	}
 
 	/**
+	 * Method which sets motor position to specified stowed angle slowly.
+	 */
+	private void raiseIntakeSlow() {
+		setPositionSlowlyPlease(IntakeConstants.SHOULDER_MINIMUM_DISTANCE);
+		// setPosition(0.25);
+	}
+
+	/**
 	 * Method which sets motor position to specified lowered angle.
 	 */
 	private void lowerIntake() {
@@ -214,7 +251,7 @@ public class IntakeShoulder extends SubsystemBase {
 	 * Method which sets motor position to specified stow over bumper angle.
 	 */
 	private void stowOverBumper() {
-		setPositionPlease(IntakeConstants.SHOULDER_STOW_OVER_BUMPER_DISTANCE);
+		setPositionSlowlyPlease(IntakeConstants.SHOULDER_STOW_OVER_BUMPER_DISTANCE);
 	}
 
 	/**

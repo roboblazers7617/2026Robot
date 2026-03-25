@@ -218,7 +218,7 @@ public final class Constants {
 		public static final double SHOULDER_MINIMUM_DISTANCE = 0;
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Rotations.of(0);
-		public static final double SHOULDER_MAXIMUM_DISTANCE = 36.0;
+		public static final double SHOULDER_MAXIMUM_DISTANCE = 35.5;
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
 		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;
@@ -238,8 +238,11 @@ public final class Constants {
 		// new (?) system for gear ratios
 		public static final double GEARBOX_RATIO = 96.0 / 5.0; // to be replaced by talonfx (?)
 		// config things
-		public static final double MAXIMUM_VELOCITY = 20.0;
+		public static final double MAXIMUM_VELOCITY = 50.0;
 		public static final double ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
+
+		public static final double SLOW_MAXIMUM_VELOCITY = 20.0;
+		public static final double SLOW_ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
 
 		// talonfx ratio stuff
 		// public static final double ROTOR_TO_SENSOR_RATIO = 0; // depracated (?)

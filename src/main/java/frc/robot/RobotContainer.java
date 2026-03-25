@@ -225,7 +225,8 @@ public class RobotContainer {
 	private void configureNamedCommands() {
 		NamedCommands.registerCommand("Deploy Intake", intakeShoulder.lowerIntakeCommand()
 				.andThen(intakeGrabber.startIntakeCommand()));
-		NamedCommands.registerCommand("Stow Intake", intakeShoulder.raiseIntakeCommand()
+		NamedCommands.registerCommand("Stow Intake", intakeShoulder.raiseIntakeSlowCommand()
+				.andThen(intakeGrabber.startIntakeSlowCommand())
 				.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
 				.andThen(intakeGrabber.stopIntakeCommand()));
 
@@ -351,7 +352,8 @@ public class RobotContainer {
 				.onTrue(intakeGrabber.startIntakeSlowCommand());
 		// Press Y to STOW and then STOP INTAKE
 		operatorController.y()
-				.onTrue(intakeShoulder.raiseIntakeCommand()
+				.onTrue(intakeShoulder.raiseIntakeSlowCommand()
+						.andThen(intakeGrabber.startIntakeSlowCommand())
 						.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
 						.finallyDo(intakeGrabber::stopIntake));
 
