@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.DrivetrainConstants;
+import frc.robot.Constants.OperatorConstants;
 
 public class DrivetrainControls {
 	private final SwerveRequest.FieldCentricFacingAngle drive = new SwerveRequest.FieldCentricFacingAngle()
@@ -85,14 +86,14 @@ public class DrivetrainControls {
 	 * Controls Swerve Request for drivetrian with the facing angle type
 	 * Left stick drives the robot with field centric control
 	 * Right stick points robot in direction relitive to feild
-	 * 
+	 *
 	 * @param driverController
 	 * @return Swerve Request
 	 */
 	public SwerveRequest feildCentricFacingAngleRequest(CommandXboxController driverController) {
 		{
 			// this logic applies a deadband to the right stick turn by only running after checking controller values
-			if (Math.abs(driverController.getRightY()) >= 0.5 || Math.abs(driverController.getRightX()) >= 0.5) {
+			if (Math.abs(driverController.getRightY()) >= OperatorConstants.ANGLE_SNAP_DEADBAND || Math.abs(driverController.getRightX()) >= OperatorConstants.ANGLE_SNAP_DEADBAND) {
 				drive.withTargetDirection(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()));
 			}
 			// Standard drive code and return the request to be applied
@@ -105,7 +106,7 @@ public class DrivetrainControls {
 	 * Controls the swerve drive with the field centric type
 	 * Left stick drives the robot with field centric control
 	 * Right stick turn the robot according to the x value spinning clockwise or counterclockwise around the center
-	 * 
+	 *
 	 * @param driverController
 	 * @return Swerve Request
 	 */

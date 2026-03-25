@@ -102,6 +102,10 @@ public final class Constants {
 		 * Joystick deadband.
 		 */
 		public static final double DEADBAND = 0.1;
+		/**
+		 * Joystick deadband for snap-to-angle functionality.
+		 */
+		public static final double ANGLE_SNAP_DEADBAND = 0.5;
 	}
 
 	/**
