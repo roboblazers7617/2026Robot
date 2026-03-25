@@ -96,7 +96,7 @@ public class RobotContainer {
 	public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 	public final DrivetrainControls drivetrainControls = new DrivetrainControls(drivetrain);
 	private final Vision vision = new Vision(drivetrain);
-	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this);
+	private final RebuiltDashboard rebuiltDashboard = new RebuiltDashboard(drivetrain, this, logger);
 	private final Shooter shooter;
 	private final Hood hood;
 	private final Turret turret = new Turret();
