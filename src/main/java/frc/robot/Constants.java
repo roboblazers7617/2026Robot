@@ -218,7 +218,7 @@ public final class Constants {
 		public static final double SHOULDER_MINIMUM_DISTANCE = 0;
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Rotations.of(0);
-		public static final double SHOULDER_MAXIMUM_DISTANCE = 36.0;
+		public static final double SHOULDER_MAXIMUM_DISTANCE = 35.5;
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
 		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;
@@ -238,8 +238,11 @@ public final class Constants {
 		// new (?) system for gear ratios
 		public static final double GEARBOX_RATIO = 96.0 / 5.0; // to be replaced by talonfx (?)
 		// config things
-		public static final double MAXIMUM_VELOCITY = 20.0;
+		public static final double MAXIMUM_VELOCITY = 50.0;
 		public static final double ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
+
+		public static final double SLOW_MAXIMUM_VELOCITY = 20.0;
+		public static final double SLOW_ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
 
 		// talonfx ratio stuff
 		// public static final double ROTOR_TO_SENSOR_RATIO = 0; // depracated (?)
@@ -631,11 +634,11 @@ public final class Constants {
 		/**
 		 * The offset from zero of the absolute encoder. This is in mechanism rotations.
 		 */
-		public static final Angle PRIMARY_ENCODER_OFFSET = Rotations.of(0.94);
+		public static final Angle PRIMARY_ENCODER_OFFSET = Rotations.of(-0.225);
 		/**
 		 * The offset from zero of the absolute encoder. This is in mechanism rotations.
 		 */
-		public static final Angle SECONDARY_ENCODER_OFFSET = Rotations.of(0.21);
+		public static final Angle SECONDARY_ENCODER_OFFSET = Rotations.of(0.735);
 
 		/**
 		 * The neutral mode for the motor.
@@ -717,6 +720,7 @@ public final class Constants {
 
 	public static class VisionConstants {
 		public static final Boolean isGoPro = true;
+		public static final Boolean DEBUG_PRINT_STATEMENTS = false; // enables/disables the print statements from vision
 		public static final String TURRET_CAM_NAME = "CamFront";
 		// transform numbers are placeholders as of now
 		public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.1397, -0.3479292, 0.2666238), new Rotation3d(0, 0.174533, -0.5 * Math.PI));
