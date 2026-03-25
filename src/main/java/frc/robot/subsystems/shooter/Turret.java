@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.Constants.TurretConstants;
+import frc.robot.MotorMonitor;
 import frc.robot.util.AlertUtil;
 
 import static edu.wpi.first.units.Units.Radians;
@@ -159,6 +160,9 @@ public class Turret extends SubsystemBase {
 			// If we run into an error, log it and notify on the dashboard
 			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Failed to apply configuration to Turret motor", String.format("Failed to apply configuration to Turret motor (ID %d)! Make sure the CAN bus is operating properly.", TurretConstants.MOTOR_ID), Seconds.zero());
 		}
+
+		// Set up temperature monitoring for the motor
+		MotorMonitor.addMotor(motor);
 
 		CANdiConfiguration candiConfiguration = new CANdiConfiguration();
 

@@ -35,6 +35,9 @@ import frc.robot.util.Elastic;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.swerve.SwerveModule;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.epilogue.Logged;
@@ -146,6 +149,12 @@ public class RobotContainer {
 		// Set up subsystems
 		shooter = new Shooter(networkTableInst.getSubTable("Shooter"));
 		hood = new Hood(networkTableInst.getSubTable("Hood"));
+
+		// Set up motor temperature warnings for Drivetrain
+		for (SwerveModule<TalonFX, TalonFX, CANcoder> module : drivetrain.getModules()) {
+			MotorMonitor.addMotor(module.getDriveMotor());
+			MotorMonitor.addMotor(module.getSteerMotor());
+		}
 
 		// Set up superstructure
 		shooterSuperstructure = new ShooterSuperstructure(shooter, hood, turret, hopperUptake, uptakeBeamBreak);
