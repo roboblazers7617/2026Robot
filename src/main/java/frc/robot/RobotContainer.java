@@ -30,6 +30,7 @@ import frc.robot.Constants.DashboardConstants;
 import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.LoggingConstants;
+import frc.robot.util.Util;
 import frc.robot.util.Elastic;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -140,8 +141,11 @@ public class RobotContainer {
 	 */
 	public RobotContainer() {
 		// Publish version metadata
-		VersionConstants.publishNetworkTables(NetworkTableInstance.getDefault().getTable("/Metadata"));
-		VersionConstants.logSignals();
+		VersionConstants.publish();
+
+		// Publish some general metadata
+		Util.recordMetadata("DebugMode", LoggingConstants.DEBUG_MODE ? "true" : "false");
+		Util.recordMetadata("LogLevel", LoggingConstants.DEBUG_LEVEL.name());
 
 		// autoChooser = AutoBuilder.buildAutoChooser("Tests");
 		// SmartDashboard.putData("Auto Mode", autoChooser);
