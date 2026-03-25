@@ -25,6 +25,7 @@ import edu.wpi.first.units.Units;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.HoodConstants;
 
 @Logged
@@ -32,7 +33,7 @@ public class Hood extends SubsystemBase {
 	private final TalonFX hoodMotor;
 	/** Creates a new Hood. */
 	private final MotionMagicVoltage positionMotionMagic = new MotionMagicVoltage(0);
-	private final CANcoder hoodEncoder = new CANcoder(HoodConstants.HOOT_ENCODER_CAN_ID);
+	private final CANcoder hoodEncoder = new CANcoder(HoodConstants.HOOT_ENCODER_CAN_ID, Constants.CANIVORE_BUS);
 	private NetworkTable hoodTable;
 	private DoubleEntry hoodPositionEntry;
 	private Angle requestedAngle;
@@ -40,7 +41,7 @@ public class Hood extends SubsystemBase {
 
 	public Hood(NetworkTable table) {
 		setupNetworkTable(table);
-		hoodMotor = new TalonFX(HoodConstants.HOOD_MOTOR_CAN_ID);
+		hoodMotor = new TalonFX(HoodConstants.HOOD_MOTOR_CAN_ID, Constants.CANIVORE_BUS);
 		requestedAngle = Degrees.zero();
 		TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
 

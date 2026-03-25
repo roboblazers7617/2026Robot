@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.Constants.TurretConstants;
 import frc.robot.util.AlertUtil;
@@ -47,7 +48,7 @@ public class Turret extends SubsystemBase {
 	/**
 	 * The motor on the turret.
 	 */
-	private TalonFX motor = new TalonFX(TurretConstants.MOTOR_ID);
+	private TalonFX motor = new TalonFX(TurretConstants.MOTOR_ID, Constants.CANIVORE_BUS);
 
 	/**
 	 * The CANdi for the encoders.
@@ -56,7 +57,7 @@ public class Turret extends SubsystemBase {
 	 * <p>
 	 * PWM2 is the secondary encoder on the turret. This is {@link TurretConstants#SECONDARY_ENCODER_RATIO} to the mechanism.
 	 */
-	private final CANdi encoderCandi = new CANdi(TurretConstants.CANDI_ID);
+	private final CANdi encoderCandi = new CANdi(TurretConstants.CANDI_ID, Constants.CANIVORE_BUS);
 
 	/**
 	 * The configuration for the {@link #encoder}.
@@ -238,7 +239,7 @@ public class Turret extends SubsystemBase {
 
 	/**
 	 * finds the rotation of the turret based on the encoders
-	 * 
+	 *
 	 * @param e1v
 	 *            the value of the primary encoder, with 0 at turret = 0
 	 * @param e2v
@@ -267,7 +268,7 @@ public class Turret extends SubsystemBase {
 
 	/**
 	 * generic binary search, needed for findRotationsFromEncoders, replace if there is one in a library i don't know about
-	 * 
+	 *
 	 * @param values
 	 *            the list of values to search
 	 * @param target

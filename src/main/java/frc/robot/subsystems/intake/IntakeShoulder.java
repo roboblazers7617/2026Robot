@@ -3,6 +3,7 @@ package frc.robot.subsystems.intake;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 
 import java.util.function.Supplier;
@@ -23,7 +24,7 @@ public class IntakeShoulder extends SubsystemBase {
 
 	private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0);
 
-	private final CANcoder intakeEncoder = new CANcoder(IntakeConstants.SHOULDER_ENCODER_CAN_ID);
+	private final CANcoder intakeEncoder = new CANcoder(IntakeConstants.SHOULDER_ENCODER_CAN_ID, Constants.CANIVORE_BUS);
 
 	private double setPointMeters;
 
@@ -32,7 +33,7 @@ public class IntakeShoulder extends SubsystemBase {
 	 * configurations, sets up Motion Magic, and configures gear ratios.
 	 */
 	public IntakeShoulder() {
-		motor = new TalonFX(IntakeConstants.SHOULDER_CAN_ID);
+		motor = new TalonFX(IntakeConstants.SHOULDER_CAN_ID, Constants.CANIVORE_BUS);
 
 		// TODO: See the comments on IntakeGrabber on how to better code this
 		// TalonFXConfigurator motorConfigurator = motor.getConfigurator();
