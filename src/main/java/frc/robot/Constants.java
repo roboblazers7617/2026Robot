@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.CANBus;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.config.PIDConstants;
@@ -76,6 +77,8 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+	public static final CANBus CANIVORE_BUS = new CANBus("CANivore");
+
 	public static class AutoConstants {
 		public static final PIDConstants TRANSLATION_PID_CONSTANTS = new PIDConstants(5, 0.0, 0);
 		public static final PIDConstants ROTATION_PID_CONSTANTS = new PIDConstants(10, 0.0, 0.0);

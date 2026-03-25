@@ -25,6 +25,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ShooterConstants;
 
 @Logged
@@ -44,8 +45,8 @@ public class Shooter extends SubsystemBase {
 		setupNetworkTable(table);
 		requestedSpeed = RadiansPerSecond.zero();
 
-		leaderMotor = new TalonFX(ShooterConstants.LEADER_CAN_ID);
-		followermotor = new TalonFX(ShooterConstants.FOLLOWER_CAN_ID);
+		leaderMotor = new TalonFX(ShooterConstants.LEADER_CAN_ID, Constants.CANIVORE_BUS);
+		followermotor = new TalonFX(ShooterConstants.FOLLOWER_CAN_ID, Constants.CANIVORE_BUS);
 		followermotor.setControl(new Follower(leaderMotor.getDeviceID(), MotorAlignmentValue.Aligned));
 
 		TalonFXConfiguration shooterConfig = new TalonFXConfiguration();

@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -23,7 +24,7 @@ public class IntakeGrabber extends SubsystemBase {
 	 * TorqueCurrentFOC.
 	 */
 	public IntakeGrabber() {
-		Motor = new TalonFX(IntakeConstants.GRABBER_CAN_ID);
+		Motor = new TalonFX(IntakeConstants.GRABBER_CAN_ID, Constants.CANIVORE_BUS);
 
 		// TalonFXConfigurator MotorConfigurator = Motor.getConfigurator();
 		TalonFXConfiguration motorConfig = new TalonFXConfiguration();

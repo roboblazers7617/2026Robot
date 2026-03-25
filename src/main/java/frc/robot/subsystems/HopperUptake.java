@@ -18,6 +18,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.HopperUptakeConstants;
 
 /** This class covers the Hopper/Spindexer motor and the Uptake motor */
@@ -46,8 +47,8 @@ public class HopperUptake extends SubsystemBase {
 	private boolean isHopperRunningForwards = false;
 
 	public HopperUptake() {
-		bigSpinny = new TalonFX(HopperUptakeConstants.BIG_SPINNY_CAN_ID);
-		littleSpinny = new TalonFX(HopperUptakeConstants.LITTLE_SPINNY_CAN_ID);
+		bigSpinny = new TalonFX(HopperUptakeConstants.BIG_SPINNY_CAN_ID, Constants.CANIVORE_BUS);
+		littleSpinny = new TalonFX(HopperUptakeConstants.LITTLE_SPINNY_CAN_ID, Constants.CANIVORE_BUS);
 		// The configuration for uptake
 		TalonFXConfiguration uptakeConfig = new TalonFXConfiguration();
 		// // Neutral mode
