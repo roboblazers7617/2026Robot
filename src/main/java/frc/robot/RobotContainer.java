@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.Auto;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.DrivetrainControls;
 import frc.robot.subsystems.Vision;
@@ -31,6 +32,7 @@ import frc.robot.Constants.DrivetrainConstants;
 import frc.robot.Constants.HopperConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.util.Util;
+import frc.robot.util.AlertUtil;
 import frc.robot.util.Elastic;
 
 import com.pathplanner.lib.auto.NamedCommands;
@@ -198,6 +200,9 @@ public class RobotContainer {
 		if (!LoggingConstants.DEBUG_MODE) {
 			Elastic.selectTab(DashboardConstants.AUTO_TAB_NAME);
 		}
+
+		// Configure AutoBuilder if not already configured
+		Auto.setupPathPlannerFailsafe(drivetrain);
 	}
 
 	/**
@@ -208,6 +213,9 @@ public class RobotContainer {
 		if (!LoggingConstants.DEBUG_MODE) {
 			Elastic.selectTab(DashboardConstants.TELEOP_TAB_NAME);
 		}
+
+		// Configure AutoBuilder if not already configured
+		Auto.setupPathPlannerFailsafe(drivetrain);
 	}
 
 	/**
@@ -393,34 +401,11 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		// // Simple drive forward auton
-		// final var idle = new SwerveRequest.Idle();
-		// return autoChooser.getSelected();
-		// // // Reset our field centric heading to match the robot
-		// // // facing away from our alliance station wall (0 deg).
-		// // drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-		// // // Then slowly drive forward (away from us) for 5 seconds.
-		// // drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
-		// // .withVelocityY(0)
-		// // .withRotationalRate(0))
-		// // .withTimeout(5.0),
-		// // // Finally idle for the rest of auton
-		// // drivetrain.applyRequest(() -> idle));
-		// TODO: I removed the simple auton and use the selected one instead, do we still need this.
+		if (autoChooser == null) {
+			return Commands.runOnce(() -> AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "Auto Chooser Not Configured", "Auto chooser has not been configured! Skipping autonomous routine.", Seconds.of(10.0)));
+		}
+
 		return autoChooser.getSelected();
-		// // Simple drive forward auton
-		// final var idle = new SwerveRequest.Idle();
-		// return Commands.sequence(
-		// // Reset our field centric heading to match the robot
-		// // facing away from our alliance station wall (0 deg).
-		// drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-		// // Then slowly drive forward (away from us) for 5 seconds.
-		// drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
-		// .withVelocityY(0)
-		// .withRotationalRate(0))
-		// .withTimeout(5.0),
-		// // Finally idle for the rest of auton
-		// drivetrain.applyRequest(() -> idle));
 	}
 
 	public void setAutoChooser(SendableChooser<Command> auto) {
