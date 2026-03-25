@@ -43,9 +43,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Intook Right to Trench"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Intook Right to Trench"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Protect Intake"
+                }
+              }
+            ]
           }
         },
         {
@@ -86,9 +99,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Right Intook R2"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Right Intook R2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Protect Intake"
+                }
+              }
+            ]
           }
         },
         {

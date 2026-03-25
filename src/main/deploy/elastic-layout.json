@@ -71,10 +71,10 @@
           },
           {
             "title": "Teleop Field Preview",
-            "x": 384.0,
+            "x": 512.0,
             "y": 0.0,
-            "width": 1024.0,
-            "height": 512.0,
+            "width": 1408.0,
+            "height": 640.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Teleop Field Preview",
@@ -170,10 +170,10 @@
           },
           {
             "title": "Auto Field Preview",
-            "x": 384.0,
+            "x": 512.0,
             "y": 0.0,
-            "width": 1024.0,
-            "height": 512.0,
+            "width": 1408.0,
+            "height": 640.0,
             "type": "Field",
             "properties": {
               "topic": "/SmartDashboard/Auto Field Preview",

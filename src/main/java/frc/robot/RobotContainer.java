@@ -248,9 +248,10 @@ public class RobotContainer {
 
 		NamedCommands.registerCommand("Protect Intake", intakeShoulder.stowOverBumperCommand());
 
-		NamedCommands.registerCommand("Shoot", shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot", ShootingConstants.STATIC_SHOOT_VALUES))
+		NamedCommands.registerCommand("Shoot", shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
 				.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
 				.andThen(shooterSuperstructure.startShootingCommand())
+				.andThen(intakeShoulder.stowOverBumperCommand())
 				.andThen(Commands.waitSeconds(4.0))
 				.andThen(shooterSuperstructure.homeCommand()));
 	}

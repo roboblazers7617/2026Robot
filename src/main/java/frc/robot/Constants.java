@@ -79,6 +79,9 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+	/**
+	 * The CAN bus used by devices on the CANivore.
+	 */
 	public static final CANBus CANIVORE_BUS = new CANBus("CANivore");
 
 	public static class AutoConstants {
@@ -118,7 +121,7 @@ public final class Constants {
 		 * Send logging data to NetworkTables. Data is written to storage when set to
 		 * false.
 		 */
-		public static final boolean DEBUG_MODE = true;
+		public static final boolean DEBUG_MODE = false;
 		/**
 		 * Log all data above specified level.
 		 */
@@ -734,13 +737,12 @@ public final class Constants {
 	}
 
 	public static class VisionConstants {
-		public static final Boolean isGoPro = true;
+		public static final Boolean IS_GO_P = true;
 		public static final Boolean DEBUG_PRINT_STATEMENTS = false; // enables/disables the print statements from vision
 		public static final String TURRET_CAM_NAME = "CamFront";
-		// transform numbers are placeholders as of now
 		public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.1397, -0.3479292, 0.2666238), new Rotation3d(0, 0.174533, -0.5 * Math.PI));
 		public static final String EBOARD_CAM_NAME = "CamSide";
-		public static final Transform3d ROBOT_TO_EBOARD_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.2960878, 0.3098546, 0.5274056), new Rotation3d(0, 0.174533, Math.PI));
+		public static final Transform3d ROBOT_TO_EBOARD_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.3415792, -0.10795, 0.2708148), new Rotation3d(0, 0.174533, Math.PI));
 		public static final String XTRA_CAM_NAME = "CamX3"; // replace the String in the Constant of the camera you want to swap out with the extra cam name
 		public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8); // 4, 4, 8
 		public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);

@@ -16,11 +16,11 @@
     },
     {
       "anchor": {
-        "x": 3.447714932126697,
+        "x": 3.5,
         "y": 4.055520361990951
       },
       "prevControl": {
-        "x": 3.0412328766462586,
+        "x": 3.0935179445195615,
         "y": 3.5684666836635133
       },
       "nextControl": null,
@@ -48,7 +48,7 @@
   "folder": "Riley and Lukas",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": 90.0
   },
   "useDefaultConstraints": true
 }

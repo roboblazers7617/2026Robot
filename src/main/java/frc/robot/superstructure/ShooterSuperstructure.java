@@ -427,15 +427,12 @@ public class ShooterSuperstructure {
 
 	/**
 	 * Command to start shooting. This can only be called from the {@link ShooterState#SHOOTING_STAGE_2_READY_TO_SHOOT} state.
-	 * <p>
-	 * Exits when exiting the {@link ShooterState#SHOOTING_STAGE_3_SHOOTING} state.
 	 *
 	 * @return
 	 *         Command to run.
 	 */
 	public Command startShootingCommand() {
-		return Commands.runOnce(() -> stateMachine.fire(ShooterTrigger.START_SHOOTING))
-				.andThen(Commands.waitUntil(() -> !stateMachine.isInState(ShooterState.SHOOTING_STAGE_3_SHOOTING)));
+		return Commands.runOnce(() -> stateMachine.fire(ShooterTrigger.START_SHOOTING));
 	}
 
 	/**

@@ -80,16 +80,10 @@
               {
                 "type": "named",
                 "data": {
-                  "name": "Stow Intake"
+                  "name": "Deploy Intake"
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Deploy Intake"
           }
         },
         {
@@ -99,9 +93,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Left Intook R2"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Intook R2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Protect Intake"
+                }
+              }
+            ]
           }
         },
         {
