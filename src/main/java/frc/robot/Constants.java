@@ -79,6 +79,9 @@ import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+	/**
+	 * The CAN bus used by devices on the CANivore.
+	 */
 	public static final CANBus CANIVORE_BUS = new CANBus("CANivore");
 
 	public static class AutoConstants {
