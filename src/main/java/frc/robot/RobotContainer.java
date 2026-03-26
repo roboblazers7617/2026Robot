@@ -165,8 +165,8 @@ public class RobotContainer {
 
 		// Set up superstructure
 		shooterSuperstructure = new ShooterSuperstructure(shooter, hood, turret, hopperUptake, uptakeBeamBreak, () -> {
-			if (Math.abs(driverController.getRightY()) >= OperatorConstants.ANGLE_SNAP_DEADBAND || Math.abs(driverController.getRightX()) >= OperatorConstants.ANGLE_SNAP_DEADBAND) {
-				return Optional.of(new Rotation2d(-driverController.getRightY(), -driverController.getRightX()).getMeasure());
+			if (Math.abs(operatorController.getLeftY()) >= OperatorConstants.ANGLE_SNAP_DEADBAND || Math.abs(operatorController.getLeftX()) >= OperatorConstants.ANGLE_SNAP_DEADBAND) {
+				return Optional.of(new Rotation2d(-operatorController.getLeftY(), -driverController.getLeftX()).getMeasure());
 			}
 
 			return Optional.empty();
