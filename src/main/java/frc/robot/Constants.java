@@ -634,11 +634,11 @@ public final class Constants {
 		/**
 		 * The offset from zero of the absolute encoder. This is in mechanism rotations.
 		 */
-		public static final Angle PRIMARY_ENCODER_OFFSET = Rotations.of(-0.225);
+		public static final Angle PRIMARY_ENCODER_OFFSET = Rotations.of(-.299);
 		/**
 		 * The offset from zero of the absolute encoder. This is in mechanism rotations.
 		 */
-		public static final Angle SECONDARY_ENCODER_OFFSET = Rotations.of(0.735);
+		public static final Angle SECONDARY_ENCODER_OFFSET = Rotations.of(0.713);
 
 		/**
 		 * The neutral mode for the motor.

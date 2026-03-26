@@ -193,10 +193,10 @@ public class Turret extends SubsystemBase {
 			SmartDashboard.putData("TurretMechanism", turretMechanism);
 		}
 
-		motor.setPosition(0.0);
+		// motor.setPosition(0.0);
 
 		// Seed the encoder
-		// seedEncoder();
+		seedEncoder();
 	}
 
 	@Override
@@ -260,7 +260,7 @@ public class Turret extends SubsystemBase {
 			double val = (i + e2v) / e2r;
 			if (isInArrayBinarySearch(possibleR, val, TurretConstants.TURRET_ENCODER_TOLERANCE.in(Rotations))) {
 				// if val > 2.1, it should wrap around
-				val = ((val + 2.1) % 4.2) - 2.1;
+				val = -(((val + 2.1) % 4.2) - 2.1);
 				return Rotations.of(val);
 			}
 		}
@@ -376,7 +376,7 @@ public class Turret extends SubsystemBase {
 	 */
 	private boolean seedEncoder() {
 		// Encoder seeding
-		Angle turretPosition = findRotationFromEncoders(encoderCandi.getPWM2Position(true).getValueAsDouble() - TurretConstants.PRIMARY_ENCODER_OFFSET.in(Rotations), encoderCandi.getPWM1Position(true).getValueAsDouble() - TurretConstants.SECONDARY_ENCODER_OFFSET.in(Rotations));
+		Angle turretPosition = findRotationFromEncoders(encoderCandi.getPWM2Position(true).getValueAsDouble(), encoderCandi.getPWM1Position(true).getValueAsDouble());
 		if (turretPosition != null) {
 			motor.setPosition(turretPosition);
 			return true;
