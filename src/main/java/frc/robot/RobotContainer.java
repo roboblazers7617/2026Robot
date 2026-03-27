@@ -54,6 +54,8 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Seconds;
 
 /**
@@ -182,6 +184,9 @@ public class RobotContainer {
 					.onTrue(shooterSuperstructure.homeCommand());
 		}
 
+		RobotModeTriggers.test()
+				.onTrue(getTestCommand());
+
 		// Set up a trigger so, when we enable in teleop we go into shoot while move
 		RobotModeTriggers.teleop()
 				.onTrue(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource));
@@ -208,6 +213,43 @@ public class RobotContainer {
 		if (!LoggingConstants.DEBUG_MODE) {
 			Elastic.selectTab(DashboardConstants.TELEOP_TAB_NAME);
 		}
+	}
+
+	/**
+	 * returns the diagnostic test command
+	 */
+	public Command getTestCommand() {
+		/*
+		 * in order
+		 * 1. Lower intake
+		 * 2. Stow intake over bumper, start the hopper, spindexer, and flywheels
+		 * 3. Lower intake again and spin the turret .75 rotations CCW
+		 * 4. spin the turret to .75 rotations CW
+		 * 5. spin everything down and raise intake
+		 */
+		Command testCommand = intakeShoulder.lowerIntakeCommand()
+				.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
+				.andThen(Commands.waitSeconds(.5))
+				.andThen(intakeShoulder.stowOverBumperCommand())
+				.andThen(hopperUptake.startBothCommand())
+				.andThen(shooter.startFlywheelCommand(() -> RotationsPerSecond.of(30)))
+				.andThen(Commands.waitUntil(shooter::isAtTarget))
+				.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
+				.andThen(intakeShoulder.lowerIntakeCommand())
+				.andThen(turret.setPositionCommand(() -> Rotations.of(.75)))
+				.andThen(Commands.waitUntil(turret::isAtTarget))
+				.andThen(Commands.waitSeconds(.5))
+				.andThen(turret.setPositionCommand(() -> Rotations.of(-.75)))
+				// shut everything down
+				.andThen(Commands.waitUntil(turret::isAtTarget))
+				.andThen(Commands.waitSeconds(.5))
+				.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
+				.andThen(turret.setPositionCommand(() -> Rotations.of(0)))
+				.andThen(hopperUptake.stopBothMotorsCommand())
+				.andThen(shooter.stopFlywheelCommand())
+				.andThen(intakeShoulder.raiseIntakeCommand());
+
+		return testCommand;
 	}
 
 	/**
