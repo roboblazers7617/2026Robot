@@ -20,6 +20,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
@@ -347,11 +349,27 @@ public class ShootingCalculator {
 	public static Optional<Pose3d> getTargetPoseForPosition(Pose2d robotPose) {
 		// Hubs
 		if (FieldConstants.ShootingZones.HUB_ZONE_RED.contains(robotPose.getTranslation())) {
-			return Optional.of(FieldConstants.ShootingZones.HUB_POSE.getRedPose());
+			if (DriverStation.getAlliance().get() == Alliance.Red) {
+				return Optional.of(FieldConstants.ShootingZones.HUB_POSE.getRedPose());
+			} else {
+				if (robotPose.getMeasureY().compareTo(FieldConstants.FIELD_CENTER.getMeasureY()) < 0.0) {
+					return Optional.of(FieldConstants.ShootingZones.SHUTTLE_CENTER_TOP_POSE);
+				} else {
+					return Optional.of(FieldConstants.ShootingZones.SHUTTLE_CENTER_BOTTOM_POSE);
+				}
+			}
 		}
 
 		if (FieldConstants.ShootingZones.HUB_ZONE_BLUE.contains(robotPose.getTranslation())) {
-			return Optional.of(FieldConstants.ShootingZones.HUB_POSE.getBluePose());
+			if (DriverStation.getAlliance().get() == Alliance.Blue) {
+				return Optional.of(FieldConstants.ShootingZones.HUB_POSE.getBluePose());
+			} else {
+				if (robotPose.getMeasureY().compareTo(FieldConstants.FIELD_CENTER.getMeasureY()) < 0.0) {
+					return Optional.of(FieldConstants.ShootingZones.SHUTTLE_CENTER_TOP_POSE);
+				} else {
+					return Optional.of(FieldConstants.ShootingZones.SHUTTLE_CENTER_BOTTOM_POSE);
+				}
+			}
 		}
 
 		// Neutral zone

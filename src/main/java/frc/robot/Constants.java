@@ -192,6 +192,14 @@ public final class Constants {
 			 * The pose to shoot at for the {@link #NEUTRAL_ZONE_BOTTOM bottom of the neutral rectangle} (when looking at the field diagram).
 			 */
 			public static final BiAlliancePose3d SHUTTLE_BOTTOM_POSE = BiAlliancePose3d.fromBluePose(PoseUtil.flipPoseY(SHUTTLE_TOP_POSE.getBluePose()), BiAlliancePose3d.InvertY.KEEP_Y);
+			/**
+			 * The pose to shoot at into the top of the neutral rectangle (when looking at the field diagram). This is used when shooting from the other alliance's hub.
+			 */
+			public static final Pose3d SHUTTLE_CENTER_TOP_POSE = new Pose3d(FIELD_CENTER.getMeasureX(), Meters.of(2.0), Meters.zero(), Rotation3d.kZero);
+			/**
+			 * The pose to shoot at into the bottom of the neutral rectangle (when looking at the field diagram). This is used when shooting from the other alliance's hub.
+			 */
+			public static final Pose3d SHUTTLE_CENTER_BOTTOM_POSE = PoseUtil.flipPoseY(SHUTTLE_CENTER_TOP_POSE);
 
 			/**
 			 * A rectangle encompassing the shooting zone for the hub on the red alliance.
