@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.573,
+        "x": 4.435,
         "y": 0.49910000000000004
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.834266968325792,
-        "y": 0.6222221719457005
+        "x": 5.4350000000000005,
+        "y": 0.49910000000000004
       },
       "isLocked": false,
-      "linkedName": "Right Edge Trench"
+      "linkedName": "START REAL RIGHT"
     },
     {
       "anchor": {
-        "x": 0.675,
-        "y": 0.66595625
+        "x": 7.716,
+        "y": 1.2134502262443436
       },
       "prevControl": {
-        "x": 2.045579181965636,
-        "y": 0.6659562500000002
+        "x": 7.767113122171946,
+        "y": 0.44428959276018143
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Outpost"
+      "linkedName": "Right Edge Neutral"
     }
   ],
   "rotationTargets": [],
@@ -41,7 +41,7 @@
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 3.0,
     "rotation": 90.0
   },
   "reversed": false,

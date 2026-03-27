@@ -7,6 +7,8 @@ import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.MotorMonitor;
 
+import static edu.wpi.first.units.Units.Rotations;
+
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -256,6 +258,12 @@ public class IntakeShoulder extends SubsystemBase {
 	 */
 	private void stowOverBumper() {
 		setPositionSlowlyPlease(IntakeConstants.SHOULDER_STOW_OVER_BUMPER_DISTANCE);
+	}
+
+	public void zeroEncoder() {
+		setPointMeters = intakeEncoder.getAbsolutePosition().getValueAsDouble();
+		motor.setControl(positionRequest.withPosition(setPointMeters));
+		motor.setPosition(intakeEncoder.getAbsolutePosition().getValueAsDouble());
 	}
 
 	/**

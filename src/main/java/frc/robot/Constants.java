@@ -236,7 +236,7 @@ public final class Constants {
 		public static final double SHOULDER_MINIMUM_DISTANCE = 0;
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Rotations.of(0);
-		public static final double SHOULDER_MAXIMUM_DISTANCE = 35.5;
+		public static final double SHOULDER_MAXIMUM_DISTANCE = 36.5;
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
 		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;

@@ -346,8 +346,9 @@ public class RobotContainer {
 						.andThen(shooterSuperstructure.homeCommand()));
 
 		// Set mode to idle
-		operatorController.povDown()
-				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()));
+		// operatorController.povDown()
+		// .onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()));
+		operatorController.povDown().onTrue(Commands.runOnce(() -> intakeShoulder.zeroEncoder()));
 
 		operatorController.back()
 				.onTrue(shooterSuperstructure.turnOffCommand());
