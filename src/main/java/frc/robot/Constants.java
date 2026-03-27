@@ -177,14 +177,6 @@ public final class Constants {
 		 */
 		public static class ShootingZones {
 			/**
-			 * A rectangle encompassing the shooting zone for the top half (towards negative Y) of the neutral rectangle (when looking at the field diagram).
-			 */
-			public static final Rectangle2d NEUTRAL_ZONE_TOP = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(0, -FIELD_LAYOUT.getFieldWidth() / 3.0, Rotation2d.kZero)), NEUTRAL_RECTANGLE.getXWidth(), NEUTRAL_RECTANGLE.getYWidth() / 3.0);
-			/**
-			 * A rectangle encompassing the shooting zone for the bottom half (towards positive Y) of the neutral rectangle (when looking at the field diagram).
-			 */
-			public static final Rectangle2d NEUTRAL_ZONE_BOTTOM = RectangleUtil.flipRectangleY(NEUTRAL_ZONE_TOP);
-			/**
 			 * The pose to shoot at for the {@link #NEUTRAL_ZONE_TOP top of the neutral rectangle} (when looking at the field diagram).
 			 */
 			public static final BiAlliancePose3d SHUTTLE_TOP_POSE = BiAlliancePose3d.fromBluePose(new Pose3d(Meters.of(3.0), Meters.of(2.0), Meters.zero(), Rotation3d.kZero), BiAlliancePose3d.InvertY.KEEP_Y);

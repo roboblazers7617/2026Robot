@@ -373,12 +373,12 @@ public class ShootingCalculator {
 		}
 
 		// Neutral zone
-		if (FieldConstants.ShootingZones.NEUTRAL_ZONE_TOP.contains(robotPose.getTranslation())) {
-			return Optional.of(FieldConstants.ShootingZones.SHUTTLE_TOP_POSE.getPoseByAlliance());
-		}
-
-		if (FieldConstants.ShootingZones.NEUTRAL_ZONE_BOTTOM.contains(robotPose.getTranslation())) {
-			return Optional.of(FieldConstants.ShootingZones.SHUTTLE_BOTTOM_POSE.getPoseByAlliance());
+		if (FieldConstants.NEUTRAL_RECTANGLE.contains(robotPose.getTranslation())) {
+			if (robotPose.getMeasureY().compareTo(FieldConstants.FIELD_CENTER.getMeasureY()) < 0.0) {
+				return Optional.of(FieldConstants.ShootingZones.SHUTTLE_TOP_POSE.getPoseByAlliance());
+			} else {
+				return Optional.of(FieldConstants.ShootingZones.SHUTTLE_BOTTOM_POSE.getPoseByAlliance());
+			}
 		}
 
 		return Optional.empty();
