@@ -26,8 +26,8 @@ public class IntakeShoulder extends SubsystemBase {
 	// controller for motor which moves intake
 	private final TalonFX motor;
 
-	private final MotionMagicVoltage positionRequest = new MotionMagicVoltage(0);
-	private final DynamicMotionMagicVoltage slowPositionRequest = new DynamicMotionMagicVoltage(0, IntakeConstants.SLOW_MAXIMUM_VELOCITY, IntakeConstants.SLOW_ACCELERATION);
+	private final MotionMagicVoltage positionRequestOut = new MotionMagicVoltage(0).withSlot(1);
+	private final DynamicMotionMagicVoltage positionRequestIn = new DynamicMotionMagicVoltage(0, IntakeConstants.SLOW_MAXIMUM_VELOCITY, IntakeConstants.SLOW_ACCELERATION).withSlot(0);
 
 	private final CANcoder intakeEncoder = new CANcoder(IntakeConstants.SHOULDER_ENCODER_CAN_ID, Constants.CANIVORE_BUS);
 
@@ -69,30 +69,41 @@ public class IntakeShoulder extends SubsystemBase {
 		// Slot0Configs slot0Configs = new Slot0Configs();
 		// slot0Configs.GravityType = GravityTypeValue.Arm_Cosine;
 		motorConfig.Slot0.GravityType = GravityTypeValue.Elevator_Static; // Use cosine gravity compensation
-		motorConfig.Slot0.kG = IntakeConstants.INTAKE_KG; // Gravity gain
-		motorConfig.Slot0.kS = IntakeConstants.INTAKE_KS; // Add ____ V output to overcome static friction
-		motorConfig.Slot0.kV = IntakeConstants.INTAKE_KV; // A velocity target of 1 rps results in ____ V output
-		motorConfig.Slot0.kA = IntakeConstants.INTAKE_KA; // An acceleration of 1 rps/s requires ____ V output
-		motorConfig.Slot0.kP = IntakeConstants.INTAKE_KP; // A position error of 2.5 rotations results in ____ V output
-		motorConfig.Slot0.kI = IntakeConstants.INTAKE_KI; // no output for integrated error
-		motorConfig.Slot0.kD = IntakeConstants.INTAKE_KD; // A velocity error of 1 rps results in ____ V output
+		motorConfig.Slot0.kG = IntakeConstants.INTAKE_KG_0; // Gravity gain
+		motorConfig.Slot0.kS = IntakeConstants.INTAKE_KS_0; // Add ____ V output to overcome static friction
+		motorConfig.Slot0.kV = IntakeConstants.INTAKE_KV_0; // A velocity target of 1 rps results in ____ V output
+		motorConfig.Slot0.kA = IntakeConstants.INTAKE_KA_0; // An acceleration of 1 rps/s requires ____ V output
+		motorConfig.Slot0.kP = IntakeConstants.INTAKE_KP_0; // A position error of 2.5 rotations results in ____ V output
+		motorConfig.Slot0.kI = IntakeConstants.INTAKE_KI_0; // no output for integrated error
+		motorConfig.Slot0.kD = IntakeConstants.INTAKE_KD_0; // A velocity error of 1 rps results in ____ V output
 		motorConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
 		// motorConfigurator.apply(slot0Configs);
 
 		motorConfig.Slot0.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
 		motorConfig.ClosedLoopGeneral.GainSchedErrorThreshold = IntakeConstants.GAIN_SCHEDULE_ERROR_THRESHOLD;
 
+		motorConfig.Slot1.GravityType = GravityTypeValue.Elevator_Static; // Use cosine gravity compensation
+		motorConfig.Slot1.kG = IntakeConstants.INTAKE_KG_1; // Gravity gain
+		motorConfig.Slot1.kS = IntakeConstants.INTAKE_KS_1; // Add ____ V output to overcome static friction
+		motorConfig.Slot1.kV = IntakeConstants.INTAKE_KV_1; // A velocity target of 1 rps results in ____ V output
+		motorConfig.Slot1.kA = IntakeConstants.INTAKE_KA_1; // An acceleration of 1 rps/s requires ____ V output
+		motorConfig.Slot1.kP = IntakeConstants.INTAKE_KP_1; // A position error of 2.5 rotations results in ____ V output
+		motorConfig.Slot1.kI = IntakeConstants.INTAKE_KI_1; // no output for integrated error
+		motorConfig.Slot1.kD = IntakeConstants.INTAKE_KD_1; // A velocity error of 1 rps results in ____ V output
+		motorConfig.Slot1.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+		// motorConfigurator.apply(slot0Configs);_1
+		motorConfig.Slot1.GainSchedBehavior = GainSchedBehaviorValue.ZeroOutput;
 		// MotionMagicConfigs motionMagicConfigs = new MotionMagicConfigs();
 		// motionMagicConfigs.MotionMagicCruiseVelocity =
 		// IntakeConstants.INTAKE_MM_CRUISE_VELOCITY;
-		motorConfig.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.MAXIMUM_VELOCITY; // 80; // Target
-																								// cruise
-																								// velocity of
-																								// 80 rps
-		motorConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.ACCELERATION; // 160; // Target
-																						// acceleration of
-																						// 160 rps/s (0.5
-																						// seconds)
+		motorConfig.MotionMagic.MotionMagicCruiseVelocity = IntakeConstants.FAST_MAXIMUM_VELOCITY; // 80; // Target
+																									// cruise
+																									// velocity of
+																									// 80 rps
+		motorConfig.MotionMagic.MotionMagicAcceleration = IntakeConstants.FAST_ACCELERATION; // 160; // Target
+		// acceleration of
+		// 160 rps/s (0.5
+		// seconds)
 		// motorConfig.MotionMagic.MotionMagicJerk = IntakeConstants.INTAKE_MM_JERK; //
 		// 1600; // Target jerk of 1600
 		// rps/s/s (0.1 seconds)
@@ -137,12 +148,12 @@ public class IntakeShoulder extends SubsystemBase {
 	 *
 	 * @param positionMeters
 	 */
-	private void setPositionPlease(double positionMeters) {
+	private void setPositionOutFast(double positionMeters) {
 		positionMeters = MathUtil.clamp(positionMeters, IntakeConstants.SHOULDER_MINIMUM_DISTANCE, IntakeConstants.SHOULDER_MAXIMUM_DISTANCE);
 		setPointMeters = positionMeters;
 		// solution one (post *360) (doesn't work)
 		// motor.setControl(positionRequest.withPosition(position.in(Units.Degrees)));
-		motor.setControl(positionRequest.withPosition(positionMeters)); // max's solution
+		motor.setControl(positionRequestOut.withPosition(positionMeters)); // max's solution
 
 		// private void setPosition(double position) {
 		// motor.setControl(positionRequest.withPosition(position));
@@ -155,25 +166,25 @@ public class IntakeShoulder extends SubsystemBase {
 	 *
 	 * @param positionMeters
 	 */
-	private void setPositionSlowlyPlease(double positionMeters) {
+	private void setPositionInSlow(double positionMeters) {
 		positionMeters = MathUtil.clamp(positionMeters, IntakeConstants.SHOULDER_MINIMUM_DISTANCE, IntakeConstants.SHOULDER_MAXIMUM_DISTANCE);
 		setPointMeters = positionMeters;
 		// solution one (post *360) (doesn't work)
 		// motor.setControl(positionRequest.withPosition(position.in(Units.Degrees)));
-		motor.setControl(slowPositionRequest.withPosition(positionMeters)); // max's solution
+		motor.setControl(positionRequestIn.withPosition(positionMeters)); // max's solution
 
 		// private void setPosition(double position) {
 		// motor.setControl(positionRequest.withPosition(position));
 	}
 
-	/**
-	 * Command which raises shoulder of intake
-	 *
-	 * @return runOnce(() -> raiseIntake());
-	 */
-	public Command raiseIntakeCommand() {
-		return runOnce(() -> raiseIntake());
-	}
+	// /**
+	// * Command which raises shoulder of intake
+	// *
+	// * @return runOnce(() -> raiseIntake());
+	// */
+	// public Command raiseIntakeCommand() {
+	// return runOnce(() -> raiseIntake());
+	// }
 
 	/**
 	 * Command which raises shoulder of intake slowly
@@ -222,19 +233,19 @@ public class IntakeShoulder extends SubsystemBase {
 		return runOnce(() -> stowOverBumper());
 	}
 
-	/**
-	 * Method which sets motor position to specified stowed angle.
-	 */
-	private void raiseIntake() {
-		setPositionPlease(IntakeConstants.SHOULDER_MINIMUM_DISTANCE);
-		// setPosition(0.25);
-	}
+	// /**
+	// * Method which sets motor position to specified stowed angle.
+	// */
+	// private void raiseIntake() {
+	// setPositionOutFast(IntakeConstants.SHOULDER_MINIMUM_DISTANCE);
+	// // setPosition(0.25);
+	// }
 
 	/**
 	 * Method which sets motor position to specified stowed angle slowly.
 	 */
 	private void raiseIntakeSlow() {
-		setPositionSlowlyPlease(IntakeConstants.SHOULDER_MINIMUM_DISTANCE);
+		setPositionInSlow(IntakeConstants.SHOULDER_MINIMUM_DISTANCE);
 		// setPosition(0.25);
 	}
 
@@ -242,7 +253,7 @@ public class IntakeShoulder extends SubsystemBase {
 	 * Method which sets motor position to specified lowered angle.
 	 */
 	private void lowerIntake() {
-		setPositionPlease(IntakeConstants.SHOULDER_MAXIMUM_DISTANCE);
+		setPositionOutFast(IntakeConstants.SHOULDER_MAXIMUM_DISTANCE);
 		// setPosition(0);
 	}
 
@@ -250,19 +261,19 @@ public class IntakeShoulder extends SubsystemBase {
 	 * Method which sets motor position to specified depot angle.
 	 */
 	private void lowerToDepot() {
-		setPositionPlease(IntakeConstants.SHOULDER_DEPOT_DISTANCE);
+		setPositionOutFast(IntakeConstants.SHOULDER_DEPOT_DISTANCE);
 	}
 
 	/**
 	 * Method which sets motor position to specified stow over bumper angle.
 	 */
 	private void stowOverBumper() {
-		setPositionSlowlyPlease(IntakeConstants.SHOULDER_STOW_OVER_BUMPER_DISTANCE);
+		setPositionInSlow(IntakeConstants.SHOULDER_STOW_OVER_BUMPER_DISTANCE);
 	}
 
 	public void zeroEncoder() {
 		setPointMeters = intakeEncoder.getAbsolutePosition().getValueAsDouble();
-		motor.setControl(positionRequest.withPosition(setPointMeters));
+		motor.setControl(positionRequestOut.withPosition(setPointMeters));
 		motor.setPosition(intakeEncoder.getAbsolutePosition().getValueAsDouble());
 	}
 
@@ -302,7 +313,7 @@ public class IntakeShoulder extends SubsystemBase {
 	 */
 	public Command nudgeIntakeCommand(Supplier<Double> nudgeAmount) {
 		return runOnce(() -> {
-			setPositionPlease(setPointMeters += nudgeAmount.get() * IntakeConstants.NUDGE_SPEED);
+			setPositionOutFast(setPointMeters += nudgeAmount.get() * IntakeConstants.NUDGE_SPEED);
 		});
 	}
 

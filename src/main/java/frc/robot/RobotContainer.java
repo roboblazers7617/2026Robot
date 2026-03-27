@@ -252,7 +252,7 @@ public class RobotContainer {
 				.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
 				.andThen(shooterSuperstructure.startShootingCommand())
 				.andThen(intakeShoulder.stowOverBumperCommand())
-				.andThen(Commands.waitSeconds(4.0))
+				.andThen(Commands.waitSeconds(3.5))
 				.andThen(shooterSuperstructure.homeCommand()));
 	}
 
@@ -311,13 +311,16 @@ public class RobotContainer {
 		operatorController.leftBumper()
 				.whileTrue(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger())
 						.andThen(intakeGrabber.startIntakeSlowCommand())
-						.andThen(intakeShoulder.raiseIntakeCommand())
+						.andThen(intakeShoulder.raiseIntakeSlowCommand())
 						.andThen(shooterSuperstructure.startShootingCommand()))
 				.onFalse(shooterSuperstructure.homeCommand()
 						.andThen(intakeGrabber.stopIntakeCommand()));
 
 		operatorController.rightBumper()
-				.onTrue(intakeShoulder.stowOverBumperCommand());
+				.onTrue(intakeShoulder.stowOverBumperCommand()
+						.andThen(intakeGrabber.startIntakeSlowCommand())
+						.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
+						.finallyDo(intakeGrabber::stopIntake));
 
 		// Set mode to shoot from fixed position, wait until ready to shoot, then shoot
 		// Home and set back to shoot from anywhere on release

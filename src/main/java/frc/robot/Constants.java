@@ -242,13 +242,24 @@ public final class Constants {
 		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;
 		public static final double SHOULDER_STOW_OVER_BUMPER_DISTANCE = 10.0;
 
-		public static final double INTAKE_KG = 0.1;
-		public static final double INTAKE_KS = 0.34;
-		public static final double INTAKE_KV = 0.16;
-		public static final double INTAKE_KA = 0;
-		public static final double INTAKE_KP = 0.2;
-		public static final double INTAKE_KI = 0;
-		public static final double INTAKE_KD = 0;
+		// PID vals for moving the intake in
+		public static final double INTAKE_KG_0 = 0.1;
+		public static final double INTAKE_KS_0 = 0.34;
+		public static final double INTAKE_KV_0 = 0.16;
+		public static final double INTAKE_KA_0 = 0;
+		public static final double INTAKE_KP_0 = 0.2;
+		public static final double INTAKE_KI_0 = 0;
+		public static final double INTAKE_KD_0 = 0;
+
+		// PID vals for moving the intake out
+		public static final double INTAKE_KG_1 = 0.1;
+		public static final double INTAKE_KS_1 = 0.34;
+		public static final double INTAKE_KV_1 = 0.13;
+		public static final double INTAKE_KA_1 = 0;
+		public static final double INTAKE_KP_1 = 0.05;
+		public static final double INTAKE_KI_1 = 0;
+		public static final double INTAKE_KD_1 = 0;
+
 		// public static final double INTAKE_MM_CRUISE_VELOCITY = 80; // depracated
 		// public static final double INTAKE_MM_ACCELERATION = 160; // depracated
 		// public static final double INTAKE_MM_JERK = 1600; // depracated
@@ -256,11 +267,11 @@ public final class Constants {
 		// new (?) system for gear ratios
 		public static final double GEARBOX_RATIO = 96.0 / 5.0; // to be replaced by talonfx (?)
 		// config things
-		public static final double MAXIMUM_VELOCITY = 50.0;
-		public static final double ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
+		public static final double FAST_MAXIMUM_VELOCITY = 75.0;
+		public static final double FAST_ACCELERATION = 4.0 * FAST_MAXIMUM_VELOCITY;
 
 		public static final double SLOW_MAXIMUM_VELOCITY = 20.0;
-		public static final double SLOW_ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
+		public static final double SLOW_ACCELERATION = 2.0 * FAST_MAXIMUM_VELOCITY;
 
 		// talonfx ratio stuff
 		// public static final double ROTOR_TO_SENSOR_RATIO = 0; // depracated (?)
