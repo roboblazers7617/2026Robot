@@ -310,7 +310,7 @@ public class RobotContainer {
 		// Home on release
 		operatorController.leftBumper()
 				.whileTrue(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger())
-						.andThen(intakeGrabber.startIntakeCommand())
+						.andThen(intakeGrabber.startIntakeSlowCommand())
 						.andThen(intakeShoulder.raiseIntakeCommand())
 						.andThen(shooterSuperstructure.startShootingCommand()))
 				.onFalse(shooterSuperstructure.homeCommand()
