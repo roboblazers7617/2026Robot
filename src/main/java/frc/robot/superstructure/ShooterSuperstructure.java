@@ -550,7 +550,7 @@ public class ShooterSuperstructure {
 	 * @param tracking
 	 *            Is the shooter currently tracking a target?
 	 */
-	private void setValues(ShooterValues values, boolean tracking) {
+	public void setValues(ShooterValues values, boolean tracking) {
 		flywheel.startFlywheel(values.getFlywheelSpeed());
 		turret.setPosition(values.getTurretAngle());
 

@@ -19,10 +19,10 @@ import frc.robot.subsystems.intake.IntakeShoulder;
 import frc.robot.superstructure.ShooterSim;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
+import frc.robot.superstructure.ShootingCalculator;
 import frc.robot.superstructure.sources.ShootingSource;
 import frc.robot.superstructure.sources.ShootFromAnywhereInterpolatedSource;
 import frc.robot.superstructure.sources.ShootingSourceConstant;
-import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.commands.HapticCommand;
@@ -43,6 +43,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -254,6 +255,16 @@ public class RobotContainer {
 				.andThen(intakeShoulder.stowOverBumperCommand())
 				.andThen(Commands.waitSeconds(3.5))
 				.andThen(shooterSuperstructure.homeCommand()));
+
+		// only used for center auto
+		NamedCommands.registerCommand("ShootNoSuperstructure",
+				// set the shooter values based off of the lerp table
+				Commands.runOnce(() -> shooterSuperstructure.setValues(ShootingCalculator.solveInterpolated(new Pose3d(drivetrain.getPose2d()), ShootingCalculator.getTargetPoseForPosition(drivetrain.getPose2d()).get()), true))
+						.andThen(Commands.waitUntil(shooter::isAtTarget))
+						.andThen(hopperUptake.startBothCommand())
+						.andThen(intakeShoulder.stowOverBumperCommand())
+						.andThen(Commands.waitSeconds(3.5))
+						.andThen(shooterSuperstructure.homeCommand()));
 	}
 
 	/**

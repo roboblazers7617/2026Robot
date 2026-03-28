@@ -7,8 +7,6 @@ import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.MotorMonitor;
 
-import static edu.wpi.first.units.Units.Rotations;
-
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
