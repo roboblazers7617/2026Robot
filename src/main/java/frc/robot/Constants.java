@@ -177,11 +177,11 @@ public final class Constants {
 		 */
 		public static class ShootingZones {
 			/**
-			 * The pose to shoot at for the {@link #NEUTRAL_ZONE_TOP top of the neutral rectangle} (when looking at the field diagram).
+			 * The pose to shoot at for the top of the neutral rectangle (when looking at the field diagram).
 			 */
 			public static final BiAlliancePose3d SHUTTLE_TOP_POSE = BiAlliancePose3d.fromBluePose(new Pose3d(Meters.of(3.0), Meters.of(2.0), Meters.zero(), Rotation3d.kZero), BiAlliancePose3d.InvertY.KEEP_Y);
 			/**
-			 * The pose to shoot at for the {@link #NEUTRAL_ZONE_BOTTOM bottom of the neutral rectangle} (when looking at the field diagram).
+			 * The pose to shoot at for the bottom of the neutral rectangle (when looking at the field diagram).
 			 */
 			public static final BiAlliancePose3d SHUTTLE_BOTTOM_POSE = BiAlliancePose3d.fromBluePose(PoseUtil.flipPoseY(SHUTTLE_TOP_POSE.getBluePose()), BiAlliancePose3d.InvertY.KEEP_Y);
 			/**
