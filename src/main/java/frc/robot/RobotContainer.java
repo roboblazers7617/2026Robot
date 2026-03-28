@@ -22,7 +22,6 @@ import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.superstructure.sources.ShootingSource;
 import frc.robot.superstructure.sources.ShootFromAnywhereInterpolatedSource;
 import frc.robot.superstructure.sources.ShootingSourceConstant;
-import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.commands.HapticCommand;
@@ -312,9 +311,8 @@ public class RobotContainer {
 		operatorController.leftBumper()
 				.whileTrue(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger())
 						.andThen(shooterSuperstructure.startShootingCommand())
-						.andThen(intakeShoulder.raiseIntakeSlowCommand())
 						.andThen(intakeGrabber.startIntakeSlowCommand())
-						.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
+						.andThen(intakeShoulder.agitateCommand())
 						.finallyDo(intakeGrabber::stopIntake))
 				.onFalse(shooterSuperstructure.homeCommand()
 						.andThen(intakeGrabber.stopIntakeCommand()));

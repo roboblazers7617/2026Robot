@@ -2,12 +2,11 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.MotorMonitor;
-
-import static edu.wpi.first.units.Units.Rotations;
 
 import java.util.function.Supplier;
 
@@ -216,6 +215,17 @@ public class IntakeShoulder extends SubsystemBase {
 	// }
 
 	/**
+	 * Command which continously runs agitate method when triggered and raises
+	 * intake when cancelled.
+	 *
+	 * @return run(() -> agitate()).finallyDo(() -> raiseIntake());
+	 */
+	// don't need this anymore now that we are a linear slide
+	public Command agitateCommand() {
+		return lowerIntakeCommand().andThen(Commands.run(() -> agitate())).finallyDo(() -> stowOverBumper());
+	}
+
+	/**
 	 * Command which calls lowerToDepot method.
 	 *
 	 * @return runOnce(() -> lowerToDepot());
@@ -351,4 +361,59 @@ public class IntakeShoulder extends SubsystemBase {
 	// raiseAgitate();
 	// }
 	// }
+
+	/**
+	 * OOD
+	 * Method which sets motor position to specified low angle. To be used in
+	 * agitate command
+	 */
+	private void lowerAgitate() {
+		setPositionInSlow(IntakeConstants.AGITATE_LOWERED_DISTANCE);
+	}
+
+	/**
+	 * OOD
+	 * Method which sets motor position to specified high angle. To be used in
+	 * agitate command
+	 */
+	private void raiseAgitate() {
+		setPositionInSlow(IntakeConstants.AGITATE_RAISED_DISTANCE);
+	}
+
+	public boolean getHasReachedTarget(double distance, double tolerance) {
+		return MathUtil.isNear(distance, motor.getPosition().getValueAsDouble(), tolerance);
+	}
+
+	/**
+	 * Runs getIsAtTarget() for specified raised angle (for agitate system)
+	 *
+	 * @return boolean value
+	 */
+	private boolean getIsRaised() {
+		return getHasReachedTarget(IntakeConstants.AGITATE_RAISED_DISTANCE, IntakeConstants.AGITATE_TOLERANCE);
+	}
+
+	/**
+	 * Runs getIsAtTarget() for specified lowered angle (for agitate system)
+	 *
+	 * @return boolean value
+	 */
+	private boolean getIsLowered() {
+		return getHasReachedTarget(IntakeConstants.AGITATE_LOWERED_DISTANCE, IntakeConstants.AGITATE_TOLERANCE);
+	}
+
+	/**
+	 * Method which moves arm to a raised position when in lowered position and vice
+	 * versa. This is intended to be called through a continuous RunCommand
+	 * triggered by a held button. Does not have an end state by default, this must
+	 * be implemented in said Command.
+	 */
+
+	private void agitate() {
+		if (getIsRaised()) {
+			lowerAgitate();
+		} else if (getIsLowered()) {
+			raiseAgitate();
+		}
+	}
 }

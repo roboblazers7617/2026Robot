@@ -239,8 +239,11 @@ public final class Constants {
 		public static final double SHOULDER_MAXIMUM_DISTANCE = 36.5;
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
-		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;
+		public static final double SHOULDER_DEPOT_DISTANCE = 20;
 		public static final double SHOULDER_STOW_OVER_BUMPER_DISTANCE = 10.0;
+		public static final double AGITATE_LOWERED_DISTANCE = SHOULDER_MAXIMUM_DISTANCE;
+		public static final double AGITATE_RAISED_DISTANCE = SHOULDER_MINIMUM_DISTANCE;
+		public static final double AGITATE_TOLERANCE = 0.5;
 
 		// PID vals for moving the intake in
 		public static final double INTAKE_KG_0 = 0.1;
@@ -278,9 +281,6 @@ public final class Constants {
 		public static final double SENSOR_TO_MECHANISM_RATIO = 1.0; // number of shaft rotations divided by
 																	// distance traveled by intake
 
-		public static final Angle AGITATE_RAISED_ANGLE = Degrees.of(70); // depracated
-		public static final Angle AGITATE_LOWERED_ANGLE = Degrees.of(0); // depracated
-		public static final Angle AGITATE_TOLERANCE = Degrees.of(10);
 		public static final double GRABBER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
 		public static final double GRABBER_SUPPLY_CURRENT_LOWER_TIME = 0.1;
 		public static final double GRABBER_STATOR_CURRENT_LIMIT = 40.0;
