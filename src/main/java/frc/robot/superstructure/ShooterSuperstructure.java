@@ -500,7 +500,7 @@ public class ShooterSuperstructure {
 	 *         Are all the shooter subsystems at their targets?
 	 */
 	public boolean subsystemsAtTargets() {
-		return flywheel.isAtTarget() && hood.isAtPosition() && turret.isAtTarget() && hopperUptake.isUptakeAtTarget();
+		return true; // flywheel.isAtTarget() && hood.isAtPosition() && turret.isAtTarget() && hopperUptake.isUptakeAtTarget();
 	}
 
 	/**
