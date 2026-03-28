@@ -224,7 +224,7 @@ public final class Constants {
 		// public static final double INTAKE_START_SPEED = 0.2; //ts is old (as are the
 		// following three)
 		public static final double INTAKE_START_VOLTAGE = 6;
-		public static final double INTAKE_START_SLOW_VOLTAGE = 3.0;
+		public static final double INTAKE_START_SLOW_VOLTAGE = 6.0;
 		// public static final double INTAKE_STOP_SPEED = 0.0;
 		public static final double INTAKE_STOP_VOLTAGE = 0.0;
 		// public static final double OUTTAKE_SPEED = -0.2;
