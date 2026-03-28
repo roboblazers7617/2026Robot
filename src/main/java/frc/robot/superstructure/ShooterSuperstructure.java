@@ -271,6 +271,7 @@ public class ShooterSuperstructure {
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Home", homeCommand());
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Start Manual Control", startManualControlCommand());
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Start Shooting", startShootingCommand());
+		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Skip Waiting", skipWaitingCommand());
 	}
 
 	/**
@@ -467,6 +468,16 @@ public class ShooterSuperstructure {
 	public Command startShootingWhenReadyCommand() {
 		return Commands.waitUntil(readyToShootTrigger())
 				.andThen(startShootingCommand());
+	}
+
+	/**
+	 * Command that skips the regular checks of if we're at our setpoint and forces the state machineto continue.
+	 *
+	 * @return
+	 *         Command to run.
+	 */
+	public Command skipWaitingCommand() {
+		return Commands.runOnce(() -> stateMachine.fire(ShooterTrigger.READY_TO_SHOOT));
 	}
 
 	/**
