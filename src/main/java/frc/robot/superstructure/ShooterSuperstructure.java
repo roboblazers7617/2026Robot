@@ -247,7 +247,7 @@ public class ShooterSuperstructure {
 
 		stateMachineConfig.configure(ShooterState.SHOOTING_WAITING)
 				.substateOf(ShooterState.SHOOTING_STAGE_3_SHOOTING)
-				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING_RUNNING)
+				.permit(ShooterTrigger.READY_TO_SHOOT, ShooterState.SHOOTING_RUNNING)
 				// Restart the shooting waiting timer when we start waiting
 				.onEntry(shootingWaitingTimeout::restart)
 				// And stop it when we stop
@@ -381,7 +381,7 @@ public class ShooterSuperstructure {
 
 				if (subsystemsAtTargets() || (shootingWaitingTimeout.hasElapsed(SuperstructureConstants.SHOOTING_WAITING_TIMEOUT) && DriverStation.isAutonomous())) {
 					// Ready to start shooting again, so let's do that
-					stateMachine.fire(ShooterTrigger.START_SHOOTING);
+					stateMachine.fire(ShooterTrigger.READY_TO_SHOOT);
 					break;
 				}
 
