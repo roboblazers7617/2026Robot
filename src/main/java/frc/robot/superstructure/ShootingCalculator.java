@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -368,20 +369,22 @@ public class ShootingCalculator {
 			LinearVelocity outputVelocity = MetersPerSecond.of(curValue.getFlywheelSpeed().in(RotationsPerSecond) * ShootingConstants.LINREG_FLYWHEEL_A + ShootingConstants.LINREG_FLYWHEEL_B);
 
 			// use this to find the output angle assuming the ball perfectly hits the target
-			Translation2d translationToTarget = solveGamepieceTranslation(robotPose, targetPose);
+			Translation2d translationToTarget = solveGamepieceTranslation(solveExitPose(adjustedPose, curValue.getTurretAngle(), curValue.getHoodAngle()), targetPose);
 
-			// \arccos\left(\frac{\frac{\left(g\cdot d_{x}^{2}\right)}{2v^{2}}}{\sqrt{d_{y}^{2}+d_{x}^{2}}}\right)-\arctan\left(\frac{d_{x}}{d_{y}}\right)
+			// 180-\ .5\left(\arccos\left(\frac{\frac{\left(g\cdot d_{x}^{2}\right)}{v^{2}}-d_{y}}{\sqrt{d_{y}^{2}+d_{x}^{2}}}\right)+\arctan\left(\frac{d_{x}}{d_{y}}\right)\right)
 			double g = ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
-			double dx = translationToTarget.getX();
+			double dx = translationToTarget.getX() + Units.inchesToMeters(12); // since we don't shoot in the exact middle, add an offset
 			double dy = translationToTarget.getY();
 
 			// calculate each term individualy, tt/mt/bt
-			double topTerm = g * Math.pow(dx, 2);
-			double middleTerm = 2 * Math.pow(outputVelocity.in(MetersPerSecond), 2);
+			double topTerm = g * Math.pow(dx, 2) - dy * Math.pow(outputVelocity.in(MetersPerSecond), 2);
+			double middleTerm = Math.pow(outputVelocity.in(MetersPerSecond), 2);
 			double bottomTerm = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
 			// calculate the angle
-			Angle outputAngle = Radians.of(Math.acos((topTerm / middleTerm) / bottomTerm) - Math.atan(dx / dy));
+			// this will only work for angles > PI/3 / 60 degrees, otherwise we would want to do
+			// Angle outputAngle = Radians.of.5*(Math.acos((topTerm / middleTerm) / bottomTerm) - Math.atan(dx / dy)));
+			Angle outputAngle = Radians.of(Math.PI - .5 * (Math.acos((topTerm / middleTerm) / bottomTerm) + Math.atan(dx / dy)));
 
 			// use this to find the time till the ball lands
 			time = calculateTimeTillScore(translationToTarget, outputAngle, outputVelocity);
