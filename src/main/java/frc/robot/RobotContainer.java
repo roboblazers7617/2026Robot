@@ -22,7 +22,6 @@ import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.superstructure.sources.ShootingSource;
 import frc.robot.superstructure.sources.ShootFromAnywhereInterpolatedSource;
 import frc.robot.superstructure.sources.ShootingSourceConstant;
-import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.commands.HapticCommand;
@@ -250,9 +249,10 @@ public class RobotContainer {
 
 		NamedCommands.registerCommand("Shoot", shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
 				.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
+				.andThen(Commands.waitSeconds(0.5))
 				.andThen(shooterSuperstructure.startShootingCommand())
+				.andThen(Commands.waitSeconds(3.5))
 				.andThen(intakeShoulder.stowOverBumperCommand())
-				.andThen(Commands.waitSeconds(4.0))
 				.andThen(shooterSuperstructure.homeCommand()));
 	}
 
@@ -310,14 +310,18 @@ public class RobotContainer {
 		// Home on release
 		operatorController.leftBumper()
 				.whileTrue(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger())
-						.andThen(intakeGrabber.startIntakeCommand())
-						.andThen(intakeShoulder.raiseIntakeCommand())
-						.andThen(shooterSuperstructure.startShootingCommand()))
+						.andThen(shooterSuperstructure.startShootingCommand())
+						.andThen(intakeGrabber.startIntakeSlowCommand())
+						.andThen(intakeShoulder.agitateCommand())
+						.finallyDo(intakeGrabber::stopIntake))
 				.onFalse(shooterSuperstructure.homeCommand()
 						.andThen(intakeGrabber.stopIntakeCommand()));
 
 		operatorController.rightBumper()
-				.onTrue(intakeShoulder.stowOverBumperCommand());
+				.onTrue(intakeShoulder.stowOverBumperCommand()
+						.andThen(intakeGrabber.startIntakeSlowCommand())
+						.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
+						.finallyDo(intakeGrabber::stopIntake));
 
 		// Set mode to shoot from fixed position, wait until ready to shoot, then shoot
 		// Home and set back to shoot from anywhere on release
@@ -346,8 +350,9 @@ public class RobotContainer {
 						.andThen(shooterSuperstructure.homeCommand()));
 
 		// Set mode to idle
-		operatorController.povDown()
-				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()));
+		// operatorController.povDown()
+		// .onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()));
+		operatorController.povDown().onTrue(Commands.runOnce(() -> intakeShoulder.zeroEncoder()));
 
 		operatorController.back()
 				.onTrue(shooterSuperstructure.turnOffCommand());

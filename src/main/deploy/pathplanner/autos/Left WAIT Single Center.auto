@@ -5,6 +5,18 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
@@ -39,56 +51,6 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Intake Left Neutral"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Intook Left to Trench"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Protect Intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Left Trench to Neutral"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Deploy Intake"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
             "pathName": "Left Intake Round 2"
           }
         },
@@ -109,6 +71,12 @@
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot"
           }
         },
         {

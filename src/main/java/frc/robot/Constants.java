@@ -177,21 +177,21 @@ public final class Constants {
 		 */
 		public static class ShootingZones {
 			/**
-			 * A rectangle encompassing the shooting zone for the top half (towards negative Y) of the neutral rectangle (when looking at the field diagram).
-			 */
-			public static final Rectangle2d NEUTRAL_ZONE_TOP = new Rectangle2d(FIELD_CENTER.transformBy(new Transform2d(0, -FIELD_LAYOUT.getFieldWidth() / 3.0, Rotation2d.kZero)), NEUTRAL_RECTANGLE.getXWidth(), NEUTRAL_RECTANGLE.getYWidth() / 3.0);
-			/**
-			 * A rectangle encompassing the shooting zone for the bottom half (towards positive Y) of the neutral rectangle (when looking at the field diagram).
-			 */
-			public static final Rectangle2d NEUTRAL_ZONE_BOTTOM = RectangleUtil.flipRectangleY(NEUTRAL_ZONE_TOP);
-			/**
-			 * The pose to shoot at for the {@link #NEUTRAL_ZONE_TOP top of the neutral rectangle} (when looking at the field diagram).
+			 * The pose to shoot at for the top of the neutral rectangle (when looking at the field diagram).
 			 */
 			public static final BiAlliancePose3d SHUTTLE_TOP_POSE = BiAlliancePose3d.fromBluePose(new Pose3d(Meters.of(3.0), Meters.of(2.0), Meters.zero(), Rotation3d.kZero), BiAlliancePose3d.InvertY.KEEP_Y);
 			/**
-			 * The pose to shoot at for the {@link #NEUTRAL_ZONE_BOTTOM bottom of the neutral rectangle} (when looking at the field diagram).
+			 * The pose to shoot at for the bottom of the neutral rectangle (when looking at the field diagram).
 			 */
 			public static final BiAlliancePose3d SHUTTLE_BOTTOM_POSE = BiAlliancePose3d.fromBluePose(PoseUtil.flipPoseY(SHUTTLE_TOP_POSE.getBluePose()), BiAlliancePose3d.InvertY.KEEP_Y);
+			/**
+			 * The pose to shoot at into the top of the neutral rectangle (when looking at the field diagram). This is used when shooting from the other alliance's hub.
+			 */
+			public static final Pose3d SHUTTLE_CENTER_TOP_POSE = new Pose3d(FIELD_CENTER.getMeasureX(), Meters.of(2.0), Meters.zero(), Rotation3d.kZero);
+			/**
+			 * The pose to shoot at into the bottom of the neutral rectangle (when looking at the field diagram). This is used when shooting from the other alliance's hub.
+			 */
+			public static final Pose3d SHUTTLE_CENTER_BOTTOM_POSE = PoseUtil.flipPoseY(SHUTTLE_CENTER_TOP_POSE);
 
 			/**
 			 * A rectangle encompassing the shooting zone for the hub on the red alliance.
@@ -223,8 +223,8 @@ public final class Constants {
 		public static final double GRABBER_SUPPLY_CURRENT_LIMIT = 30.0;
 		// public static final double INTAKE_START_SPEED = 0.2; //ts is old (as are the
 		// following three)
-		public static final double INTAKE_START_VOLTAGE = 4.5;
-		public static final double INTAKE_START_SLOW_VOLTAGE = 2.0;
+		public static final double INTAKE_START_VOLTAGE = 6;
+		public static final double INTAKE_START_SLOW_VOLTAGE = 6.0;
 		// public static final double INTAKE_STOP_SPEED = 0.0;
 		public static final double INTAKE_STOP_VOLTAGE = 0.0;
 		// public static final double OUTTAKE_SPEED = -0.2;
@@ -236,19 +236,33 @@ public final class Constants {
 		public static final double SHOULDER_MINIMUM_DISTANCE = 0;
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Rotations.of(0);
-		public static final double SHOULDER_MAXIMUM_DISTANCE = 35.5;
+		public static final double SHOULDER_MAXIMUM_DISTANCE = 36.5;
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
-		public static final double SHOULDER_DEPOT_DISTANCE = 0.25;
+		public static final double SHOULDER_DEPOT_DISTANCE = 20;
 		public static final double SHOULDER_STOW_OVER_BUMPER_DISTANCE = 10.0;
+		public static final double AGITATE_LOWERED_DISTANCE = SHOULDER_MAXIMUM_DISTANCE;
+		public static final double AGITATE_RAISED_DISTANCE = SHOULDER_MINIMUM_DISTANCE;
+		public static final double AGITATE_TOLERANCE = 0.5;
 
-		public static final double INTAKE_KG = 0.1;
-		public static final double INTAKE_KS = 0.34;
-		public static final double INTAKE_KV = 0.16;
-		public static final double INTAKE_KA = 0;
-		public static final double INTAKE_KP = 0.2;
-		public static final double INTAKE_KI = 0;
-		public static final double INTAKE_KD = 0;
+		// PID vals for moving the intake in
+		public static final double INTAKE_KG_0 = 0.1;
+		public static final double INTAKE_KS_0 = 0.34;
+		public static final double INTAKE_KV_0 = 0.16;
+		public static final double INTAKE_KA_0 = 0;
+		public static final double INTAKE_KP_0 = 0.2;
+		public static final double INTAKE_KI_0 = 0;
+		public static final double INTAKE_KD_0 = 0;
+
+		// PID vals for moving the intake out
+		public static final double INTAKE_KG_1 = 0.1;
+		public static final double INTAKE_KS_1 = 0.34;
+		public static final double INTAKE_KV_1 = 0.13;
+		public static final double INTAKE_KA_1 = 0;
+		public static final double INTAKE_KP_1 = 0.05;
+		public static final double INTAKE_KI_1 = 0;
+		public static final double INTAKE_KD_1 = 0;
+
 		// public static final double INTAKE_MM_CRUISE_VELOCITY = 80; // depracated
 		// public static final double INTAKE_MM_ACCELERATION = 160; // depracated
 		// public static final double INTAKE_MM_JERK = 1600; // depracated
@@ -256,20 +270,17 @@ public final class Constants {
 		// new (?) system for gear ratios
 		public static final double GEARBOX_RATIO = 96.0 / 5.0; // to be replaced by talonfx (?)
 		// config things
-		public static final double MAXIMUM_VELOCITY = 50.0;
-		public static final double ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
+		public static final double FAST_MAXIMUM_VELOCITY = 75.0;
+		public static final double FAST_ACCELERATION = 4.0 * FAST_MAXIMUM_VELOCITY;
 
 		public static final double SLOW_MAXIMUM_VELOCITY = 20.0;
-		public static final double SLOW_ACCELERATION = 2.0 * MAXIMUM_VELOCITY;
+		public static final double SLOW_ACCELERATION = 2.0 * FAST_MAXIMUM_VELOCITY;
 
 		// talonfx ratio stuff
 		// public static final double ROTOR_TO_SENSOR_RATIO = 0; // depracated (?)
 		public static final double SENSOR_TO_MECHANISM_RATIO = 1.0; // number of shaft rotations divided by
 																	// distance traveled by intake
 
-		public static final Angle AGITATE_RAISED_ANGLE = Degrees.of(70); // depracated
-		public static final Angle AGITATE_LOWERED_ANGLE = Degrees.of(0); // depracated
-		public static final Angle AGITATE_TOLERANCE = Degrees.of(10);
 		public static final double GRABBER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
 		public static final double GRABBER_SUPPLY_CURRENT_LOWER_TIME = 0.1;
 		public static final double GRABBER_STATOR_CURRENT_LIMIT = 40.0;
