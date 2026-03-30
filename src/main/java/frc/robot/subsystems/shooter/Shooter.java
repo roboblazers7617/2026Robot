@@ -101,8 +101,7 @@ public class Shooter extends SubsystemBase {
 	}
 
 	public boolean isAtTarget() {
-		return true;
-		// return MathUtil.isNear(requestedSpeed.in(RotationsPerSecond), leaderMotor.getVelocity().getValueAsDouble(), ShooterConstants.TOLERANCE.in(RotationsPerSecond));
+		return MathUtil.isNear(requestedSpeed.in(RotationsPerSecond), leaderMotor.getVelocity().getValueAsDouble(), ShooterConstants.TOLERANCE.in(RotationsPerSecond));
 	}
 
 	public void startFlywheel(AngularVelocity speed) {
