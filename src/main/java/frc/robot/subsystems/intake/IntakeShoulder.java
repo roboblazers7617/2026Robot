@@ -1,9 +1,11 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.MotorMonitor;
@@ -136,8 +138,14 @@ public class IntakeShoulder extends SubsystemBase {
 		// TODO: hook up to absolute encoder on actual bot
 		// Motor.setPosition(IntakeConstants.SHOULDER_STOWED_ANGLE);
 
+		// Enable brake mode on robot enable
+		RobotModeTriggers.disabled()
+				.onFalse(enableBrakeModeCommand());
+
 		// Set up temperature monitoring for the motors
 		MotorMonitor.addMotor(motor);
+
+		SmartDashboard.putData("Disable Intake Brake Mode", disableBrakeModeCommand());
 	}
 
 	/**
@@ -415,5 +423,47 @@ public class IntakeShoulder extends SubsystemBase {
 		} else if (getIsLowered()) {
 			raiseAgitate();
 		}
+	}
+
+	/**
+	 * Disables brake mode.
+	 */
+	public void disableBrakeMode() {
+		motor.setNeutralMode(NeutralModeValue.Coast);
+	}
+
+	/**
+	 * Enables brake mode.
+	 */
+	public void enableBrakeMode() {
+		motor.setNeutralMode(NeutralModeValue.Brake);
+	}
+
+	/**
+	 * Disables brake mode.
+	 * <p>
+	 * This command can be run while disabled.
+	 *
+	 * @return
+	 *         Command to run.
+	 */
+	public Command disableBrakeModeCommand() {
+		return Commands.runOnce(this::disableBrakeMode)
+				.ignoringDisable(true);
+	}
+
+	/**
+	 * Enables brake mode.
+	 * <p>
+	 * This command can be run while disabled.
+	 *
+	 * @return
+	 *         Command to run.
+	 * @implNote
+	 *           Called internally on enable to reset things.
+	 */
+	public Command enableBrakeModeCommand() {
+		return Commands.runOnce(this::enableBrakeMode)
+				.ignoringDisable(true);
 	}
 }
