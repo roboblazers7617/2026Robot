@@ -340,7 +340,7 @@ public final class Constants {
 		/**
 		 * The number of times to recalculate the shooting position for shoot-while-move. More iterations should give more accurate shoot-while-move outputs.
 		 */
-		public static final int SHOOTING_CALCULATOR_ITERATIONS = 3;
+		public static final int SHOOTING_CALCULATOR_ITERATIONS = 0;
 		/**
 		 * Should we automatically enter the {@link frc.robot.superstructure.ShooterSuperstructure.ShooterState#HOME} state on enable?
 		 * <p>
@@ -450,7 +450,7 @@ public final class Constants {
 		/**
 		 * the A in the linreg for x=flywheel speed y = output speed
 		 */
-		public static final double LINREG_FLYWHEEL_A = 0.187635 * 1.0;
+		public static final double LINREG_FLYWHEEL_A = 0.187635 * 1.15;
 		/**
 		 * the B in the linreg for x=flywheel speed y = output speed
 		 */
