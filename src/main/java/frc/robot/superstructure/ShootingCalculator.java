@@ -399,6 +399,7 @@ public class ShootingCalculator {
 			curValue = solveInterpolated(adjustedPose, targetPose);
 
 			adjustedPoses[i] = adjustedPose;
+			System.out.println("Velocity:" + velocityAsTransform);
 			System.out.println("Time:" + time.in(Seconds));
 		}
 
