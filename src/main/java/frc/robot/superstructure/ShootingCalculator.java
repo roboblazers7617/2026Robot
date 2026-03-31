@@ -376,15 +376,15 @@ public class ShootingCalculator {
 			double dx = translationToTarget.getX() + Units.inchesToMeters(12); // since we don't shoot in the exact middle, add an offset
 			double dy = translationToTarget.getY();
 
-			// calculate each term individualy, tt/mt/bt
+			// calculate each term individualy, (tt/mt)/bt
 			double topTerm = g * Math.pow(dx, 2) - dy * Math.pow(outputVelocity.in(MetersPerSecond), 2);
 			double middleTerm = Math.pow(outputVelocity.in(MetersPerSecond), 2);
 			double bottomTerm = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
 			// calculate the angle
-			// this will only work for angles > PI/3 / 60 degrees, otherwise we would want to do
-			// Angle outputAngle = Radians.of.5*(Math.acos((topTerm / middleTerm) / bottomTerm) - Math.atan(dx / dy)));
-			Angle outputAngle = Radians.of(Math.PI - .5 * (Math.acos((topTerm / middleTerm) / bottomTerm) + Math.atan(dx / dy)));
+			// there are two versions of this equation, the high and the low equations, the top equation is the low arc the bottom is the high arc
+			Angle outputAngle = Radians.of(.5 * (Math.acos((topTerm / middleTerm) / bottomTerm) - Math.atan(dx / dy)));
+			// Angle outputAngle = Radians.of(Math.PI - .5 * (Math.acos((topTerm / middleTerm) / bottomTerm) + Math.atan(dx / dy)));
 
 			// use this to find the time till the ball lands
 			time = calculateTimeTillScore(translationToTarget, outputAngle, outputVelocity);
