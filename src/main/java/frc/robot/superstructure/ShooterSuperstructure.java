@@ -9,7 +9,6 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -152,8 +151,6 @@ public class ShooterSuperstructure {
 	private final Timer shooterTimeout = new Timer();
 	/**
 	 * Timer used to override subsystem checks if it takes too long for subsystems to ready. Once this timer elapses the {@link SuperstructureConstants#SHOOTING_WAITING_TIMEOUT}, the superstructure will continue on from the waiting state and just shoot anyway.
-	 * <p>
-	 * This only takes effect in autonomous.
 	 */
 	private final Timer shootingWaitingTimeout = new Timer();
 
@@ -316,7 +313,7 @@ public class ShooterSuperstructure {
 				}
 
 				// Once we reach the target, start to track
-				if (subsystemsAtTargets() || (shootingWaitingTimeout.hasElapsed(SuperstructureConstants.SHOOTING_WAITING_TIMEOUT) && DriverStation.isAutonomous())) {
+				if (subsystemsAtTargets() || shootingWaitingTimeout.hasElapsed(SuperstructureConstants.SHOOTING_WAITING_TIMEOUT)) {
 					stateMachine.fire(ShooterTrigger.READY_TO_SHOOT);
 					break;
 				}
@@ -380,7 +377,7 @@ public class ShooterSuperstructure {
 					stateMachine.fire(ShooterTrigger.HOME);
 				}
 
-				if (subsystemsAtTargets() || (shootingWaitingTimeout.hasElapsed(SuperstructureConstants.SHOOTING_WAITING_TIMEOUT) && DriverStation.isAutonomous())) {
+				if (subsystemsAtTargets() || shootingWaitingTimeout.hasElapsed(SuperstructureConstants.SHOOTING_WAITING_TIMEOUT)) {
 					// Ready to start shooting again, so let's do that
 					stateMachine.fire(ShooterTrigger.READY_TO_SHOOT);
 					break;
