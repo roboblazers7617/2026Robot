@@ -363,6 +363,11 @@ public final class Constants {
 		 * the transform from the center of the pivot on top of the shooter base plate to the center of the hood pivot axis in meters
 		 */
 		public static final Transform3d TURRET_BASE_TO_HOOD_PIVOT = new Transform3d(0.126746, 0, 0.0635, new Rotation3d());
+
+		/**
+		 * The time to wait before overriding subsystems and just shooting anyway.
+		 */
+		public static final Time SHOOTING_WAITING_TIMEOUT = Seconds.of(2.0);
 	}
 
 	/**

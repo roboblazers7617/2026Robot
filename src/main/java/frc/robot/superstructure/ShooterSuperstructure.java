@@ -9,6 +9,7 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -149,6 +150,12 @@ public class ShooterSuperstructure {
 	 * Timer used to time the stopping of the shooter.
 	 */
 	private final Timer shooterTimeout = new Timer();
+	/**
+	 * Timer used to override subsystem checks if it takes too long for subsystems to ready. Once this timer elapses the {@link SuperstructureConstants#SHOOTING_WAITING_TIMEOUT}, the superstructure will continue on from the waiting state and just shoot anyway.
+	 * <p>
+	 * This only takes effect in autonomous.
+	 */
+	private final Timer shootingWaitingTimeout = new Timer();
 
 	/**
 	 * The current source to poll for shooting values.
@@ -205,7 +212,14 @@ public class ShooterSuperstructure {
 
 		stateMachineConfig.configure(ShooterState.SHOOTING_STAGE_1_INITIALIZING)
 				.substateOf(ShooterState.SHOOTING)
-				.permit(ShooterTrigger.READY_TO_SHOOT, ShooterState.SHOOTING_STAGE_2_READY_TO_SHOOT);
+				.permit(ShooterTrigger.READY_TO_SHOOT, ShooterState.SHOOTING_STAGE_2_READY_TO_SHOOT)
+				// Restart the shooting waiting timer when we start waiting
+				.onEntry(shootingWaitingTimeout::restart)
+				// And stop it when we stop
+				.onExit(() -> {
+					shootingWaitingTimeout.stop();
+					shootingWaitingTimeout.reset();
+				});
 
 		stateMachineConfig.configure(ShooterState.SHOOTING_STAGE_2_READY_TO_SHOOT)
 				.substateOf(ShooterState.SHOOTING)
@@ -233,7 +247,14 @@ public class ShooterSuperstructure {
 
 		stateMachineConfig.configure(ShooterState.SHOOTING_WAITING)
 				.substateOf(ShooterState.SHOOTING_STAGE_3_SHOOTING)
-				.permit(ShooterTrigger.START_SHOOTING, ShooterState.SHOOTING_RUNNING);
+				.permit(ShooterTrigger.READY_TO_SHOOT, ShooterState.SHOOTING_RUNNING)
+				// Restart the shooting waiting timer when we start waiting
+				.onEntry(shootingWaitingTimeout::restart)
+				// And stop it when we stop
+				.onExit(() -> {
+					shootingWaitingTimeout.stop();
+					shootingWaitingTimeout.reset();
+				});
 
 		stateMachineConfig.configure(ShooterState.SHOOTING_PAUSED)
 				.substateOf(ShooterState.SHOOTING_STAGE_3_SHOOTING)
@@ -250,6 +271,7 @@ public class ShooterSuperstructure {
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Home", homeCommand());
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Start Manual Control", startManualControlCommand());
 		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Start Shooting", startShootingCommand());
+		SmartDashboard.putData(SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Skip Waiting", skipWaitingCommand());
 	}
 
 	/**
@@ -294,7 +316,7 @@ public class ShooterSuperstructure {
 				}
 
 				// Once we reach the target, start to track
-				if (subsystemsAtTargets()) {
+				if (subsystemsAtTargets() || (shootingWaitingTimeout.hasElapsed(SuperstructureConstants.SHOOTING_WAITING_TIMEOUT) && DriverStation.isAutonomous())) {
 					stateMachine.fire(ShooterTrigger.READY_TO_SHOOT);
 					break;
 				}
@@ -358,9 +380,9 @@ public class ShooterSuperstructure {
 					stateMachine.fire(ShooterTrigger.HOME);
 				}
 
-				if (subsystemsAtTargets()) {
+				if (subsystemsAtTargets() || (shootingWaitingTimeout.hasElapsed(SuperstructureConstants.SHOOTING_WAITING_TIMEOUT) && DriverStation.isAutonomous())) {
 					// Ready to start shooting again, so let's do that
-					stateMachine.fire(ShooterTrigger.START_SHOOTING);
+					stateMachine.fire(ShooterTrigger.READY_TO_SHOOT);
 					break;
 				}
 
@@ -449,6 +471,16 @@ public class ShooterSuperstructure {
 	}
 
 	/**
+	 * Command that skips the regular checks of if we're at our setpoint and forces the state machineto continue.
+	 *
+	 * @return
+	 *         Command to run.
+	 */
+	public Command skipWaitingCommand() {
+		return Commands.runOnce(() -> stateMachine.fire(ShooterTrigger.READY_TO_SHOOT));
+	}
+
+	/**
 	 * Sets the shooter state to the specified state. This requires that you are in {@link ShooterState#MANUAL_CONTROL}.
 	 * <p>
 	 * This assumes that we are not tracking a target, since that is done internally.
@@ -500,7 +532,7 @@ public class ShooterSuperstructure {
 	 *         Are all the shooter subsystems at their targets?
 	 */
 	public boolean subsystemsAtTargets() {
-		return true; // flywheel.isAtTarget() && hood.isAtPosition() && turret.isAtTarget() && hopperUptake.isUptakeAtTarget();
+		return flywheel.isAtTarget() && hood.isAtPosition() && turret.isAtTarget() && hopperUptake.isUptakeAtTarget();
 	}
 
 	/**
