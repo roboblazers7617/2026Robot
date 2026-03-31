@@ -367,7 +367,7 @@ public final class Constants {
 		/**
 		 * The time to wait before overriding subsystems and just shooting anyway.
 		 */
-		public static final Time SHOOTING_WAITING_TIMEOUT = Seconds.of(2.0);
+		public static final Time SHOOTING_WAITING_TIMEOUT = Seconds.of(1.0);
 	}
 
 	/**
