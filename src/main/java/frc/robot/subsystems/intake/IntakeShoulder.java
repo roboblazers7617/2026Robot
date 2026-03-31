@@ -403,6 +403,16 @@ public class IntakeShoulder extends SubsystemBase {
 	}
 
 	/**
+	 * Checks if the current draw of the motor is above the {@link IntakeConstants#AGITATE_CURRENT_SPIKE_THRESHOLD}.
+	 *
+	 * @return
+	 *         Is the current draw over the threshold?
+	 */
+	private boolean getAgitateCurrentSpike() {
+		return motor.getTorqueCurrent().getValue().compareTo(IntakeConstants.AGITATE_CURRENT_SPIKE_THRESHOLD) > 0.0;
+	}
+
+	/**
 	 * Method which moves arm to a raised position when in lowered position and vice
 	 * versa. This is intended to be called through a continuous RunCommand
 	 * triggered by a held button. Does not have an end state by default, this must
@@ -410,7 +420,7 @@ public class IntakeShoulder extends SubsystemBase {
 	 */
 
 	private void agitate() {
-		if (getIsRaised()) {
+		if (getIsRaised() || getAgitateCurrentSpike()) {
 			lowerAgitate();
 		} else if (getIsLowered()) {
 			raiseAgitate();
