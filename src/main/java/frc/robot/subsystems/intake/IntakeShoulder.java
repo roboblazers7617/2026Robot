@@ -1,6 +1,7 @@
 package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,6 +32,11 @@ public class IntakeShoulder extends SubsystemBase {
 	private final CANcoder intakeEncoder = new CANcoder(IntakeConstants.SHOULDER_ENCODER_CAN_ID, Constants.CANIVORE_BUS);
 
 	private double setPointMeters;
+
+	/**
+	 * Timer that delays when the current spike check for agitate is done. This allows us to make sure the initial starting current of the motor doesn't trip the check.
+	 */
+	private Timer agitateCurrentSpikeDelay = new Timer();
 
 	/**
 	 * Constructor for motor which raises and lowers intakes with associated
@@ -378,6 +384,8 @@ public class IntakeShoulder extends SubsystemBase {
 	 */
 	private void raiseAgitate() {
 		setPositionInSlow(IntakeConstants.AGITATE_RAISED_DISTANCE);
+
+		agitateCurrentSpikeDelay.restart();
 	}
 
 	public boolean getHasReachedTarget(double distance, double tolerance) {
@@ -420,7 +428,7 @@ public class IntakeShoulder extends SubsystemBase {
 	 */
 
 	private void agitate() {
-		if (getIsRaised() || getAgitateCurrentSpike()) {
+		if (getIsRaised() || (getAgitateCurrentSpike() && agitateCurrentSpikeDelay.hasElapsed(IntakeConstants.AGITATE_CURRENT_SPIKE_DELAY))) {
 			lowerAgitate();
 		} else if (getIsLowered()) {
 			raiseAgitate();
