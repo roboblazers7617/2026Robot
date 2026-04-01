@@ -405,6 +405,8 @@ public final class Constants {
 			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(4.5), RotationsPerSecond.of(34.5));
 			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(5.29), RotationsPerSecond.of(38));
 			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(6.48), RotationsPerSecond.of(44));
+			// Extrapolated with a linreg
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(20), RotationsPerSecond.of(91));
 		}
 
 		/**
@@ -420,6 +422,8 @@ public final class Constants {
 			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(4.5), Degrees.of(4));
 			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(5.29), Degrees.of(5));
 			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(6.48), Degrees.of(7));
+			// Extrapolated with a linreg
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(20), Degrees.of(28.9));
 		}
 
 		/**
