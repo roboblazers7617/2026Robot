@@ -11,6 +11,8 @@ import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.MotorMonitor;
 
+import static edu.wpi.first.units.Units.Amps;
+
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -425,7 +427,10 @@ public class IntakeShoulder extends SubsystemBase {
 	 *         Is the current draw over the threshold?
 	 */
 	private boolean getAgitateCurrentSpike() {
-		return motor.getTorqueCurrent().getValue().compareTo(IntakeConstants.AGITATE_CURRENT_SPIKE_THRESHOLD) > 0.0;
+		return Amps.of(motor.getTorqueCurrent()
+				.getValue()
+				.abs(Amps))
+				.compareTo(IntakeConstants.AGITATE_CURRENT_SPIKE_THRESHOLD) > 0.0;
 	}
 
 	/**
