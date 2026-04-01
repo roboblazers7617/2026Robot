@@ -251,8 +251,10 @@ public class RobotContainer {
 				.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
 				.andThen(Commands.waitSeconds(0.5))
 				.andThen(shooterSuperstructure.startShootingCommand())
-				.andThen(Commands.waitSeconds(3.5))
-				.andThen(intakeShoulder.stowOverBumperCommand())
+				.andThen(intakeGrabber.startIntakeSlowCommand())
+				.andThen(intakeShoulder.agitateCommand()
+						.raceWith(Commands.waitSeconds(3.5)))
+				.andThen(intakeGrabber.stopIntakeCommand())
 				.andThen(shooterSuperstructure.homeCommand()));
 	}
 
