@@ -244,6 +244,8 @@ public final class Constants {
 		public static final double AGITATE_LOWERED_DISTANCE = SHOULDER_MAXIMUM_DISTANCE;
 		public static final double AGITATE_RAISED_DISTANCE = SHOULDER_MINIMUM_DISTANCE;
 		public static final double AGITATE_TOLERANCE = 0.5;
+		public static final Current AGITATE_CURRENT_SPIKE_THRESHOLD = Amps.of(10.0);
+		public static final Time AGITATE_CURRENT_SPIKE_DELAY = Seconds.of(0.2);
 
 		// PID vals for moving the intake in
 		public static final double INTAKE_KG_0 = 0.1;

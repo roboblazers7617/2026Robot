@@ -2,6 +2,7 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,6 +34,11 @@ public class IntakeShoulder extends SubsystemBase {
 	private final CANcoder intakeEncoder = new CANcoder(IntakeConstants.SHOULDER_ENCODER_CAN_ID, Constants.CANIVORE_BUS);
 
 	private double setPointMeters;
+
+	/**
+	 * Timer that delays when the current spike check for agitate is done. This allows us to make sure the initial starting current of the motor doesn't trip the check.
+	 */
+	private Timer agitateCurrentSpikeDelay = new Timer();
 
 	/**
 	 * Constructor for motor which raises and lowers intakes with associated
@@ -386,6 +392,8 @@ public class IntakeShoulder extends SubsystemBase {
 	 */
 	private void raiseAgitate() {
 		setPositionInSlow(IntakeConstants.AGITATE_RAISED_DISTANCE);
+
+		agitateCurrentSpikeDelay.restart();
 	}
 
 	public boolean getHasReachedTarget(double distance, double tolerance) {
@@ -411,6 +419,16 @@ public class IntakeShoulder extends SubsystemBase {
 	}
 
 	/**
+	 * Checks if the current draw of the motor is above the {@link IntakeConstants#AGITATE_CURRENT_SPIKE_THRESHOLD}.
+	 *
+	 * @return
+	 *         Is the current draw over the threshold?
+	 */
+	private boolean getAgitateCurrentSpike() {
+		return motor.getTorqueCurrent().getValue().compareTo(IntakeConstants.AGITATE_CURRENT_SPIKE_THRESHOLD) > 0.0;
+	}
+
+	/**
 	 * Method which moves arm to a raised position when in lowered position and vice
 	 * versa. This is intended to be called through a continuous RunCommand
 	 * triggered by a held button. Does not have an end state by default, this must
@@ -418,7 +436,7 @@ public class IntakeShoulder extends SubsystemBase {
 	 */
 
 	private void agitate() {
-		if (getIsRaised()) {
+		if (getIsRaised() || (getAgitateCurrentSpike() && agitateCurrentSpikeDelay.hasElapsed(IntakeConstants.AGITATE_CURRENT_SPIKE_DELAY))) {
 			lowerAgitate();
 		} else if (getIsLowered()) {
 			raiseAgitate();
