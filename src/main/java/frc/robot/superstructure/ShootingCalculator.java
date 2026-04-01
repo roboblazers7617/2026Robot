@@ -64,6 +64,9 @@ public class ShootingCalculator {
 	private static StructPublisher<Pose3d> modifiedTargetPosePublisher = NetworkTableInstance.getDefault()
 			.getStructTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Modified Target Pose", Pose3d.struct)
 			.publish();
+	private static StructPublisher<Pose3d> adjustedRobotPosePublisher = NetworkTableInstance.getDefault()
+			.getStructTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Adjusted Robot Pose", Pose3d.struct)
+			.publish();
 	private static DoublePublisher gamepieceThetaPublisher = NetworkTableInstance.getDefault()
 			.getDoubleTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Gamepiece Theta")
 			.publish();
@@ -345,7 +348,7 @@ public class ShootingCalculator {
 		// quadratic formula values
 		double a = .5 * ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
 		double b = yVelocity;
-		double c = gamepieceTranslation.getY();
+		double c = -gamepieceTranslation.getY();
 		System.out.println("A:" + a + " B:" + b + " C:" + c + " V:" + gamepieceSpeed.in(MetersPerSecond) + " Theta:" + gamepieceTheta.in(Degrees));
 		// calculate quadratic formula to solve kinematics deltaY = Yinitial + Vyt + at^2
 		double t = (-b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
@@ -373,20 +376,7 @@ public class ShootingCalculator {
 			// use this to find the output angle assuming the ball perfectly hits the target
 			Translation2d translationToTarget = solveGamepieceTranslation(solveExitPose(adjustedPose, curValue.getTurretAngle(), curValue.getHoodAngle()), targetPose);
 
-			// 180-\ .5\left(\arccos\left(\frac{\frac{\left(g\cdot d_{x}^{2}\right)}{v^{2}}-d_{y}}{\sqrt{d_{y}^{2}+d_{x}^{2}}}\right)+\arctan\left(\frac{d_{x}}{d_{y}}\right)\right)
-			double g = ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
-			double dx = Math.abs(translationToTarget.getX());// + Units.inchesToMeters(8); // since we don't shoot in the exact middle, add an offset
-			double dy = translationToTarget.getY();
-
-			// calculate each term individualy, (tt/mt)/bt
-			double topTerm = g * Math.pow(dx, 2) - dy * Math.pow(outputVelocity.in(MetersPerSecond), 2);
-			double middleTerm = Math.pow(outputVelocity.in(MetersPerSecond), 2);
-			double bottomTerm = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-
-			// calculate the angle
-			// there are two versions of this equation, the high and the low equations, the top equation is the low arc the bottom is the high arc
-			Angle outputAngle = Radians.of(.5 * (Math.acos((topTerm / middleTerm) / bottomTerm) - Math.atan(Math.abs(dx / dy))));
-			// Angle outputAngle = Radians.of(Math.PI - .5 * (Math.acos((topTerm / middleTerm) / bottomTerm) + Math.atan(Math.abs(dx / dy))));
+			Angle outputAngle = solveOutputAngleFromVelocity(outputVelocity, translationToTarget);
 
 			// use this to find the time till the ball lands
 			time = calculateTimeTillScore(translationToTarget, outputAngle, outputVelocity);
@@ -394,19 +384,38 @@ public class ShootingCalculator {
 
 			// add the robots velocity vector times the time
 			Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
-			adjustedPose = robotPose.transformBy(velocityAsTransform.times(time.in(Seconds)));
+			adjustedPose = robotPose.plus(velocityAsTransform.times(time.in(Seconds)));
 
 			curValue = solveInterpolated(adjustedPose, targetPose);
 
 			adjustedPoses[i] = adjustedPose;
-			System.out.println("Velocity:" + velocityAsTransform);
-			System.out.println("Time:" + time.in(Seconds));
+			// System.out.println("Velocity:" + velocityAsTransform);
+			System.out.println("Time:" + time.in(Seconds) + " Translation:" + translationToTarget);
 		}
-
+		adjustedRobotPosePublisher.set(adjustedPose);
 		interpolatedWhileMoveTimeTillScorePublisher.set(timeTillScoreArray);
 		interpolatedWhileMoveTurretPosePublisher.set(adjustedPoses);
 
 		return curValue;
+	}
+
+	public static Angle solveOutputAngleFromVelocity(LinearVelocity outputVelocity, Translation2d translationToTarget) {
+		// 180-\ .5\left(\arccos\left(\frac{\frac{\left(g\cdot d_{x}^{2}\right)}{v^{2}}-d_{y}}{\sqrt{d_{y}^{2}+d_{x}^{2}}}\right)+\arctan\left(\frac{d_{x}}{d_{y}}\right)\right)
+		double g = ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
+		double dx = translationToTarget.getMeasureX().in(Meters) + Units.inchesToMeters(8); // since we don't shoot in the exact middle, add an offset
+		double dy = translationToTarget.getMeasureY().in(Meters);
+
+		// calculate each term individualy, (tt/mt)/bt
+		double topTerm = g * Math.pow(dx, 2) - dy * Math.pow(outputVelocity.in(MetersPerSecond), 2);
+		double middleTerm = Math.pow(outputVelocity.in(MetersPerSecond), 2);
+		double bottomTerm = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+		// calculate the angle
+		// there are two versions of this equation, the high and the low equations, the top equation is the low arc the bottom is the high arc
+		Angle outputAngle = Radians.of(.5 * (Math.acos((topTerm / middleTerm) / bottomTerm) - Math.atan(Math.abs(dx / dy))));
+		// Angle outputAngle = Radians.of(Math.PI - .5 * (Math.acos((topTerm / middleTerm) / bottomTerm) + Math.atan(Math.abs(dx / dy))));
+
+		return outputAngle;
 	}
 
 	/**
