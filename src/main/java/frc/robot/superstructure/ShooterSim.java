@@ -46,6 +46,12 @@ public class ShooterSim {
 	private static DoublePublisher anglePublisher = NetworkTableInstance.getDefault()
 			.getDoubleTopic(TABLE_NAME + "/INIT_ANGLE")
 			.publish();
+	private static DoublePublisher flywheelSpeedPublisher = NetworkTableInstance.getDefault()
+			.getDoubleTopic(TABLE_NAME + "/INIT_FLYWHEEL")
+			.publish();
+	private static DoublePublisher turretAnglePublisher = NetworkTableInstance.getDefault()
+			.getDoubleTopic(TABLE_NAME + "/INIT_TURRET_ANGLE")
+			.publish();
 	/**
 	 * Update counter, used for timing.
 	 * <p>
@@ -102,6 +108,10 @@ public class ShooterSim {
 				Pose3d turretPose = ShootingCalculator.solveExitPose(new Pose3d(robotPose), results.getTurretAngle(), results.getHoodAngle());
 
 				gamepieceTheta = ShootingCalculator.solveOutputAngleFromVelocity(gamepieceSpeed, ShootingCalculator.solveGamepieceTranslation(turretPose, ShootingCalculator.getTargetPoseForPosition(robotPose).get()));
+
+				System.out.println("SHOT INFO   V:" + gamepieceSpeed.in(MetersPerSecond) + " Otheta:" + gamepieceTheta + " Ttheta:" + results.getTurretAngle().in(Radians));
+				flywheelSpeedPublisher.set(results.getFlywheelSpeed().in(RotationsPerSecond));
+				turretAnglePublisher.set(results.getTurretAngle().in(Radians));
 				RebuiltFuelOnFly fuelOnFly = new RebuiltFuelOnFly(
 						// Specify the position of the chassis
 						robotPose.getTranslation(),
@@ -127,7 +137,6 @@ public class ShooterSim {
 						(pose3ds) -> fuelTrajectoryMiss.accept(pose3ds.toArray(Pose3d[]::new)));
 
 				SimulatedArena.getInstance().addGamePieceProjectile(fuelOnFly);
-
 				tickCounter = 0;
 			}
 		}

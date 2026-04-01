@@ -450,7 +450,7 @@ public final class Constants {
 		/**
 		 * the A in the linreg for x=flywheel speed y = output speed
 		 */
-		public static final double LINREG_FLYWHEEL_A = 0.25;
+		public static final double LINREG_FLYWHEEL_A = .225;
 		/**
 		 * the B in the linreg for x=flywheel speed y = output speed
 		 */

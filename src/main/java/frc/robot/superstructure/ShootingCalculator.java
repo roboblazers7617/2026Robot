@@ -297,11 +297,12 @@ public class ShootingCalculator {
 	 *         and field-relative.
 	 */
 	private static Angle solveTurretAngle(Pose2d turretPose, Pose2d targetPose) {
-		return targetPose.getTranslation()
-				.minus(turretPose.getTranslation())
-				.getAngle()
-				.getMeasure()
-				.minus(turretPose.getRotation().getMeasure());
+		return Radians.of(Math.atan2(targetPose.getY() - turretPose.getY(), targetPose.getX() - turretPose.getX()));
+		// return targetPose.getTranslation()
+		// .minus(turretPose.getTranslation())
+		// .getAngle()
+		// .getMeasure()
+		// .minus(turretPose.getRotation().getMeasure());
 	}
 
 	/**
@@ -379,6 +380,7 @@ public class ShootingCalculator {
 			Angle outputAngle = solveOutputAngleFromVelocity(outputVelocity, translationToTarget);
 
 			// use this to find the time till the ball lands
+			System.out.println("FLYWHEEL:" + curValue.getFlywheelSpeed());
 			time = calculateTimeTillScore(translationToTarget, outputAngle, outputVelocity);
 			timeTillScoreArray[i] = time.in(Seconds);
 
@@ -400,19 +402,32 @@ public class ShootingCalculator {
 	}
 
 	public static Angle solveOutputAngleFromVelocity(LinearVelocity outputVelocity, Translation2d translationToTarget) {
-		// 180-\ .5\left(\arccos\left(\frac{\frac{\left(g\cdot d_{x}^{2}\right)}{v^{2}}-d_{y}}{\sqrt{d_{y}^{2}+d_{x}^{2}}}\right)+\arctan\left(\frac{d_{x}}{d_{y}}\right)\right)
-		double g = ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
-		double dx = translationToTarget.getMeasureX().in(Meters) + Units.inchesToMeters(8); // since we don't shoot in the exact middle, add an offset
+		// \arctan\left(\frac{\left(v^{2}+\sqrt{v^{4}-g^{2}d_{x}^{2}-2gv^{2}d_{y}}\right)}{g\cdot d_{x}}\right)
+		// square v to make equations less cluttered
+		double v = Math.pow(outputVelocity.in(MetersPerSecond), 2);
+		double g = -ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond); // make g negative bc thats the formu
+		double dx = translationToTarget.getMeasureX().in(Meters);
 		double dy = translationToTarget.getMeasureY().in(Meters);
 
-		// calculate each term individualy, (tt/mt)/bt
-		double topTerm = g * Math.pow(dx, 2) - dy * Math.pow(outputVelocity.in(MetersPerSecond), 2);
-		double middleTerm = Math.pow(outputVelocity.in(MetersPerSecond), 2);
-		double bottomTerm = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+		// sqrt(v^4 - g^2dx^2-2gv^2dy)
+		// EVERY OCCURENCE OF V IS SQUARED, so v^2 = outputVelocity ^4
+		double sqrtTerm = Math.sqrt(Math.pow(v, 2) - Math.pow(g, 2) * Math.pow(dx, 2) - 2 * g * v * dy);
+		System.out.println("v^2:" + v + " g:" + g + " dx:" + dx + " dy:" + dy);
+		double innerTerm = (v + sqrtTerm) / (g * dx);
+		Angle outputAngle = Radians.of(Math.atan(innerTerm));
+		// 180-\ .5\left(\arccos\left(\frac{\frac{\left(g\cdot d_{x}^{2}\right)}{v^{2}}-d_{y}}{\sqrt{d_{y}^{2}+d_{x}^{2}}}\right)+\arctan\left(\frac{d_{x}}{d_{y}}\right)\right)
+		// double g = ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
+		// double dx = translationToTarget.getMeasureX().in(Meters) + Units.inchesToMeters(8); // since we don't shoot in the exact middle, add an offset
+		// double dy = translationToTarget.getMeasureY().in(Meters);
+
+		// // calculate each term individualy, (tt/mt)/bt
+		// double topTerm = g * Math.pow(dx, 2) - dy * Math.pow(outputVelocity.in(MetersPerSecond), 2);
+		// double middleTerm = Math.pow(outputVelocity.in(MetersPerSecond), 2);
+		// double bottomTerm = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
 		// calculate the angle
 		// there are two versions of this equation, the high and the low equations, the top equation is the low arc the bottom is the high arc
-		Angle outputAngle = Radians.of(.5 * (Math.acos((topTerm / middleTerm) / bottomTerm) - Math.atan(Math.abs(dx / dy))));
+		// Angle outputAngle = Radians.of(.5 * (Math.acos((topTerm / middleTerm) / bottomTerm) - Math.atan(Math.abs(dx / dy))));
 		// outputAngle = Degrees.of(90).minus(outputAngle);
 		// Angle outputAngle = Radians.of(Math.PI - .5 * (Math.acos((topTerm / middleTerm) / bottomTerm) + Math.atan(Math.abs(dx / dy))));
 
