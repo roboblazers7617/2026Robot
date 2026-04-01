@@ -413,6 +413,7 @@ public class ShootingCalculator {
 		// calculate the angle
 		// there are two versions of this equation, the high and the low equations, the top equation is the low arc the bottom is the high arc
 		Angle outputAngle = Radians.of(.5 * (Math.acos((topTerm / middleTerm) / bottomTerm) - Math.atan(Math.abs(dx / dy))));
+		// outputAngle = Degrees.of(90).minus(outputAngle);
 		// Angle outputAngle = Radians.of(Math.PI - .5 * (Math.acos((topTerm / middleTerm) / bottomTerm) + Math.atan(Math.abs(dx / dy))));
 
 		return outputAngle;
