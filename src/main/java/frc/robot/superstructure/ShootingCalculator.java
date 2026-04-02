@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.IntegerPublisher;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -88,6 +89,9 @@ public class ShootingCalculator {
 			.publish();
 	private static DoubleArrayPublisher interpolatedWhileMoveTimeTillScorePublisher = NetworkTableInstance.getDefault()
 			.getDoubleArrayTopic(SHOOTING_CALCULATOR_INTERPOLATED_WHILE_MOVE_TABLE_NAME + "/Time Till Score")
+			.publish();
+	private static IntegerPublisher swmTimeToCalculatePublisher = NetworkTableInstance.getDefault()
+			.getIntegerTopic(SHOOTING_CALCULATOR_INTERPOLATED_WHILE_MOVE_TABLE_NAME + "/Time To Compute")
 			.publish();
 
 	/**
@@ -356,6 +360,8 @@ public class ShootingCalculator {
 	}
 
 	public static ShooterValues solveShootWhileMoveInterpolated(Pose3d robotPose, Pose3d targetPose, ChassisSpeeds robotVelocity) {
+		long startTime = System.nanoTime();
+
 		// these will be useful later, for now don't add the velocity vector of the robot
 		Time time = Seconds.of(0);
 		// we don't need to adjust for turret pose, as this is done during solveInterpolated
@@ -396,6 +402,8 @@ public class ShootingCalculator {
 		adjustedRobotPosePublisher.set(adjustedPose);
 		interpolatedWhileMoveTimeTillScorePublisher.set(timeTillScoreArray);
 		interpolatedWhileMoveTurretPosePublisher.set(adjustedPoses);
+
+		swmTimeToCalculatePublisher.set(System.nanoTime() - startTime);
 
 		return curValue;
 	}
