@@ -41,6 +41,7 @@ import edu.wpi.first.units.Units;
 
 import edu.wpi.first.units.AngularAccelerationUnit;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.TimeUnit;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Velocity;
@@ -61,6 +62,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
+
 import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -431,6 +433,28 @@ public final class Constants {
 			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(6.48), Degrees.of(7));
 			// Extrapolated with a linreg
 			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(20), Degrees.of(28.9));
+		}
+
+		public static final InterpolatingMeasureTreeMap<Distance, DistanceUnit, Time, TimeUnit> TIME_TO_SCORE_BY_DISTANCE = new InterpolatingMeasureTreeMap<>();
+
+		static {
+			// for high arc
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(1.9), Seconds.of(0.77133478759));
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(2.58), Seconds.of(1.02370063866));
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(3.29), Seconds.of(1.05972742105));
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(4.5), Seconds.of(1.12811589605));
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(5.29), Seconds.of(1.36338398207));
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(6.48), Seconds.of(1.71443901118));
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(20), Seconds.of(3.98172596723));
+
+			// for low arc
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(1.9), Seconds.of(0.604051441332));
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(2.58), Seconds.of(0.572693676756));
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(3.29), Seconds.of(0.678460601952));
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(4.5), Seconds.of(0.845008647989));
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(5.29), Seconds.of(0.813517027033));
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(6.48), Seconds.of(0.785233152962));
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(20), Seconds.of(1.02610888441));
 		}
 
 		/**

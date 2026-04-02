@@ -375,18 +375,10 @@ public class ShootingCalculator {
 
 		// iterate through the amount of calculations
 		for (int i = 0; i < SuperstructureConstants.SHOOTING_CALCULATOR_ITERATIONS; i++) {
-			// use a linreg to find the output velocity given by the lerp table
-			LinearVelocity outputVelocity = MetersPerSecond.of(curValue.getFlywheelSpeed().in(RotationsPerSecond) * ShootingConstants.LINREG_FLYWHEEL_A + ShootingConstants.LINREG_FLYWHEEL_B);
-
 			// use this to find the output angle assuming the ball perfectly hits the target
 			Translation2d translationToTarget = solveGamepieceTranslation(solveExitPose(adjustedPose, curValue.getTurretAngle(), curValue.getHoodAngle()), targetPose);
 
-			Angle outputAngle = solveOutputAngleFromVelocity(outputVelocity, translationToTarget);
-
-			// use this to find the time till the ball lands
-			System.out.println("FLYWHEEL:" + curValue.getFlywheelSpeed());
-			time = calculateTimeTillScore(translationToTarget, outputAngle, outputVelocity);
-			timeTillScoreArray[i] = time.in(Seconds);
+			time = ShootingConstants.TIME_TO_SCORE_BY_DISTANCE.get(translationToTarget.getMeasureX());
 
 			// add the robots velocity vector times the time
 			Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
@@ -395,8 +387,6 @@ public class ShootingCalculator {
 			curValue = solveInterpolated(adjustedPose, targetPose);
 
 			adjustedPoses[i] = adjustedPose;
-			// System.out.println("Velocity:" + velocityAsTransform);
-			System.out.println("Time:" + time.in(Seconds) + " Translation:" + translationToTarget);
 		}
 		adjustedRobotPosePublisher.set(adjustedPose);
 		interpolatedWhileMoveTimeTillScorePublisher.set(timeTillScoreArray);
