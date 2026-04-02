@@ -300,12 +300,11 @@ public class ShootingCalculator {
 	 *         and field-relative.
 	 */
 	private static Angle solveTurretAngle(Pose2d turretPose, Pose2d targetPose) {
-		return Radians.of(Math.atan2(targetPose.getY() - turretPose.getY(), targetPose.getX() - turretPose.getX()));
-		// return targetPose.getTranslation()
-		// .minus(turretPose.getTranslation())
-		// .getAngle()
-		// .getMeasure()
-		// .minus(turretPose.getRotation().getMeasure());
+		return targetPose.getTranslation()
+				.minus(turretPose.getTranslation())
+				.getAngle()
+				.getMeasure()
+				.minus(turretPose.getRotation().getMeasure());
 	}
 
 	/**
