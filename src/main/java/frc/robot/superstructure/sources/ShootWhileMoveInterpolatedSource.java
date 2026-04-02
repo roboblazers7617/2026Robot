@@ -32,7 +32,7 @@ public class ShootWhileMoveInterpolatedSource extends ShootingSource {
 	@Override
 	public Optional<ShooterValues> get() {
 		Pose2d robotPose = drivetrain.getPose2d();
-		ChassisSpeeds robotVelocity = drivetrain.getFeildRelativeSpeeds();
+		ChassisSpeeds robotVelocity = drivetrain.getRobotRelativeSpeeds();
 
 		// Figure out target values if we have any
 		Optional<Pose3d> targetPose = ShootingCalculator.getTargetPoseForPosition(robotPose);
