@@ -41,6 +41,7 @@ import edu.wpi.first.units.Units;
 
 import edu.wpi.first.units.AngularAccelerationUnit;
 import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.TimeUnit;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Velocity;
@@ -61,6 +62,7 @@ import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Celsius;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
+
 import static edu.wpi.first.units.Units.Milliseconds;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -244,6 +246,8 @@ public final class Constants {
 		public static final double AGITATE_LOWERED_DISTANCE = SHOULDER_MAXIMUM_DISTANCE;
 		public static final double AGITATE_RAISED_DISTANCE = SHOULDER_MINIMUM_DISTANCE;
 		public static final double AGITATE_TOLERANCE = 0.5;
+		public static final Current AGITATE_CURRENT_SPIKE_THRESHOLD = Amps.of(15.0);
+		public static final Time AGITATE_CURRENT_SPIKE_DELAY = Seconds.of(0.2);
 
 		// PID vals for moving the intake in
 		public static final double INTAKE_KG_0 = 0.1;
@@ -287,7 +291,7 @@ public final class Constants {
 		public static final double SHOULDER_SUPPLY_CURRENT_LIMIT = 40.0;
 		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
 		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_TIME = 0.15;
-		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 20.0;
+		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 15.0;
 
 		public static final double GAIN_SCHEDULE_ERROR_THRESHOLD = 0.5;
 
@@ -336,7 +340,7 @@ public final class Constants {
 		/**
 		 * The interval to run the {@link RobotContainer#superstructurePeriodic()} at.
 		 */
-		public static final Time PERIODIC_INTERVAL = Milliseconds.of(10);
+		public static final Time PERIODIC_INTERVAL = Milliseconds.of(20);
 		/**
 		 * The number of times to recalculate the shooting position for shoot-while-move. More iterations should give more accurate shoot-while-move outputs.
 		 */
@@ -410,6 +414,8 @@ public final class Constants {
 			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(4.5), RotationsPerSecond.of(34.5));
 			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(5.29), RotationsPerSecond.of(38));
 			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(6.48), RotationsPerSecond.of(44));
+			// Extrapolated with a linreg
+			FLYWHEEL_VELOCITY_BY_DISTANCE.put(Meters.of(20), RotationsPerSecond.of(91));
 		}
 
 		/**
@@ -425,6 +431,30 @@ public final class Constants {
 			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(4.5), Degrees.of(4));
 			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(5.29), Degrees.of(5));
 			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(6.48), Degrees.of(7));
+			// Extrapolated with a linreg
+			HOOD_ANGLE_BY_DISTANCE.put(Meters.of(20), Degrees.of(28.9));
+		}
+
+		public static final InterpolatingMeasureTreeMap<Distance, DistanceUnit, Time, TimeUnit> TIME_TO_SCORE_BY_DISTANCE = new InterpolatingMeasureTreeMap<>();
+
+		static {
+			// for high arc
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(1.9), Seconds.of(0.77133478759));
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(2.58), Seconds.of(1.02370063866));
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(3.29), Seconds.of(1.05972742105));
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(4.5), Seconds.of(1.12811589605));
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(5.29), Seconds.of(1.36338398207));
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(6.48), Seconds.of(1.71443901118));
+			// TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(20), Seconds.of(3.98172596723));
+
+			// for low arc
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(1.9), Seconds.of(0.604051441332));
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(2.58), Seconds.of(0.572693676756));
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(3.29), Seconds.of(0.678460601952));
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(4.5), Seconds.of(0.845008647989));
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(5.29), Seconds.of(0.813517027033));
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(6.48), Seconds.of(0.785233152962));
+			TIME_TO_SCORE_BY_DISTANCE.put(Meters.of(20), Seconds.of(1.02610888441));
 		}
 
 		/**
@@ -455,10 +485,11 @@ public final class Constants {
 		/**
 		 * the A in the linreg for x=flywheel speed y = output speed
 		 */
-		public static final double LINREG_FLYWHEEL_A = 0;
+		public static final double LINREG_FLYWHEEL_A = .225;
 		/**
 		 * the B in the linreg for x=flywheel speed y = output speed
 		 */
+		// currently forcing the intercept to 0, might change later
 		public static final double LINREG_FLYWHEEL_B = 0;
 
 		/**
@@ -758,7 +789,7 @@ public final class Constants {
 		public static final String TURRET_CAM_NAME = "CamFront";
 		public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.1397, -0.3479292, 0.2666238), new Rotation3d(0, 0.174533, -0.5 * Math.PI));
 		public static final String EBOARD_CAM_NAME = "CamSide";
-		public static final Transform3d ROBOT_TO_EBOARD_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.3415792, -0.10795, 0.2708148), new Rotation3d(0, 0.174533, Math.PI));
+		public static final Transform3d ROBOT_TO_EBOARD_CAM_TRANSFORM = new Transform3d(new Translation3d(Inches.of(-13.412), Inches.of(13.309), Inches.of(8.473 - 3.243)), new Rotation3d(0, 0.174533, Math.PI * .75));
 		public static final String XTRA_CAM_NAME = "CamX3"; // replace the String in the Constant of the camera you want to swap out with the extra cam name
 		public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8); // 4, 4, 8
 		public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);

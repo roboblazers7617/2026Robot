@@ -13,7 +13,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.DoublePublisher;
+import edu.wpi.first.networktables.IntegerPublisher;
+import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
@@ -28,6 +31,7 @@ import frc.robot.Constants.SuperstructureConstants;
 
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.Seconds;
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
@@ -42,6 +46,7 @@ public class ShootingCalculator {
 	public static String SHOOTING_CALCULATOR_TABLE_NAME = SuperstructureConstants.SHOOTER_SUPERSTRUCTURE_TABLE_NAME + "/Shooting Calculator";
 	public static String SHOOTING_CALCULATOR_MODELED_TABLE_NAME = SHOOTING_CALCULATOR_TABLE_NAME + "/Modeled";
 	public static String SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME = SHOOTING_CALCULATOR_TABLE_NAME + "/Interpolated";
+	public static String SHOOTING_CALCULATOR_INTERPOLATED_WHILE_MOVE_TABLE_NAME = SHOOTING_CALCULATOR_TABLE_NAME + "/Interpolated While Move";
 
 	private static StructPublisher<Pose3d> targetPosePublisher = NetworkTableInstance.getDefault()
 			.getStructTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Target Pose", Pose3d.struct)
@@ -58,6 +63,9 @@ public class ShootingCalculator {
 	private static StructPublisher<Pose3d> modifiedTargetPosePublisher = NetworkTableInstance.getDefault()
 			.getStructTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Modified Target Pose", Pose3d.struct)
 			.publish();
+	private static StructPublisher<Pose3d> adjustedRobotPosePublisher = NetworkTableInstance.getDefault()
+			.getStructTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Adjusted Robot Pose", Pose3d.struct)
+			.publish();
 	private static DoublePublisher gamepieceThetaPublisher = NetworkTableInstance.getDefault()
 			.getDoubleTopic(SHOOTING_CALCULATOR_MODELED_TABLE_NAME + "/Gamepiece Theta")
 			.publish();
@@ -72,7 +80,17 @@ public class ShootingCalculator {
 			.getStructTopic(SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME + "/Target Pose", Pose3d.struct)
 			.publish();
 	private static StructPublisher<Pose3d> interpolatedTurretPosePublisher = NetworkTableInstance.getDefault()
-			.getStructTopic(SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct)
+			.getStructTopic(SHOOTING_CALCULATOR_INTERPOLATED_TABLE_NAME + "/Turret Pose", Pose3d.struct)
+			.publish();
+
+	private static StructArrayPublisher<Pose3d> interpolatedWhileMoveTurretPosePublisher = NetworkTableInstance.getDefault()
+			.getStructArrayTopic(SHOOTING_CALCULATOR_INTERPOLATED_WHILE_MOVE_TABLE_NAME + "/Modified Turret Pose", Pose3d.struct)
+			.publish();
+	private static DoubleArrayPublisher interpolatedWhileMoveTimeTillScorePublisher = NetworkTableInstance.getDefault()
+			.getDoubleArrayTopic(SHOOTING_CALCULATOR_INTERPOLATED_WHILE_MOVE_TABLE_NAME + "/Time Till Score")
+			.publish();
+	private static IntegerPublisher swmTimeToCalculatePublisher = NetworkTableInstance.getDefault()
+			.getIntegerTopic(SHOOTING_CALCULATOR_INTERPOLATED_WHILE_MOVE_TABLE_NAME + "/Time To Compute")
 			.publish();
 
 	/**
@@ -330,12 +348,85 @@ public class ShootingCalculator {
 	public static Time calculateTimeTillScore(Translation2d gamepieceTranslation, Angle gamepieceTheta, LinearVelocity gamepieceSpeed) {
 		double yVelocity = gamepieceSpeed.in(MetersPerSecond) * Math.sin(gamepieceTheta.in(Radians));
 		// quadratic formula values
-		double a = ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
+		double a = .5 * ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
 		double b = yVelocity;
-		double c = gamepieceTranslation.getY();
+		double c = -gamepieceTranslation.getY();
+		System.out.println("A:" + a + " B:" + b + " C:" + c + " V:" + gamepieceSpeed.in(MetersPerSecond) + " Theta:" + gamepieceTheta.in(Degrees));
 		// calculate quadratic formula to solve kinematics deltaY = Yinitial + Vyt + at^2
 		double t = (-b - Math.sqrt(Math.pow(b, 2) - 4 * a * c)) / (2 * a);
 		return Seconds.of(t);
+	}
+
+	public static ShooterValues solveShootWhileMoveInterpolated(Pose3d robotPose, Pose3d targetPose, ChassisSpeeds robotVelocity) {
+		long startTime = System.nanoTime();
+
+		// these will be useful later, for now don't add the velocity vector of the robot
+		Time time = Seconds.of(0);
+		// we don't need to adjust for turret pose, as this is done during solveInterpolated
+		Pose3d adjustedPose = robotPose;
+
+		// find the values at the initial position
+		ShooterValues curValue = solveInterpolated(adjustedPose, targetPose);
+
+		// used for logging
+		double[] timeTillScoreArray = new double[SuperstructureConstants.SHOOTING_CALCULATOR_ITERATIONS];
+		Pose3d[] adjustedPoses = new Pose3d[SuperstructureConstants.SHOOTING_CALCULATOR_ITERATIONS];
+
+		// iterate through the amount of calculations
+		for (int i = 0; i < SuperstructureConstants.SHOOTING_CALCULATOR_ITERATIONS; i++) {
+			// use this to find the output angle assuming the ball perfectly hits the target
+			Translation2d translationToTarget = solveGamepieceTranslation(solveExitPose(adjustedPose, curValue.getTurretAngle(), curValue.getHoodAngle()), targetPose);
+
+			time = ShootingConstants.TIME_TO_SCORE_BY_DISTANCE.get(translationToTarget.getMeasureX());
+
+			// add the robots velocity vector times the time
+			Transform3d velocityAsTransform = new Transform3d(robotVelocity.vxMetersPerSecond, robotVelocity.vyMetersPerSecond, 0.0, new Rotation3d());
+			adjustedPose = robotPose.plus(velocityAsTransform.times(time.in(Seconds)));
+
+			curValue = solveInterpolated(adjustedPose, targetPose);
+
+			adjustedPoses[i] = adjustedPose;
+		}
+		adjustedRobotPosePublisher.set(adjustedPose);
+		interpolatedWhileMoveTimeTillScorePublisher.set(timeTillScoreArray);
+		interpolatedWhileMoveTurretPosePublisher.set(adjustedPoses);
+
+		swmTimeToCalculatePublisher.set(System.nanoTime() - startTime);
+
+		return curValue;
+	}
+
+	public static Angle solveOutputAngleFromVelocity(LinearVelocity outputVelocity, Translation2d translationToTarget) {
+		// \arctan\left(\frac{\left(v^{2}+\sqrt{v^{4}-g^{2}d_{x}^{2}-2gv^{2}d_{y}}\right)}{g\cdot d_{x}}\right)
+		// square v to make equations less cluttered
+		double v = Math.pow(outputVelocity.in(MetersPerSecond), 2);
+		double g = -ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond); // make g negative bc thats the formu
+		double dx = translationToTarget.getMeasureX().in(Meters);
+		double dy = translationToTarget.getMeasureY().in(Meters);
+
+		// sqrt(v^4 - g^2dx^2-2gv^2dy)
+		// EVERY OCCURENCE OF V IS SQUARED, so v^2 = outputVelocity ^4
+		double sqrtTerm = Math.sqrt(Math.pow(v, 2) - Math.pow(g, 2) * Math.pow(dx, 2) - 2 * g * v * dy);
+		System.out.println("v^2:" + v + " g:" + g + " dx:" + dx + " dy:" + dy);
+		double innerTerm = (v + sqrtTerm) / (g * dx);
+		Angle outputAngle = Radians.of(Math.atan(innerTerm));
+		// 180-\ .5\left(\arccos\left(\frac{\frac{\left(g\cdot d_{x}^{2}\right)}{v^{2}}-d_{y}}{\sqrt{d_{y}^{2}+d_{x}^{2}}}\right)+\arctan\left(\frac{d_{x}}{d_{y}}\right)\right)
+		// double g = ShootingConstants.GAMEPIECE_G.in(MetersPerSecondPerSecond);
+		// double dx = translationToTarget.getMeasureX().in(Meters) + Units.inchesToMeters(8); // since we don't shoot in the exact middle, add an offset
+		// double dy = translationToTarget.getMeasureY().in(Meters);
+
+		// // calculate each term individualy, (tt/mt)/bt
+		// double topTerm = g * Math.pow(dx, 2) - dy * Math.pow(outputVelocity.in(MetersPerSecond), 2);
+		// double middleTerm = Math.pow(outputVelocity.in(MetersPerSecond), 2);
+		// double bottomTerm = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+		// calculate the angle
+		// there are two versions of this equation, the high and the low equations, the top equation is the low arc the bottom is the high arc
+		// Angle outputAngle = Radians.of(.5 * (Math.acos((topTerm / middleTerm) / bottomTerm) - Math.atan(Math.abs(dx / dy))));
+		// outputAngle = Degrees.of(90).minus(outputAngle);
+		// Angle outputAngle = Radians.of(Math.PI - .5 * (Math.acos((topTerm / middleTerm) / bottomTerm) + Math.atan(Math.abs(dx / dy))));
+
+		return outputAngle;
 	}
 
 	/**
