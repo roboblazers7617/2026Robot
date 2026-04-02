@@ -21,7 +21,6 @@ import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.superstructure.sources.ShootingSource;
 import frc.robot.superstructure.sources.ShootFromAnywhereInterpolatedSource;
-import frc.robot.superstructure.sources.ShootWhileMoveInterpolatedSource;
 import frc.robot.superstructure.sources.ShootingSourceConstant;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
