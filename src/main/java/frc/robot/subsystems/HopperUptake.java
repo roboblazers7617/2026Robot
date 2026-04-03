@@ -187,6 +187,15 @@ public class HopperUptake extends SubsystemBase {
 		return runOnce(() -> startUptakeForward());
 	}
 
+	public Command startHopperForwardCommand() {
+		// TODO Auto-generated method stub
+		return runOnce(() -> startHopperForward());
+	}
+
+	public Command startHopperUnjamCommand() {
+		return runOnce(() -> startHopperUnjam());
+	}
+
 	public Command startBothCommand() {
 		return startUptakeForwardCommand().andThen(Commands.waitUntil(() -> isUptakeAtTarget()).finallyDo(this::startHopperForward));
 	}
@@ -199,6 +208,14 @@ public class HopperUptake extends SubsystemBase {
 		return runOnce(() -> startUptakeUnjam());
 	}
 
+	public Command stopUptakeCommand() {
+		return runOnce(() -> stopUptake());
+	}
+
+	public Command stopHopperCommand() {
+		return runOnce(() -> stopHopper());
+	}
+
 	public Command stopBothMotorsCommand() {
 		return runOnce(() -> stopBothMotors());
 	}
@@ -209,7 +226,4 @@ public class HopperUptake extends SubsystemBase {
 	public boolean getIsHopperRunningForwards() {
 		return isHopperRunningForwards;
 	}
-
-	@Override
-	public void periodic() {}
 }

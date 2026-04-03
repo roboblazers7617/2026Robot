@@ -2,6 +2,8 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.networktables.BooleanPublisher;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,6 +18,7 @@ import static edu.wpi.first.units.Units.Amps;
 
 import java.util.function.Supplier;
 
+import com.andymark.jni.AM_CAN_Mag_Switch;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DynamicMotionMagicVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
@@ -36,8 +39,12 @@ public class IntakeShoulder extends SubsystemBase {
 	private final DynamicMotionMagicVoltage positionRequestIn = new DynamicMotionMagicVoltage(0, IntakeConstants.SLOW_MAXIMUM_VELOCITY, IntakeConstants.SLOW_ACCELERATION).withSlot(0);
 
 	private final CANcoder intakeEncoder = new CANcoder(IntakeConstants.SHOULDER_ENCODER_CAN_ID, Constants.CANIVORE_BUS);
-
+	private final AM_CAN_Mag_Switch magSwitch = new AM_CAN_Mag_Switch(IntakeConstants.MAG_SWITCH_CAN_ID);
 	private double setPointMeters;
+
+	private final BooleanPublisher magSwitchPublisher = NetworkTableInstance.getDefault()
+			.getBooleanTopic("Intake Shoulder/magnet Detected")
+			.publish();
 
 	/**
 	 * Timer that delays when the current spike check for agitate is done. This allows us to make sure the initial starting current of the motor doesn't trip the check.
@@ -49,6 +56,8 @@ public class IntakeShoulder extends SubsystemBase {
 	 * configurations, sets up Motion Magic, and configures gear ratios.
 	 */
 	public IntakeShoulder() {
+		magSwitch.setReportPeriod(20);
+
 		motor = new TalonFX(IntakeConstants.SHOULDER_CAN_ID, Constants.CANIVORE_BUS);
 
 		// TODO: See the comments on IntakeGrabber on how to better code this
@@ -158,6 +167,14 @@ public class IntakeShoulder extends SubsystemBase {
 		SmartDashboard.putData("Disable Intake Brake Mode", disableBrakeModeCommand());
 	}
 
+	@Override
+	public void periodic() {
+		magSwitchPublisher.set(magSwitch.getData().magnetDetected);
+		if (magSwitch.getData().magnetDetected) {
+			motor.setPosition(IntakeConstants.SHOULDER_LIMIT_SWITCH_DISTANCE);
+		}
+	}
+
 	/**
 	 * Method which takes Angle values (no it does not) and sets Kraken to angle.
 	 * Should compensate
@@ -192,6 +209,16 @@ public class IntakeShoulder extends SubsystemBase {
 
 		// private void setPosition(double position) {
 		// motor.setControl(positionRequest.withPosition(position));
+	}
+
+	/**
+	 * Gets the current position of the motor. Mostly exists for logging.
+	 * 
+	 * @return
+	 *         The current position of the intake motor.
+	 */
+	public double getPosition() {
+		return motor.getPosition().getValueAsDouble();
 	}
 
 	// /**
