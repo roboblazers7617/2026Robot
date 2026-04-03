@@ -553,6 +553,26 @@ public class ShooterSuperstructure {
 	}
 
 	/**
+	 * Checks if we are in the shooting process (should uptake be spinning?).
+	 * 
+	 * @return
+	 *         Are we shooting?
+	 */
+	public boolean isShooting() {
+		return stateMachine.isInState(ShooterState.SHOOTING_STAGE_3_SHOOTING);
+	}
+
+	/**
+	 * Checks if we are actively shooting (is hopper supposed to be spinning?).
+	 * 
+	 * @return
+	 *         Are we actively shooting?
+	 */
+	public boolean isShootingActive() {
+		return stateMachine.isInState(ShooterState.SHOOTING_RUNNING);
+	}
+
+	/**
 	 * Sets the shooting source to use.
 	 * <p>
 	 * This can be called at any time, and will immediately take over the current setting.

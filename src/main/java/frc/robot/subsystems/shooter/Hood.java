@@ -54,6 +54,7 @@ public class Hood extends SubsystemBase {
 		hoodConfig.Slot0.kG = HoodConstants.KG; // Gravity gain
 		hoodConfig.Slot0.kS = HoodConstants.KS; // Static gain
 		hoodConfig.Slot0.kP = HoodConstants.KP; // Proportional gain
+		hoodConfig.Slot0.kI = HoodConstants.KI; // Integral gain
 		hoodConfig.Slot0.kD = HoodConstants.KD; // Derivative gain
 		hoodConfig.Slot0.kV = HoodConstants.KV;
 		hoodConfig.Slot0.StaticFeedforwardSign = StaticFeedforwardSignValue.UseVelocitySign;
@@ -61,7 +62,7 @@ public class Hood extends SubsystemBase {
 		hoodConfig.CurrentLimits.SupplyCurrentLimit = HoodConstants.SUPPLY_CURRENT_LIMIT;
 		hoodConfig.CurrentLimits.SupplyCurrentLowerTime = HoodConstants.SUPPLY_CURRENT_LOWER_TIME; // For longer than 0.1 seconds
 		hoodConfig.CurrentLimits.SupplyCurrentLimitEnable = HoodConstants.SUPPLY_CURRENT_LIMIT_ENABLE; // Enable the limit
-		hoodConfig.CurrentLimits.StatorCurrentLimit = HoodConstants.STATOR_CURRENT_LIMIT; // ← Prevent motor burnout
+		hoodConfig.CurrentLimits.StatorCurrentLimit = HoodConstants.STATOR_CURRENT_LIMIT; // Prevent motor burnout
 		hoodConfig.CurrentLimits.StatorCurrentLimitEnable = HoodConstants.STATOR_CURRENT_LIMIT_ENABLE;
 		hoodConfig.MotionMagic.MotionMagicCruiseVelocity = HoodConstants.CRUISE_VELOCITY;
 		hoodConfig.MotionMagic.MotionMagicAcceleration = HoodConstants.ACCELERATION;

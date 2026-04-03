@@ -215,6 +215,7 @@ public final class Constants {
 	 * what it does YET (it contains constants for my dogwater code for intake)
 	 */
 	public static class IntakeConstants {
+		public static final int MAG_SWITCH_CAN_ID = 0;
 		public static final int SHOULDER_CAN_ID = 40;
 		public static final int GRABBER_CAN_ID = 41;
 		public static final int SHOULDER_ENCODER_CAN_ID = 40;
@@ -238,7 +239,8 @@ public final class Constants {
 		public static final double SHOULDER_MINIMUM_DISTANCE = 0;
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Rotations.of(0);
-		public static final double SHOULDER_MAXIMUM_DISTANCE = 36.5;
+		public static final double SHOULDER_MAXIMUM_DISTANCE = 36;
+		public static final double SHOULDER_LIMIT_SWITCH_DISTANCE = 36;
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
 		public static final double SHOULDER_DEPOT_DISTANCE = 20;
@@ -516,7 +518,7 @@ public final class Constants {
 		/**
 		 * A set of values to shoot from the center by the tower.
 		 */
-		public static final ShooterValues STATIC_SHOOT_CENTER = new ShooterValues(RotationsPerSecond.of(33), Degrees.of(5), Degrees.of(0));
+		public static final ShooterValues STATIC_SHOOT_CENTER = new ShooterValues(RotationsPerSecond.of(30), Degrees.of(5), Degrees.of(0));
 	}
 
 	/**
@@ -607,10 +609,11 @@ public final class Constants {
 	public static class HoodConstants {
 		public static final int HOOD_MOTOR_CAN_ID = 23;
 		public static final int HOOT_ENCODER_CAN_ID = 23;
-		public static final double KP = 0.3;
+		public static final double KP = 3.0;
+		public static final double KI = 0.0;
+		public static final double KD = 0.1;
 		public static final double KS = 0.4;
-		public static final double KD = 0;
-		public static final double KV = 0.03;
+		public static final double KV = 0.0;
 		public static final double KG = 0.6;
 		public static final Angle ANGLE = Units.Degrees.of(90);
 		public static final double RPS = 100.0; // X44 can go 125 Rotations per Second
@@ -734,15 +737,15 @@ public final class Constants {
 		/**
 		 * The PID kP for the turret closed loop controller.
 		 */
-		public static final double TURRET_KP = 19.0;
+		public static final double TURRET_KP = 19.4;
 		/**
 		 * The PID kI for the turret closed loop controller.
 		 */
-		public static final double TURRET_KI = 5.5;
+		public static final double TURRET_KI = 6.0;
 		/**
 		 * The PID kD for the turret closed loop controller.
 		 */
-		public static final double TURRET_KD = 2.1;
+		public static final double TURRET_KD = 2.3;
 		/**
 		 * The PID kS for the turret closed loop controller.
 		 */
@@ -750,7 +753,7 @@ public final class Constants {
 		/**
 		 * The PID kV for the turret closed loop controller.
 		 */
-		public static final double TURRET_KV = 3.0;
+		public static final double TURRET_KV = 0.0;
 		/**
 		 * The PID kA for the turret closed loop controller.
 		 */
