@@ -54,7 +54,7 @@ public class Vision extends SubsystemBase {
 				var est = turretVisionEst.get();
 				var estStdDevs = getEstimationStdDevs();
 				for (int tgt = 0; tgt < result.getTargets().size(); tgt++) {
-					if (result.getTargets().get((tgt)).getPoseAmbiguity() <= 0.2) {
+					if (result.getTargets().get((tgt)).getPoseAmbiguity() <= 0.1) {
 						drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
 						if (VisionConstants.DEBUG_PRINT_STATEMENTS)
 							System.out.println("turret measurement");
@@ -79,7 +79,7 @@ public class Vision extends SubsystemBase {
 				var est = eBoardVisionEst.get();
 				var estStdDevs = getEstimationStdDevs();
 				for (int tgt = 0; tgt < result.getTargets().size(); tgt++) {
-					if (result.getTargets().get((tgt)).getPoseAmbiguity() <= 0.2) {
+					if (result.getTargets().get((tgt)).getPoseAmbiguity() <= 0.1) {
 						drivetrain.addVisionMeasurement(est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
 						if (VisionConstants.DEBUG_PRINT_STATEMENTS)
 							System.out.println("eboard measurement");
