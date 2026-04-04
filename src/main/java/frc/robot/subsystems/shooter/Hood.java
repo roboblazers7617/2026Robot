@@ -68,6 +68,10 @@ public class Hood extends SubsystemBase {
 		hoodConfig.MotionMagic.MotionMagicAcceleration = HoodConstants.ACCELERATION;
 		hoodConfig.Feedback.SensorToMechanismRatio = HoodConstants.SENSOR_TO_MECHANISM_RATIO;
 
+		// Turn off beeps because they move the hood motor sometimes
+		hoodConfig.Audio.withBeepOnBoot(false);
+		hoodConfig.Audio.withBeepOnConfig(false);
+
 		// Try to apply config multiple time. Break after successfully applying
 		for (int i = 0; i < 2; ++i) {
 			var status = hoodMotor.getConfigurator().apply(hoodConfig);
