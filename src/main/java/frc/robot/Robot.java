@@ -83,6 +83,9 @@ public class Robot extends TimedRobot {
 
 		// Set up the superstructure periodic
 		addPeriodic(robotContainer::superstructurePeriodic, SuperstructureConstants.PERIODIC_INTERVAL);
+
+		// Set up the encoder update periodics
+		addPeriodic(robotContainer::intakeLimitSwitchPeriodic, 10);
 	}
 
 	/**
