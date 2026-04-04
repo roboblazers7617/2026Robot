@@ -2,8 +2,6 @@ package frc.robot.subsystems.intake;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.networktables.BooleanPublisher;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -207,7 +205,7 @@ public class IntakeShoulder extends SubsystemBase {
 
 	/**
 	 * Gets the current position of the motor. Mostly exists for logging.
-	 * 
+	 *
 	 * @return
 	 *         The current position of the intake motor.
 	 */
