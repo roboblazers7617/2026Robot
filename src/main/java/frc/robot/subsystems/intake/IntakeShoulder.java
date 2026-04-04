@@ -42,10 +42,6 @@ public class IntakeShoulder extends SubsystemBase {
 	private final AM_CAN_Mag_Switch magSwitch = new AM_CAN_Mag_Switch(IntakeConstants.MAG_SWITCH_CAN_ID);
 	private double setPointMeters;
 
-	private final BooleanPublisher magSwitchPublisher = NetworkTableInstance.getDefault()
-			.getBooleanTopic("Intake Shoulder/magnet Detected")
-			.publish();
-
 	/**
 	 * Timer that delays when the current spike check for agitate is done. This allows us to make sure the initial starting current of the motor doesn't trip the check.
 	 */
@@ -56,7 +52,7 @@ public class IntakeShoulder extends SubsystemBase {
 	 * configurations, sets up Motion Magic, and configures gear ratios.
 	 */
 	public IntakeShoulder() {
-		magSwitch.setReportPeriod(20);
+		magSwitch.setReportPeriod(10);
 
 		motor = new TalonFX(IntakeConstants.SHOULDER_CAN_ID, Constants.CANIVORE_BUS);
 
@@ -167,9 +163,7 @@ public class IntakeShoulder extends SubsystemBase {
 		SmartDashboard.putData("Disable Intake Brake Mode", disableBrakeModeCommand());
 	}
 
-	@Override
-	public void periodic() {
-		magSwitchPublisher.set(magSwitch.getData().magnetDetected);
+	public void limitSwitchPeriodic() {
 		if (magSwitch.getData().magnetDetected) {
 			motor.setPosition(IntakeConstants.SHOULDER_LIMIT_SWITCH_DISTANCE);
 		}
