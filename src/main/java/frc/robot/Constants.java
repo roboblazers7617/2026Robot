@@ -240,7 +240,7 @@ public final class Constants {
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Rotations.of(0);
 		public static final double SHOULDER_MAXIMUM_DISTANCE = 36;
-		public static final double SHOULDER_LIMIT_SWITCH_DISTANCE = 36.25;
+		public static final double SHOULDER_LIMIT_SWITCH_DISTANCE = 36;
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
 		public static final double SHOULDER_DEPOT_DISTANCE = 20;
@@ -518,7 +518,7 @@ public final class Constants {
 		/**
 		 * A set of values to shoot from the center by the tower.
 		 */
-		public static final ShooterValues STATIC_SHOOT_CENTER = new ShooterValues(RotationsPerSecond.of(33), Degrees.of(5), Degrees.of(0));
+		public static final ShooterValues STATIC_SHOOT_CENTER = new ShooterValues(RotationsPerSecond.of(30), Degrees.of(5), Degrees.of(0));
 	}
 
 	/**
