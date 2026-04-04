@@ -397,6 +397,10 @@ public class RobotContainer {
 						.onlyIf(RobotModeTriggers.teleop()));
 	}
 
+	public void intakeLimitSwitchPeriodic() {
+		intakeShoulder.limitSwitchPeriodic();
+	}
+
 	/**
 	 * Use this to pass the autonomous command to the main {@link Robot} class.
 	 *
