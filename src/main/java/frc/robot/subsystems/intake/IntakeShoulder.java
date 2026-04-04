@@ -13,6 +13,7 @@ import frc.robot.Constants.IntakeConstants;
 import frc.robot.MotorMonitor;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Milliseconds;
 
 import java.util.function.Supplier;
 
@@ -50,7 +51,7 @@ public class IntakeShoulder extends SubsystemBase {
 	 * configurations, sets up Motion Magic, and configures gear ratios.
 	 */
 	public IntakeShoulder() {
-		magSwitch.setReportPeriod(10);
+		magSwitch.setReportPeriod((int) IntakeConstants.LIMIT_SWITCH_UPDATE_INTERVAL.in(Milliseconds));
 
 		motor = new TalonFX(IntakeConstants.SHOULDER_CAN_ID, Constants.CANIVORE_BUS);
 
@@ -161,10 +162,14 @@ public class IntakeShoulder extends SubsystemBase {
 		SmartDashboard.putData("Disable Intake Brake Mode", disableBrakeModeCommand());
 	}
 
+	/**
+	 * Periodic function that updates the intake limit switch.
+	 */
 	public void limitSwitchPeriodic() {
-		if (magSwitch.getData().magnetDetected) {
-			motor.setPosition(IntakeConstants.SHOULDER_LIMIT_SWITCH_DISTANCE);
-		}
+		// if (magSwitch.getData().magnetDetected) {
+		// motor.setPosition(IntakeConstants.SHOULDER_LIMIT_SWITCH_DISTANCE);
+		// setPositionOutFast(IntakeConstants.SHOULDER_LIMIT_SWITCH_DISTANCE);
+		// }
 	}
 
 	/**

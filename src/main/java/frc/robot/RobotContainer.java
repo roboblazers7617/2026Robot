@@ -397,6 +397,9 @@ public class RobotContainer {
 						.onlyIf(RobotModeTriggers.teleop()));
 	}
 
+	/**
+	 * Periodic function that updates the intake limit switch.
+	 */
 	public void intakeLimitSwitchPeriodic() {
 		intakeShoulder.limitSwitchPeriodic();
 	}

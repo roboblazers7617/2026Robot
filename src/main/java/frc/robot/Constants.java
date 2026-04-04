@@ -221,6 +221,11 @@ public final class Constants {
 		public static final int SHOULDER_ENCODER_CAN_ID = 40;
 
 		/**
+		 * The interval to run the {@link RobotContainer#intakeLimitSwitchPeriodic()} and get data from the sensor at.
+		 */
+		public static final Time LIMIT_SWITCH_UPDATE_INTERVAL = Milliseconds.of(10);
+
+		/**
 		 * The current limit for the motor.
 		 */
 		public static final double GRABBER_SUPPLY_CURRENT_LIMIT = 30.0;

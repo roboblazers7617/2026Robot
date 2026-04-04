@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.DashboardConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.LoggingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 
@@ -85,7 +86,7 @@ public class Robot extends TimedRobot {
 		addPeriodic(robotContainer::superstructurePeriodic, SuperstructureConstants.PERIODIC_INTERVAL);
 
 		// Set up the encoder update periodics
-		addPeriodic(robotContainer::intakeLimitSwitchPeriodic, 10);
+		addPeriodic(robotContainer::intakeLimitSwitchPeriodic, IntakeConstants.LIMIT_SWITCH_UPDATE_INTERVAL);
 	}
 
 	/**
