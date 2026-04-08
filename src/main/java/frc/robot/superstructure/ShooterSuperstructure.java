@@ -8,6 +8,7 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -47,6 +48,7 @@ public class ShooterSuperstructure {
 	private final HopperUptake hopperUptake;
 	@NotLogged
 	private final DigitalInput uptakeBeamBreak;
+	private final Supplier<Optional<Angle>> turretAngleOverride;
 
 	/**
 	 * The list of states the shooter can be in.
@@ -172,13 +174,16 @@ public class ShooterSuperstructure {
 	 *            The hopper/uptake subsystem to control.
 	 * @param uptakeBeamBreak
 	 *            The beam break for the uptake.
+	 * @param turretAngleOverride
+	 *            A supplier that overrides the turret angle when present. This is used for turret angle controls.
 	 */
-	public ShooterSuperstructure(Shooter shooter, Hood hood, Turret turret, HopperUptake hopperUptake, DigitalInput uptakeBeamBreak) {
+	public ShooterSuperstructure(Shooter shooter, Hood hood, Turret turret, HopperUptake hopperUptake, DigitalInput uptakeBeamBreak, Supplier<Optional<Angle>> turretAngleOverride) {
 		this.flywheel = shooter;
 		this.hood = hood;
 		this.turret = turret;
 		this.hopperUptake = hopperUptake;
 		this.uptakeBeamBreak = uptakeBeamBreak;
+		this.turretAngleOverride = turretAngleOverride;
 
 		// Set up the state machine
 		// ---- Off state ----
@@ -581,7 +586,13 @@ public class ShooterSuperstructure {
 	 */
 	private void setValues(ShooterValues values, boolean tracking) {
 		flywheel.startFlywheel(values.getFlywheelSpeed());
-		turret.setPosition(values.getTurretAngle());
+
+		if (turretAngleOverride.get().isEmpty()) {
+			turret.setPosition(values.getTurretAngle());
+		} else {
+			// Turret angle override
+			turret.setPosition(turretAngleOverride.get().get());
+		}
 
 		// This is a bit of a jank way to do this but I'll do something better later if I have time
 		if (stateMachine.isInState(ShooterState.SHOOTING_STAGE_3_SHOOTING)) {
