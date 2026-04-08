@@ -10,10 +10,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.util.AlertUtil;
+import frc.robot.util.AlertUtil.AlertLevel;
 import frc.robot.MotorMonitor;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Milliseconds;
+import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.function.Supplier;
 
@@ -45,6 +48,8 @@ public class IntakeShoulder extends SubsystemBase {
 	 * Timer that delays when the current spike check for agitate is done. This allows us to make sure the initial starting current of the motor doesn't trip the check.
 	 */
 	private Timer agitateCurrentSpikeDelay = new Timer();
+
+	private boolean wasMagnetDetected = false;
 
 	/**
 	 * Constructor for motor which raises and lowers intakes with associated
@@ -166,10 +171,18 @@ public class IntakeShoulder extends SubsystemBase {
 	 * Periodic function that updates the intake limit switch.
 	 */
 	public void limitSwitchPeriodic() {
-		// if (magSwitch.getData().magnetDetected) {
-		// motor.setPosition(IntakeConstants.SHOULDER_LIMIT_SWITCH_DISTANCE);
-		// setPositionOutFast(IntakeConstants.SHOULDER_LIMIT_SWITCH_DISTANCE);
-		// }
+		if (magSwitch.getData().magnetDetected && !wasMagnetDetected) {
+			AlertUtil.sendNotification(AlertLevel.INFO, "Magnet Triggered", "Magnetic limit switch triggered!", Seconds.of(3));
+			motor.setPosition(IntakeConstants.SHOULDER_LIMIT_SWITCH_DISTANCE);
+			setPositionOutFast(IntakeConstants.SHOULDER_LIMIT_SWITCH_DISTANCE);
+
+			// Only trigger on the rising edge
+			wasMagnetDetected = true;
+		}
+
+		if (!magSwitch.getData().magnetDetected) {
+			wasMagnetDetected = false;
+		}
 	}
 
 	/**
