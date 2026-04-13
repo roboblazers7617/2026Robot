@@ -3,42 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.374203935599284,
-        "y": 5.763005366726297
+        "x": 0.254,
+        "y": 6.412021466905187
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1242039381131503,
-        "y": 5.763040819978064
+        "x": 0.504,
+        "y": 6.412021466905187
       },
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Intook Depot Second"
     },
     {
       "anchor": {
-        "x": 0.254,
-        "y": 5.763
+        "x": 1.7311627906976743,
+        "y": 6.412021466905187
       },
       "prevControl": {
-        "x": 0.5039999750569164,
-        "y": 5.762888323945329
+        "x": 1.4811627906976743,
+        "y": 6.412021466905187
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Inside Depot"
+      "linkedName": null
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.5,
-      "rotationDegrees": 180.0
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 0.3,
+    "maxVelocity": 1.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -52,7 +47,7 @@
   "reversed": false,
   "folder": "Riley and Lukas",
   "idealStartingState": {
-    "velocity": 1.5,
+    "velocity": 0,
     "rotation": 180.0
   },
   "useDefaultConstraints": false

@@ -241,6 +241,8 @@ public class RobotContainer {
 				.andThen(intakeGrabber.startIntakeSlowCommand())
 				.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
 				.andThen(intakeGrabber.stopIntakeCommand()));
+		NamedCommands.registerCommand("Agitate", intakeGrabber.startIntakeSlowCommand()
+				.andThen(intakeShoulder.agitateCommand()));
 
 		NamedCommands.registerCommand("Raise Climb", Commands.print("The Climb will rise"));
 		NamedCommands.registerCommand("Lower Climb", Commands.print("The Climb will fall"));
@@ -255,6 +257,13 @@ public class RobotContainer {
 				.andThen(intakeShoulder.agitateCommand()
 						.raceWith(Commands.waitSeconds(3.5)))
 				.andThen(intakeGrabber.stopIntakeCommand())
+				.andThen(shooterSuperstructure.homeCommand()));
+
+		NamedCommands.registerCommand("StartShoot", shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
+				.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
+				.andThen(shooterSuperstructure.startShootingCommand()));
+
+		NamedCommands.registerCommand("EndShoot", intakeGrabber.stopIntakeCommand()
 				.andThen(shooterSuperstructure.homeCommand()));
 	}
 

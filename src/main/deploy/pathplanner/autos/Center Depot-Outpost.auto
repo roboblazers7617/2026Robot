@@ -5,34 +5,79 @@
     "data": {
       "commands": [
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Center to Depot"
-                }
-              },
               {
                 "type": "named",
                 "data": {
                   "name": "Deploy Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Center to Depot"
                 }
               }
             ]
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Intake Depot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartShoot"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Intake Depot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Intook Depot"
+                      }
+                    },
+                    {
+                      "type": "path",
+                      "data": {
+                        "pathName": "Intake Depot Second"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Depot to Outpost Right"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Agitate"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Intook Depot Second"
+                }
+              }
+            ]
           }
         }
       ]

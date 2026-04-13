@@ -3,34 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 1.374203935599284,
-        "y": 5.763005366726297
+        "x": 1.48778175313059,
+        "y": 5.909033989266548
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.1242039381131503,
-        "y": 5.763040819978064
+        "x": 1.2377817556444561,
+        "y": 5.909069442518315
       },
       "isLocked": false,
-      "linkedName": "Depot"
+      "linkedName": "Intook Depot"
     },
     {
       "anchor": {
         "x": 0.254,
-        "y": 5.763
+        "y": 6.412021466905187
       },
       "prevControl": {
-        "x": 0.5039999750569164,
-        "y": 5.762888323945329
+        "x": 0.6434096601073345,
+        "y": 6.330894454382825
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Inside Depot"
+      "linkedName": "Intook Depot Second"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.5,
+      "waypointRelativePos": 0.25,
       "rotationDegrees": 180.0
     }
   ],
