@@ -319,7 +319,10 @@ public class RobotContainer {
 						.andThen(intakeShoulder.agitateCommand())
 						.finallyDo(intakeGrabber::stopIntake))
 				.onFalse(shooterSuperstructure.homeCommand()
-						.andThen(intakeGrabber.stopIntakeCommand()));
+						.andThen(hopperUptake.startHopperUnjamCommand())
+						.andThen(intakeGrabber.stopIntakeCommand())
+						.andThen(Commands.waitSeconds(1))
+						.andThen(hopperUptake.stopHopperCommand()));
 
 		operatorController.rightBumper()
 				.onTrue(intakeShoulder.stowOverBumperCommand()
