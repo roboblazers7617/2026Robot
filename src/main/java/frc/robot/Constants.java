@@ -60,6 +60,7 @@ import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Celsius;
+import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Second;
 import static edu.wpi.first.units.Units.Seconds;
 
@@ -231,8 +232,8 @@ public final class Constants {
 		public static final double GRABBER_SUPPLY_CURRENT_LIMIT = 30.0;
 		// public static final double INTAKE_START_SPEED = 0.2; //ts is old (as are the
 		// following three)
-		public static final double INTAKE_START_VOLTAGE = 6;
-		public static final double INTAKE_START_SLOW_VOLTAGE = 6.0;
+		public static final double INTAKE_START_VOLTAGE = 7;
+		public static final double INTAKE_START_SLOW_VOLTAGE = 7;
 		// public static final double INTAKE_STOP_SPEED = 0.0;
 		public static final double INTAKE_STOP_VOLTAGE = 0.0;
 		// public static final double OUTTAKE_SPEED = -0.2;
@@ -245,7 +246,7 @@ public final class Constants {
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Degrees.of(0);
 		// public static final Angle SHOULDER_LOWERED_ANGLE = Rotations.of(0);
 		public static final double SHOULDER_MAXIMUM_DISTANCE = 36;
-		public static final double SHOULDER_LIMIT_SWITCH_DISTANCE = 36;
+		public static final double SHOULDER_LIMIT_SWITCH_DISTANCE = 36.25;
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Degrees.of(10);
 		// public static final Angle SHOULDER_DEPOT_ANGLE = Rotations.of(0);
 		public static final double SHOULDER_DEPOT_DISTANCE = 20;
@@ -303,7 +304,7 @@ public final class Constants {
 		public static final double GAIN_SCHEDULE_ERROR_THRESHOLD = 0.5;
 
 		public static final double SHOULDER_TOLERANCE = 0.1;
-		public static final double NUDGE_SPEED = 0.6;
+		public static final double NUDGE_SPEED = 0.3;
 	}
 
 	public static class DrivetrainConstants {
@@ -523,7 +524,7 @@ public final class Constants {
 		/**
 		 * A set of values to shoot from the center by the tower.
 		 */
-		public static final ShooterValues STATIC_SHOOT_CENTER = new ShooterValues(RotationsPerSecond.of(30), Degrees.of(5), Degrees.of(0));
+		public static final ShooterValues STATIC_SHOOT_CENTER = new ShooterValues(RotationsPerSecond.of(33), Degrees.of(5), Degrees.of(0));
 	}
 
 	/**
@@ -574,10 +575,10 @@ public final class Constants {
 		// Speed Values in RPM
 		public static final AngularVelocity TOLERANCE = RotationsPerSecond.of(5);
 		// // Forward
-		public static final AngularVelocity FORWARD_HOPPER_RPS = RotationsPerSecond.of(15.0);
+		public static final AngularVelocity FORWARD_HOPPER_RPS = RotationsPerSecond.of(20.0);
 		public static final AngularVelocity FORWARD_UPTAKE_RPS = RotationsPerSecond.of(50.0);
 		// // Backward
-		public static final AngularVelocity BACKWARD_HOPPER_RPS = RotationsPerSecond.of(-10.0);
+		public static final AngularVelocity BACKWARD_HOPPER_RPS = RotationsPerSecond.of(-20.0);
 		public static final AngularVelocity BACKWARD_UPTAKE_RPS = RotationsPerSecond.of(-15.0);
 	}
 
@@ -795,11 +796,12 @@ public final class Constants {
 		public static final Boolean IS_GO_P = true;
 		public static final Boolean DEBUG_PRINT_STATEMENTS = false; // enables/disables the print statements from vision
 		public static final String TURRET_CAM_NAME = "CamFront";
-		public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.1397, -0.3479292, 0.2666238), new Rotation3d(0, 0.174533, -0.5 * Math.PI));
+		public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.13413455, .30985134, 0.53290982), new Rotation3d(0, .48, 0));
+		// public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.1397, -0.3479292, 0.2666238), new Rotation3d(0, 0.174533, -0.5 * Math.PI));
 		public static final String EBOARD_CAM_NAME = "CamX3"; // it's xtra cammin' time
-		public static final Transform3d ROBOT_TO_EBOARD_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.3415792, -0.10795, 0.2708148), new Rotation3d(0, 0.174533, Math.PI));
+		public static final Transform3d ROBOT_TO_EBOARD_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.3415792, -0.10795, 0.2666238), new Rotation3d(0, 0.174533, Math.PI));
 		public static final String XTRA_CAM_NAME = "CamX3"; // replace the String in the Constant of the camera you want to swap out with the extra cam name
-		public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(4, 4, 8); // 4, 4, 8
-		public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1);
+		public static final Matrix<N3, N1> SINGLE_TAG_STD_DEVS = VecBuilder.fill(0.5, 0.5, 1); // 4, 4, 8
+		public static final Matrix<N3, N1> MULTI_TAG_STD_DEVS = VecBuilder.fill(0.2, 0.2, 0.4); // 0.5, 0.5, 1
 	}
 }
