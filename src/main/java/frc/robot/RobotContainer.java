@@ -20,7 +20,7 @@ import frc.robot.superstructure.ShooterSim;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.superstructure.sources.ShootingSource;
-import frc.robot.superstructure.sources.ShootFromAnywhereInterpolatedSource;
+import frc.robot.superstructure.sources.ShootWhileMoveInterpolatedSource;
 import frc.robot.superstructure.sources.ShootingSourceConstant;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
@@ -133,7 +133,7 @@ public class RobotContainer {
 	/**
 	 * The source that we use for shoot-from-anywhere.
 	 */
-	private final ShootingSource shootFromAnywhereSource = new ShootFromAnywhereInterpolatedSource(drivetrain);
+	private final ShootingSource shootFromAnywhereSource = new ShootWhileMoveInterpolatedSource(drivetrain);
 
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -241,6 +241,8 @@ public class RobotContainer {
 				.andThen(intakeGrabber.startIntakeSlowCommand())
 				.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
 				.andThen(intakeGrabber.stopIntakeCommand()));
+		NamedCommands.registerCommand("Agitate", intakeGrabber.startIntakeSlowCommand()
+				.andThen(intakeShoulder.agitateCommand()));
 
 		NamedCommands.registerCommand("Raise Climb", Commands.print("The Climb will rise"));
 		NamedCommands.registerCommand("Lower Climb", Commands.print("The Climb will fall"));
@@ -255,6 +257,13 @@ public class RobotContainer {
 				.andThen(intakeShoulder.agitateCommand()
 						.raceWith(Commands.waitSeconds(3.5)))
 				.andThen(intakeGrabber.stopIntakeCommand())
+				.andThen(shooterSuperstructure.homeCommand()));
+
+		NamedCommands.registerCommand("StartShoot", shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
+				.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
+				.andThen(shooterSuperstructure.startShootingCommand()));
+
+		NamedCommands.registerCommand("EndShoot", intakeGrabber.stopIntakeCommand()
 				.andThen(shooterSuperstructure.homeCommand()));
 	}
 
@@ -319,7 +328,10 @@ public class RobotContainer {
 						.andThen(intakeShoulder.agitateCommand())
 						.finallyDo(intakeGrabber::stopIntake))
 				.onFalse(shooterSuperstructure.homeCommand()
-						.andThen(intakeGrabber.stopIntakeCommand()));
+						.andThen(hopperUptake.startHopperUnjamCommand())
+						.andThen(intakeGrabber.stopIntakeCommand())
+						.andThen(Commands.waitSeconds(1))
+						.andThen(hopperUptake.stopHopperCommand()));
 
 		operatorController.rightBumper()
 				.onTrue(intakeShoulder.stowOverBumperCommand()
