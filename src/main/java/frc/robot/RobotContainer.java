@@ -298,11 +298,11 @@ public class RobotContainer {
 		// // Sets multiplier to the higher value
 		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
 
-		// driverController.leftTrigger()
-		// .whileTrue(hopperUptake.startHopperUnjamCommand())
-		// .whileTrue(hopperUptake.startUptakeUnjamCommand())
-		// .onFalse(Commands.either(hopperUptake.startUptakeForwardCommand(), hopperUptake.stopUptakeCommand(), shooterSuperstructure::isShooting))
-		// .onFalse(Commands.either(hopperUptake.startHopperForwardCommand(), hopperUptake.stopHopperCommand(), shooterSuperstructure::isShootingActive));
+		driverController.leftTrigger()
+				.whileTrue(hopperUptake.startHopperUnjamCommand())
+				.whileTrue(hopperUptake.startUptakeUnjamCommand())
+				.onFalse(Commands.either(hopperUptake.startUptakeForwardCommand(), hopperUptake.stopUptakeCommand(), shooterSuperstructure::isShooting))
+				.onFalse(Commands.either(hopperUptake.startHopperForwardCommand(), hopperUptake.stopHopperCommand(), shooterSuperstructure::isShootingActive));
 
 		drivetrain.registerTelemetry(logger::telemeterize);
 	}
