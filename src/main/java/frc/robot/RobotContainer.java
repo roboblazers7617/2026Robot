@@ -251,7 +251,6 @@ public class RobotContainer {
 
 		NamedCommands.registerCommand("Shoot", shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
 				.andThen(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger()))
-				.andThen(Commands.waitSeconds(0.5))
 				.andThen(shooterSuperstructure.startShootingCommand())
 				.andThen(intakeGrabber.startIntakeSlowCommand())
 				.andThen(intakeShoulder.agitateCommand()
