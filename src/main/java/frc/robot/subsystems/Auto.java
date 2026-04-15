@@ -12,6 +12,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.AutoConstants;
+import frc.robot.util.AlertUtil;
+
+import static edu.wpi.first.units.Units.Seconds;
 
 /**
  * Subsystem for the robot's autonomous functionality.
@@ -74,7 +77,7 @@ public class Auto {
 	 */
 	public static void setupPathPlannerFailsafe(CommandSwerveDrivetrain commandSwerveDrivetrain) {
 		if (!AutoBuilder.isConfigured()) {
-			System.err.println("AutoBuilder not configured before enabling! Configuring AutoBuilder with data from the FMS.");
+			AlertUtil.sendNotification(AlertUtil.AlertLevel.ERROR, "AutoBuilder not configured!", "AutoBuilder not configured before enabling! Configuring AutoBuilder with data from the FMS.", Seconds.of(3.0));
 			Auto.setupPathPlanner(commandSwerveDrivetrain, DriverStation.getAlliance()
 					.orElse(DriverStation.Alliance.Blue));
 		}
@@ -90,7 +93,6 @@ public class Auto {
 	 */
 	public static Command getAutonomousCommand(String pathName) {
 		// Create a path following command using AutoBuilder. This will also trigger event markers.
-		// TODO: #119 (Max) I think would be better to add the ResetLastAngularScalar here
 		return new PathPlannerAuto(pathName);
 	}
 }
