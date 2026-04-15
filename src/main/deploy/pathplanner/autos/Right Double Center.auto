@@ -68,9 +68,41 @@
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "Shoot"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "StartShoot"
+                }
+              },
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 5.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Agitate"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "EndShoot"
+                }
+              }
+            ]
           }
         },
         {
@@ -133,7 +165,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot"
+            "name": "StartShoot"
           }
         }
       ]
