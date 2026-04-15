@@ -253,7 +253,7 @@ public final class Constants {
 		public static final double AGITATE_LOWERED_DISTANCE = SHOULDER_MAXIMUM_DISTANCE;
 		public static final double AGITATE_RAISED_DISTANCE = SHOULDER_MINIMUM_DISTANCE;
 		public static final double AGITATE_TOLERANCE = 0.5;
-		public static final Current AGITATE_CURRENT_SPIKE_THRESHOLD = Amps.of(15.0);
+		public static final Current AGITATE_CURRENT_SPIKE_THRESHOLD = Amps.of(20.0);
 		public static final Time AGITATE_CURRENT_SPIKE_DELAY = Seconds.of(0.2);
 
 		// PID vals for moving the intake in
@@ -298,7 +298,7 @@ public final class Constants {
 		public static final double SHOULDER_SUPPLY_CURRENT_LIMIT = 40.0;
 		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_LIMIT = 20.0;
 		public static final double SHOULDER_SUPPLY_CURRENT_LOWER_TIME = 0.15;
-		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 15.0;
+		public static final double SHOULDER_STATOR_CURRENT_LIMIT = 20.0;
 
 		public static final double GAIN_SCHEDULE_ERROR_THRESHOLD = 0.5;
 
