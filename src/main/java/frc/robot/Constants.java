@@ -303,7 +303,7 @@ public final class Constants {
 		public static final double GAIN_SCHEDULE_ERROR_THRESHOLD = 0.5;
 
 		public static final double SHOULDER_TOLERANCE = 0.1;
-		public static final double NUDGE_SPEED = 0.3;
+		public static final double NUDGE_SPEED = 0.6;
 	}
 
 	public static class DrivetrainConstants {
