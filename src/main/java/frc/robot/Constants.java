@@ -795,7 +795,7 @@ public final class Constants {
 		public static final Boolean IS_GO_P = true;
 		public static final Boolean DEBUG_PRINT_STATEMENTS = false; // enables/disables the print statements from vision
 		public static final String TURRET_CAM_NAME = "CamFront";
-		public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.13413455, .30985134, 0.53290982), new Rotation3d(0, .48, 0));
+		public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.149, .30985134, 0.53290982), new Rotation3d(0, .48, 0)); // -0.13413455
 		// public static final Transform3d ROBOT_TO_TURRET_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.1397, -0.3479292, 0.2666238), new Rotation3d(0, 0.174533, -0.5 * Math.PI));
 		public static final String EBOARD_CAM_NAME = "CamX3"; // it's xtra cammin' time
 		public static final Transform3d ROBOT_TO_EBOARD_CAM_TRANSFORM = new Transform3d(new Translation3d(-0.3415792, -0.10795, 0.2666238), new Rotation3d(0, 0.174533, Math.PI));
