@@ -146,7 +146,7 @@ public final class Constants {
 		/**
 		 * The temperature at which a warning is shown on the dashboard about motor overtemp.
 		 */
-		public static final Temperature MOTOR_WARNING_TEMPERATURE = Celsius.of(50.0);
+		public static final Temperature MOTOR_WARNING_TEMPERATURE = Celsius.of(70.0);
 		/**
 		 * The temperature the motor has to fall to for another alert to be sent. This adds a bit of hysteresis.
 		 */
@@ -231,7 +231,7 @@ public final class Constants {
 		public static final double GRABBER_SUPPLY_CURRENT_LIMIT = 30.0;
 		// public static final double INTAKE_START_SPEED = 0.2; //ts is old (as are the
 		// following three)
-		public static final double INTAKE_START_VOLTAGE = 7;
+		public static final double INTAKE_START_VOLTAGE = 8;
 		public static final double INTAKE_START_SLOW_VOLTAGE = 9;
 		// public static final double INTAKE_STOP_SPEED = 0.0;
 		public static final double INTAKE_STOP_VOLTAGE = 0.0;
