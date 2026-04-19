@@ -1,0 +1,37 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 12.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "center to intook depot 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "waitAAAAh to intook depot 2"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "intook depot 2 to mid"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": "Pure Scoring - No Climb",
+  "choreoAuto": false
+}
