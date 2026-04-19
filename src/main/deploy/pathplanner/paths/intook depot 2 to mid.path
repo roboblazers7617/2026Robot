@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.254,
+        "x": 1.7311627906976743,
         "y": 6.412021466905187
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.504,
-        "y": 6.412021466905187
+        "x": 1.7311627906976743,
+        "y": 7.912021466905187
       },
       "isLocked": false,
-      "linkedName": "Intook Depot Second"
+      "linkedName": "Depot intook second"
     },
     {
       "anchor": {
-        "x": 1.7311627906976743,
-        "y": 6.412021466905187
+        "x": 7.781,
+        "y": 7.4
       },
       "prevControl": {
-        "x": 1.4811627906976743,
-        "y": 6.412021466905187
+        "x": 5.659738483345143,
+        "y": 7.4
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Depot intook second"
+      "linkedName": null
     }
   ],
   "rotationTargets": [],
@@ -33,7 +33,7 @@
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
-    "maxVelocity": 1.0,
+    "maxVelocity": 2.0,
     "maxAcceleration": 6.0,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
@@ -45,10 +45,10 @@
     "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Riley and Lukas",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
     "rotation": 180.0
   },
-  "useDefaultConstraints": false
+  "useDefaultConstraints": true
 }
