@@ -296,9 +296,10 @@ public class RobotContainer {
 
 		// --- triggers ---
 		// // Sets multiplier to the higher value
-		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
+		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MID_SPEED_MULTIPLIER));
+		driverController.leftTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
 
-		driverController.leftTrigger()
+		driverController.povDown()
 				.whileTrue(hopperUptake.startHopperUnjamCommand())
 				.whileTrue(hopperUptake.startUptakeUnjamCommand())
 				.onFalse(Commands.either(hopperUptake.startUptakeForwardCommand(), hopperUptake.stopUptakeCommand(), shooterSuperstructure::isShooting))

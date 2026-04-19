@@ -321,7 +321,8 @@ public final class Constants {
 		/**
 		 * Speed Multipliers
 		 */
-		public static final double MAX_SPEED_MULTIPLIER = 0.5;
+		public static final double MAX_SPEED_MULTIPLIER = 0.8;
+		public static final double MID_SPEED_MULTIPLIER = 0.5;
 		public static final double NORMAL_SPEED_MULTIPLIER = 0.35;
 		public static final double SLOW_SPEED_MULTIPLIER = 0.25;
 		// for use in speed multiplier ONLY
@@ -523,7 +524,7 @@ public final class Constants {
 		/**
 		 * A set of values to shoot from the center by the tower.
 		 */
-		public static final ShooterValues STATIC_SHOOT_CENTER = new ShooterValues(RotationsPerSecond.of(33), Degrees.of(5), Degrees.of(0));
+		public static final ShooterValues STATIC_SHOOT_CENTER = new ShooterValues(RotationsPerSecond.of(31.5), Degrees.of(5), Degrees.of(0));
 	}
 
 	/**
