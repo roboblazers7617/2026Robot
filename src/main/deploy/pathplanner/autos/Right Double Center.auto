@@ -84,7 +84,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 5.0
+                        "waitTime": 2.5
                       }
                     },
                     {
@@ -166,6 +166,12 @@
           "type": "named",
           "data": {
             "name": "StartShoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Agitate"
           }
         }
       ]
