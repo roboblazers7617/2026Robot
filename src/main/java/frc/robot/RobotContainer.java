@@ -42,6 +42,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -54,6 +55,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static edu.wpi.first.units.Units.Seconds;
+
+import java.util.Optional;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -160,7 +163,13 @@ public class RobotContainer {
 		}
 
 		// Set up superstructure
-		shooterSuperstructure = new ShooterSuperstructure(shooter, hood, turret, hopperUptake, uptakeBeamBreak);
+		shooterSuperstructure = new ShooterSuperstructure(shooter, hood, turret, hopperUptake, uptakeBeamBreak, () -> {
+			if (Math.abs(operatorController.getLeftY()) >= OperatorConstants.ANGLE_SNAP_DEADBAND || Math.abs(operatorController.getLeftX()) >= OperatorConstants.ANGLE_SNAP_DEADBAND) {
+				return Optional.of(new Rotation2d(-operatorController.getLeftY(), -driverController.getLeftX()).getMeasure());
+			}
+
+			return Optional.empty();
+		});
 
 		// Configure the trigger bindings
 		configureNamedCommands();
