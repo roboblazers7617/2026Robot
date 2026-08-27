@@ -22,6 +22,7 @@ import frc.robot.superstructure.ShooterSuperstructureDebug;
 import frc.robot.superstructure.sources.ShootingSource;
 import frc.robot.superstructure.sources.ShootWhileMoveInterpolatedSource;
 import frc.robot.superstructure.sources.ShootingSourceConstant;
+import frc.robot.superstructure.sources.ShootingSourceIdle;
 import frc.robot.Constants.ShootingConstants;
 import frc.robot.Constants.SuperstructureConstants;
 import frc.robot.commands.HapticCommand;
@@ -181,9 +182,9 @@ public class RobotContainer {
 					.onTrue(shooterSuperstructure.homeCommand());
 		}
 
-		// Set up a trigger so, when we enable in teleop we go into shoot while move
+		// Set up a trigger so, when we enable in teleop we go into idle mode
 		RobotModeTriggers.teleop()
-				.onTrue(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource));
+				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()));
 
 		// Warmup PathPlanner to avoid Java pauses
 		FollowPathCommand.warmupCommand().schedule();
@@ -284,26 +285,6 @@ public class RobotContainer {
 		// // resets gyro
 		driverController.start().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-		// --- letter buttons ---
-		// // moves swerves into x formation
-		driverController.a().whileTrue(drivetrain.applyRequest(() -> drivetrainControls.brake));
-
-		// --- bumpers ---
-		// // switches swerve requests to field centric facing angle
-		driverController.leftBumper().whileTrue(Commands.runOnce(() -> drivetrainControls.setPose2()).andThen(drivetrain.applyRequest(() -> drivetrainControls.feildCentricFacingAngleRequest(driverController))));
-		// // Sets multiplier to the lower value
-		driverController.rightBumper().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.SLOW_SPEED_MULTIPLIER));
-
-		// --- triggers ---
-		// // Sets multiplier to the higher value
-		driverController.rightTrigger().whileTrue(drivetrainControls.setSpeedMultiplierCommand(() -> DrivetrainConstants.MAX_SPEED_MULTIPLIER));
-
-		driverController.leftTrigger()
-				.whileTrue(hopperUptake.startHopperUnjamCommand())
-				.whileTrue(hopperUptake.startUptakeUnjamCommand())
-				.onFalse(Commands.either(hopperUptake.startUptakeForwardCommand(), hopperUptake.stopUptakeCommand(), shooterSuperstructure::isShooting))
-				.onFalse(Commands.either(hopperUptake.startHopperForwardCommand(), hopperUptake.stopHopperCommand(), shooterSuperstructure::isShootingActive));
-
 		drivetrain.registerTelemetry(logger::telemeterize);
 	}
 
@@ -312,95 +293,32 @@ public class RobotContainer {
 	 * buttons.
 	 */
 	private void configureOperatorControls() {
-		// Wait until ready to shoot, then shoot in current mode
+		// Wait until ready to shoot, then shoot with demo constants
 		// Home on release
 		operatorController.leftTrigger()
-				.whileTrue(shooterSuperstructure.startShootingWhenReadyCommand())
-				.onFalse(shooterSuperstructure.homeCommand());
-
-		// Wait until ready to shoot, then shoot in current mode while pulling in intake
-		// Home on release
-		operatorController.leftBumper()
-				.whileTrue(Commands.waitUntil(shooterSuperstructure.readyToShootTrigger())
-						.andThen(shooterSuperstructure.startShootingCommand())
+				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot - Demo", ShootingConstants.STATIC_SHOOT_DEMO))
+						.andThen(shooterSuperstructure.startShootingWhenReadyCommand())
 						.andThen(intakeGrabber.startIntakeSlowCommand())
 						.andThen(intakeShoulder.agitateCommand())
 						.finallyDo(intakeGrabber::stopIntake))
-				.onFalse(shooterSuperstructure.homeCommand()
+				.onFalse(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle())
+						.andThen(shooterSuperstructure.homeCommand())
 						.andThen(hopperUptake.startHopperUnjamCommand())
 						.andThen(intakeGrabber.stopIntakeCommand())
 						.andThen(Commands.waitSeconds(1))
 						.andThen(hopperUptake.stopHopperCommand()));
 
-		operatorController.rightBumper()
-				.onTrue(intakeShoulder.stowOverBumperCommand()
-						.andThen(intakeGrabber.startIntakeSlowCommand())
-						.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
-						.finallyDo(intakeGrabber::stopIntake));
+		operatorController.start().onTrue(Commands.runOnce(() -> intakeShoulder.zeroEncoder()));
 
-		// Set mode to shoot from fixed position, wait until ready to shoot, then shoot
-		// Home and set back to shoot from anywhere on release
+		// Press Right Trigger to START and LOWER INTAKE
+		// Release to stop
 		operatorController.rightTrigger()
-				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot", ShootingConstants.STATIC_SHOOT_VALUES))
-						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
-				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
-						.andThen(shooterSuperstructure.homeCommand()));
-
-		operatorController.povLeft()
-				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot - Left", ShootingConstants.STATIC_SHOOT_LEFT_DOOR_VALUES))
-						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
-				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
-						.andThen(shooterSuperstructure.homeCommand()));
-
-		operatorController.povRight()
-				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot - Right", ShootingConstants.STATIC_SHOOT_RIGHT_DOOR_VALUES))
-						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
-				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
-						.andThen(shooterSuperstructure.homeCommand()));
-
-		operatorController.povUp()
-				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot - Center", ShootingConstants.STATIC_SHOOT_CENTER))
-						.andThen(shooterSuperstructure.startShootingWhenReadyCommand()))
-				.onFalse(shooterSuperstructure.setSourceCommand(shootFromAnywhereSource)
-						.andThen(shooterSuperstructure.homeCommand()));
-
-		// Set mode to idle
-		// operatorController.povDown()
-		// .onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()));
-		operatorController.povDown().onTrue(Commands.runOnce(() -> intakeShoulder.zeroEncoder()));
-
-		operatorController.back()
-				.onTrue(shooterSuperstructure.turnOffCommand());
-		operatorController.start()
-				.onTrue(shooterSuperstructure.homeCommand());
-
-		// Press A to START and LOWER INTAKE
-		operatorController.a()
 				.onTrue(intakeGrabber.startIntakeCommand())
-				.onTrue(intakeShoulder.lowerIntakeCommand());
-		// Press B to STOP INTAKE
-		operatorController.b()
-				.onTrue(intakeGrabber.stopIntakeCommand());
-		// Press X to START INTAKE SLOWLY
-		operatorController.x()
-				.onTrue(intakeGrabber.startIntakeSlowCommand());
-		// Press Y to STOW and then STOP INTAKE
-		operatorController.y()
-				.onTrue(intakeShoulder.raiseIntakeSlowCommand()
+				.onTrue(intakeShoulder.lowerIntakeCommand())
+				.onFalse(intakeShoulder.raiseIntakeSlowCommand()
 						.andThen(intakeGrabber.startIntakeSlowCommand())
 						.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
 						.finallyDo(intakeGrabber::stopIntake));
-
-		// Manual control on joystick
-		intakeShoulder.setDefaultCommand(intakeShoulder.nudgeIntakeCommand(() -> {
-			double controllerValue = -operatorController.getRightY();
-
-			if (Math.abs(controllerValue) > OperatorConstants.DEADBAND) {
-				return controllerValue;
-			} else {
-				return 0.0;
-			}
-		}));
 
 		// Haptics when ready to shoot
 		shooterSuperstructure.readyToShootTrigger()
