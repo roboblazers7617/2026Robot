@@ -315,10 +315,10 @@ public class RobotContainer {
 		operatorController.rightTrigger()
 				.onTrue(intakeGrabber.startIntakeCommand())
 				.onTrue(intakeShoulder.lowerIntakeCommand())
-				.onFalse(intakeShoulder.raiseIntakeSlowCommand()
-						.andThen(intakeGrabber.startIntakeSlowCommand())
-						.andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
-						.finallyDo(intakeGrabber::stopIntake));
+				.onFalse(intakeShoulder.stowOverBumperCommand()
+						// .andThen(intakeGrabber.startIntakeSlowCommand())
+						// .andThen(Commands.waitUntil(intakeShoulder::getIsAtTarget))
+						.andThen(intakeGrabber::stopIntake));
 
 		// Haptics when ready to shoot
 		shooterSuperstructure.readyToShootTrigger()

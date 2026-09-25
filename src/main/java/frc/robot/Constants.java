@@ -528,7 +528,7 @@ public final class Constants {
 		/**
 		 * Slow demo shoot
 		 */
-		public static final ShooterValues STATIC_SHOOT_DEMO = new ShooterValues(RotationsPerSecond.of(15), Degrees.of(5), Degrees.of(0));
+		public static final ShooterValues STATIC_SHOOT_DEMO = new ShooterValues(RotationsPerSecond.of(35), Degrees.of(5), Degrees.of(0));
 	}
 
 	/**
