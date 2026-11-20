@@ -19,7 +19,9 @@ import frc.robot.subsystems.intake.IntakeShoulder;
 import frc.robot.superstructure.ShooterSim;
 import frc.robot.superstructure.ShooterSuperstructure;
 import frc.robot.superstructure.ShooterSuperstructureDebug;
+import frc.robot.superstructure.ShooterValues;
 import frc.robot.superstructure.sources.ShootingSource;
+import frc.robot.superstructure.sources.ShootFromAnywhereSource;
 import frc.robot.superstructure.sources.ShootWhileMoveInterpolatedSource;
 import frc.robot.superstructure.sources.ShootingSourceConstant;
 import frc.robot.superstructure.sources.ShootingSourceIdle;
@@ -43,9 +45,12 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.simulation.DIOSim;
 import edu.wpi.first.networktables.NetworkTable;
@@ -55,6 +60,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import static edu.wpi.first.units.Units.Seconds;
+
+import java.util.function.Supplier;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -136,6 +143,15 @@ public class RobotContainer {
 	 */
 	private final ShootingSource shootFromAnywhereSource = new ShootWhileMoveInterpolatedSource(drivetrain);
 
+	enum ShootingMode {
+		Demo, ShootFromAnywhere,
+	}
+
+	/**
+	 * What mode do we want for shooting?
+	 */
+	private ShootingMode shootingMode = ShootingMode.Demo;
+
 	/**
 	 * The container for the robot. Contains subsystems, OI devices, and commands.
 	 */
@@ -147,9 +163,6 @@ public class RobotContainer {
 		Util.recordMetadata("DebugMode", LoggingConstants.DEBUG_MODE ? "true" : "false");
 		Util.recordMetadata("LogLevel", LoggingConstants.DEBUG_LEVEL.name());
 
-		// autoChooser = AutoBuilder.buildAutoChooser("Tests");
-		// SmartDashboard.putData("Auto Mode", autoChooser);
-		//
 		// Set up subsystems
 		shooter = new Shooter(networkTableInst.getSubTable("Shooter"));
 		hood = new Hood(networkTableInst.getSubTable("Hood"));
@@ -184,7 +197,28 @@ public class RobotContainer {
 
 		// Set up a trigger so, when we enable in teleop we go into idle mode
 		RobotModeTriggers.teleop()
-				.onTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()));
+				.onTrue(Commands.either(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()), shooterSuperstructure.setSourceCommand(shootFromAnywhereSource), () -> shootingMode == ShootingMode.Demo));
+
+		// Set up some buttons for demo controls
+		SendableChooser<ShootingMode> shootModeChooser = new SendableChooser<>();
+		shootModeChooser.addOption("Shoot From Anywhere", ShootingMode.ShootFromAnywhere);
+		shootModeChooser.setDefaultOption("Demo", ShootingMode.Demo);
+		shootModeChooser.onChange((newMode) -> {
+			shootingMode = newMode;
+
+			// i hate this
+			if (DriverStation.isEnabled())
+				switch (newMode) {
+					case Demo:
+						shooterSuperstructure.setSource(new ShootingSourceIdle());
+						break;
+
+					case ShootFromAnywhere:
+						shooterSuperstructure.setSource(shootFromAnywhereSource);
+						break;
+				}
+		});
+		SmartDashboard.putData("Shoot Mode", shootModeChooser);
 
 		// Warmup PathPlanner to avoid Java pauses
 		FollowPathCommand.warmupCommand().schedule();
@@ -293,24 +327,29 @@ public class RobotContainer {
 	 * buttons.
 	 */
 	private void configureOperatorControls() {
-		// Wait until ready to shoot, then shoot with demo constants
+		// LEFT TRIGGER: Wait until ready to shoot, then shoot
 		// Home on release
 		operatorController.leftTrigger()
-				.whileTrue(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot - Demo", ShootingConstants.STATIC_SHOOT_DEMO))
+				.whileTrue(Commands.either(shooterSuperstructure.setSourceCommand(new ShootingSourceConstant("Static Shoot - Demo", ShootingConstants.STATIC_SHOOT_DEMO)), Commands.none(), () -> shootingMode == ShootingMode.Demo)
 						.andThen(shooterSuperstructure.startShootingWhenReadyCommand())
 						.andThen(intakeGrabber.startIntakeSlowCommand())
 						.andThen(intakeShoulder.agitateCommand())
 						.finallyDo(intakeGrabber::stopIntake))
-				.onFalse(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle())
+				.onFalse(Commands.either(shooterSuperstructure.setSourceCommand(new ShootingSourceIdle()), Commands.none(), () -> shootingMode == ShootingMode.Demo)
 						.andThen(shooterSuperstructure.homeCommand())
 						.andThen(hopperUptake.startHopperUnjamCommand())
 						.andThen(intakeGrabber.stopIntakeCommand())
 						.andThen(Commands.waitSeconds(1))
 						.andThen(hopperUptake.stopHopperCommand()));
 
+		// LEFT STICK: Manual override for turret angle
+		new Trigger(() -> Math.abs(operatorController.getLeftX()) >= OperatorConstants.ANGLE_SNAP_DEADBAND || Math.abs(operatorController.getLeftY()) >= OperatorConstants.ANGLE_SNAP_DEADBAND)
+				.whileTrue(shooterSuperstructure.setTurretAngleOverrideCommand(() -> new Rotation2d(-operatorController.getLeftY(), operatorController.getLeftX()).getMeasure()));
+
+		// START: Zero intake button
 		operatorController.start().onTrue(Commands.runOnce(() -> intakeShoulder.zeroEncoder()));
 
-		// Press Right Trigger to START and LOWER INTAKE
+		// RIGHT TRIGGER: START and LOWER INTAKE
 		// Release to stop
 		operatorController.rightTrigger()
 				.onTrue(intakeGrabber.startIntakeCommand())
@@ -339,34 +378,7 @@ public class RobotContainer {
 	 * @return the command to run in autonomous
 	 */
 	public Command getAutonomousCommand() {
-		// // Simple drive forward auton
-		// final var idle = new SwerveRequest.Idle();
-		// return autoChooser.getSelected();
-		// // // Reset our field centric heading to match the robot
-		// // // facing away from our alliance station wall (0 deg).
-		// // drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-		// // // Then slowly drive forward (away from us) for 5 seconds.
-		// // drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
-		// // .withVelocityY(0)
-		// // .withRotationalRate(0))
-		// // .withTimeout(5.0),
-		// // // Finally idle for the rest of auton
-		// // drivetrain.applyRequest(() -> idle));
-		// TODO: I removed the simple auton and use the selected one instead, do we still need this.
 		return autoChooser.getSelected();
-		// // Simple drive forward auton
-		// final var idle = new SwerveRequest.Idle();
-		// return Commands.sequence(
-		// // Reset our field centric heading to match the robot
-		// // facing away from our alliance station wall (0 deg).
-		// drivetrain.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.kZero)),
-		// // Then slowly drive forward (away from us) for 5 seconds.
-		// drivetrain.applyRequest(() -> drive.withVelocityX(0.5)
-		// .withVelocityY(0)
-		// .withRotationalRate(0))
-		// .withTimeout(5.0),
-		// // Finally idle for the rest of auton
-		// drivetrain.applyRequest(() -> idle));
 	}
 
 	public void setAutoChooser(SendableChooser<Command> auto) {

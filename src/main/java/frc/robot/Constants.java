@@ -107,6 +107,10 @@ public final class Constants {
 		 * Joystick deadband.
 		 */
 		public static final double DEADBAND = 0.1;
+		/**
+		 * Deadband for snap-to-angle controls.
+		 */
+		public static final double ANGLE_SNAP_DEADBAND = 0.5;
 	}
 
 	/**
@@ -123,7 +127,7 @@ public final class Constants {
 		 * Send logging data to NetworkTables. Data is written to storage when set to
 		 * false.
 		 */
-		public static final boolean DEBUG_MODE = false;
+		public static final boolean DEBUG_MODE = true;
 		/**
 		 * Log all data above specified level.
 		 */
@@ -771,7 +775,7 @@ public final class Constants {
 		/**
 		 * The peak/cruising velocity of the motion.
 		 */
-		public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(125.0).div(MOTOR_GEAR_RATIO).times(0.8);
+		public static final AngularVelocity CRUISE_VELOCITY = RotationsPerSecond.of(50.0).div(MOTOR_GEAR_RATIO).times(0.8);
 		/**
 		 * The acceleration and deceleration rates during the beginning and end of motion.
 		 */
@@ -784,11 +788,11 @@ public final class Constants {
 		/**
 		 * The lowest angle the turret can rotate to.
 		 */
-		public static final Angle MINIMUM_ANGLE = Rotations.of(-1.0);
+		public static final Angle MINIMUM_ANGLE = Rotations.of(-0.5);
 		/**
 		 * The highest angle the turret can rotate to.
 		 */
-		public static final Angle MAXIMUM_ANGLE = Rotations.of(1.0);
+		public static final Angle MAXIMUM_ANGLE = Rotations.of(0.5);
 
 		/**
 		 * How close does the Turret have to be to its setpoint to be counted as being there.

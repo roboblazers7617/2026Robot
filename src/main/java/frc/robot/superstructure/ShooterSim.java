@@ -49,6 +49,7 @@ public class ShooterSim {
 	private static DoublePublisher turretAnglePublisher = NetworkTableInstance.getDefault()
 			.getDoubleTopic(TABLE_NAME + "/INIT_TURRET_ANGLE")
 			.publish();
+
 	/**
 	 * Update counter, used for timing.
 	 * <p>

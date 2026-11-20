@@ -8,6 +8,7 @@ import com.github.oxo42.stateless4j.StateMachineConfig;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.epilogue.NotLogged;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -158,6 +159,11 @@ public class ShooterSuperstructure {
 	 * The current source to poll for shooting values.
 	 */
 	private ShootingSource shootingSource = new ShootingSourceIdle();
+
+	/**
+	 * Override for the turret angle, used for manual turret control.
+	 */
+	private Optional<Angle> turretAngleOverride = Optional.empty();
 
 	/**
 	 * Creates a new ShooterSuperstructure.
@@ -513,6 +519,14 @@ public class ShooterSuperstructure {
 	}
 
 	/**
+	 * Overrides the turret angle, removes the override when canceled.
+	 */
+	public Command setTurretAngleOverrideCommand(Supplier<Angle> turretAngle) {
+		return Commands.run(() -> turretAngleOverride = Optional.of(turretAngle.get()))
+				.finallyDo(() -> turretAngleOverride = Optional.empty());
+	}
+
+	/**
 	 * Trigger that returns true when ready to shoot. Should be useful for triggering controller haptics.
 	 *
 	 * @return
@@ -601,7 +615,7 @@ public class ShooterSuperstructure {
 	 */
 	private void setValues(ShooterValues values, boolean tracking) {
 		flywheel.startFlywheel(values.getFlywheelSpeed());
-		turret.setPosition(values.getTurretAngle());
+		turret.setPosition(turretAngleOverride.orElse(values.getTurretAngle()));
 
 		// This is a bit of a jank way to do this but I'll do something better later if I have time
 		if (stateMachine.isInState(ShooterState.SHOOTING_STAGE_3_SHOOTING)) {
